@@ -1,36 +1,38 @@
 /*
- * Seralyth Menu  Menu/Buttons.cs
- * A community driven mod menu for Gorilla Tag with over 1000+ mods
- *
- * Copyright (C) 2026  Seralyth Software
- * https://github.com/Seralyth/Seralyth-Menu
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+** Pixelyth-Menu - Menu/Buttons.cs
+** An Open-Source Mod Menu for Gorilla Tag with 2000+ Mods!
+**
+** Copyright (C) 2026 - PixelCatt
+** https://github.com/PixelCattt/Pixelyth-Menu
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+** See the GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.
+** If not, see <https://www.gnu.org/licenses/>.
+*/
 
 using GorillaLocomotion;
 using GorillaNetworking;
 using GorillaTagScripts;
 using GorillaTagScripts.ObstacleCourse;
 using Photon.Pun;
-using Seralyth.Classes.Menu;
-using Seralyth.Extensions;
-using Seralyth.Managers;
-using Seralyth.Mods;
-using Seralyth.Patches.Menu;
-using Seralyth.Patches.Safety;
-using Seralyth.Utilities;
+using Pixelyth.Classes.Menu;
+using Pixelyth.Classes.Menu.ConsoleScripts;
+using Pixelyth.Extensions;
+using Pixelyth.Managers;
+using Pixelyth.Mods;
+using Pixelyth.Patches.Menu;
+using Pixelyth.Patches.Safety;
+using Pixelyth.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,13 +40,13 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static Seralyth.Menu.Main;
-using static Seralyth.Utilities.RandomUtilities;
-using static Seralyth.Utilities.RigUtilities;
-using Console = Seralyth.Classes.Menu.Console;
+using static Pixelyth.Menu.Main;
+using static Pixelyth.Utilities.RandomUtilities;
+using static Pixelyth.Utilities.RigUtilities;
+using Console = Pixelyth.Classes.Menu.ConsoleScripts.Console;
 using Random = UnityEngine.Random;
 
-namespace Seralyth.Menu
+namespace Pixelyth.Menu
 {
     public static class Buttons
     {
@@ -52,200 +54,199 @@ namespace Seralyth.Menu
         {
             new[] { // Main [0]
 
-                new ButtonInfo { buttonText = "Join Discord", method = Important.JoinDiscord, isTogglable = false, toolTip = "Invites you to join the <b>Seralyth</b> Discord server.", legal = true},
+                new ButtonInfo { buttonText = "Join Discord", method = Important.JoinDiscord, isTogglable = false, toolTip = "Invites you to join the <b>Pixelyth</b> Discord server."},
 
-                new ButtonInfo { buttonText = "Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Opens the settings tab.", legal = true},
-                // new ButtonInfo { buttonText = "Friends", method =() => CurrentCategoryName = "Friends", isTogglable = false, toolTip = "Opens the friends tab.", legal = true},
-                new ButtonInfo { buttonText = "Players", method = Settings.PlayersTab, isTogglable = false, toolTip = "Opens the players tab.", legal = true},
-                new ButtonInfo { buttonText = "Favorite Mods", method =() => CurrentCategoryName = "Favorite Mods", isTogglable = false, toolTip = "Opens your favorite mods. Favorite mods with right grip.", legal = true},
-                new ButtonInfo { buttonText = "Enabled Mods", method =() => CurrentCategoryName = "Enabled Mods", isTogglable = false, toolTip = "Shows all mods you have enabled.", legal = true},
-                new ButtonInfo { buttonText = "Room Mods", method =() => CurrentCategoryName = "Room Mods", isTogglable = false, toolTip = "Opens the room mods.", legal = true},
-                new ButtonInfo { buttonText = "Important Mods", method =() => CurrentCategoryName = "Important Mods", isTogglable = false, toolTip = "Opens the important mods.", legal = true},
-                new ButtonInfo { buttonText = "Safety Mods", method =() => CurrentCategoryName = "Safety Mods", isTogglable = false, toolTip = "Opens the safety mods.", legal = true},
+                new ButtonInfo { buttonText = "Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Opens the settings tab."},
+                // new ButtonInfo { buttonText = "Friends", method =() => CurrentCategoryName = "Friends", isTogglable = false, toolTip = "Opens the friends tab."},
+                new ButtonInfo { buttonText = "Players", method = Settings.PlayersTab, isTogglable = false, toolTip = "Opens the players tab."},
+                new ButtonInfo { buttonText = "Favorite Mods", method =() => CurrentCategoryName = "Favorite Mods", isTogglable = false, toolTip = "Opens your favorite mods. Favorite mods with right grip."},
+                new ButtonInfo { buttonText = "Enabled Mods", method =() => CurrentCategoryName = "Enabled Mods", isTogglable = false, toolTip = "Shows all mods you have enabled."},
+                new ButtonInfo { buttonText = "Room Mods", method =() => CurrentCategoryName = "Room Mods", isTogglable = false, toolTip = "Opens the room mods."},
+                new ButtonInfo { buttonText = "Important Mods", method =() => CurrentCategoryName = "Important Mods", isTogglable = false, toolTip = "Opens the important mods."},
+                new ButtonInfo { buttonText = "Safety Mods", method =() => CurrentCategoryName = "Safety Mods", isTogglable = false, toolTip = "Opens the safety mods."},
                 new ButtonInfo { buttonText = "Movement Mods", method =() => CurrentCategoryName = "Movement Mods", isTogglable = false, toolTip = "Opens the movement mods."},
                 new ButtonInfo { buttonText = "Advantage Mods", method =() => CurrentCategoryName = "Advantage Mods", isTogglable = false, toolTip = "Opens the advantage mods."},
-                new ButtonInfo { buttonText = "Visual Mods", method =() => CurrentCategoryName = "Visual Mods", isTogglable = false, toolTip = "Opens the visual mods.", legal = true},
-                new ButtonInfo { buttonText = "Fun Mods", method =() => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Opens the fun mods.", legal = true},
+                new ButtonInfo { buttonText = "Visual Mods", method =() => CurrentCategoryName = "Visual Mods", isTogglable = false, toolTip = "Opens the visual mods."},
+                new ButtonInfo { buttonText = "Fun Mods", method =() => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Opens the fun mods."},
                 new ButtonInfo { buttonText = "Sound Mods", method =() => CurrentCategoryName = "Sound Mods", isTogglable = false, toolTip = "Opens the sound mods."},
                 new ButtonInfo { buttonText = "Projectile Mods", method =() => CurrentCategoryName = "Projectile Mods", isTogglable = false, toolTip = "Opens the projectile mods."},
                 new ButtonInfo { buttonText = "Master Mods", method =() => CurrentCategoryName = "Master Mods", isTogglable = false, toolTip = "Opens the master mods."},
                 new ButtonInfo { buttonText = "Overpowered Mods", method =() => CurrentCategoryName = "Overpowered Mods", isTogglable = false, toolTip = "Opens the overpowered mods."},
-                new ButtonInfo { buttonText = "Experimental Mods", method =() => CurrentCategoryName = "Experimental Mods", isTogglable = false, toolTip = "Opens the experimental mods.", legal = true},
+                new ButtonInfo { buttonText = "Experimental Mods", method =() => CurrentCategoryName = "Experimental Mods", isTogglable = false, toolTip = "Opens the experimental mods."},
                 new ButtonInfo { buttonText = "Detected Mods", overlapText = "<color=red>Detected Mods</color>", method = Detected.EnterDetectedTab, isTogglable = false, toolTip = "Opens the detected mods."},
 
-                new ButtonInfo { buttonText = "Achievements", method = AchievementManager.EnterAchievementTab, isTogglable = false, toolTip = "Opens the achievements page.", legal = true},
-                new ButtonInfo { buttonText = "Credits", method =() => CurrentCategoryName = "Credits", isTogglable = false, toolTip = "Opens the credits page.", legal = true}
+                new ButtonInfo { buttonText = "Achievements", method = AchievementManager.EnterAchievementTab, isTogglable = false, toolTip = "Opens the achievements page."},
+                new ButtonInfo { buttonText = "Credits", method =() => CurrentCategoryName = "Credits", isTogglable = false, toolTip = "Opens the credits page."}
             },
 
             new[] { // Settings [1]
-                new ButtonInfo { buttonText = "Exit Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
-                new ButtonInfo { buttonText = "Menu Settings", method =() => CurrentCategoryName = "Menu Settings", isTogglable = false, toolTip = "Opens the settings for the menu.", legal = true},
-                new ButtonInfo { buttonText = "Category Settings", method = Settings.CategorySettings, isTogglable = false, toolTip = "Opens the settings for the categories.", legal = true},
+                new ButtonInfo { buttonText = "Menu Settings", method =() => CurrentCategoryName = "Menu Settings", isTogglable = false, toolTip = "Opens the settings for the menu."},
+                new ButtonInfo { buttonText = "Category Settings", method = Settings.CategorySettings, isTogglable = false, toolTip = "Opens the settings for the categories."},
 
-                new ButtonInfo { buttonText = "Keybind Settings", method =() => CurrentCategoryName = "Keybind Settings", isTogglable = false, toolTip = "Opens the settings for the keybinds.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Settings", method =() => CurrentCategoryName = "Rebind Settings", isTogglable = false, toolTip = "Opens the settings for rebinds.", legal = true},
-                new ButtonInfo { buttonText = "Plugin Settings", method =() => CurrentCategoryName = "Plugin Settings", isTogglable = false, toolTip = "Opens the settings for the plugins.", legal = true},
+                new ButtonInfo { buttonText = "Keybind Settings", method =() => CurrentCategoryName = "Keybind Settings", isTogglable = false, toolTip = "Opens the settings for the keybinds."},
+                new ButtonInfo { buttonText = "Rebind Settings", method =() => CurrentCategoryName = "Rebind Settings", isTogglable = false, toolTip = "Opens the settings for rebinds."},
+                new ButtonInfo { buttonText = "Plugin Settings", method =() => CurrentCategoryName = "Plugin Settings", isTogglable = false, toolTip = "Opens the settings for the plugins."},
 
                 new ButtonInfo { buttonText = "Soundboard Settings", method =() => CurrentCategoryName = "Soundboard Settings", isTogglable = false, toolTip = "Opens the settings for the soundboard."},
-                // new ButtonInfo { buttonText = "Friend Settings", method =() => CurrentCategoryName = "Friend Settings", isTogglable = false, toolTip = "Opens the settings for the friend system.", legal = true},
-                new ButtonInfo { buttonText = "Room Settings", method =() => CurrentCategoryName = "Room Settings", isTogglable = false, toolTip = "Opens the settings for the room mods.", legal = true},
+                // new ButtonInfo { buttonText = "Friend Settings", method =() => CurrentCategoryName = "Friend Settings", isTogglable = false, toolTip = "Opens the settings for the friend system."},
+                new ButtonInfo { buttonText = "Room Settings", method =() => CurrentCategoryName = "Room Settings", isTogglable = false, toolTip = "Opens the settings for the room mods."},
                 new ButtonInfo { buttonText = "Safety Settings", method =() => CurrentCategoryName = "Safety Settings", isTogglable = false, toolTip = "Opens the settings for the safety mods."},
                 new ButtonInfo { buttonText = "Movement Settings", method =() => CurrentCategoryName = "Movement Settings", isTogglable = false, toolTip = "Opens the settings for the movement mods."},
-                new ButtonInfo { buttonText = "Advantage Settings", method =() => CurrentCategoryName = "Advantage Settings", isTogglable = false, toolTip = "Opens the settings for the advantage mods.", legal = true},
-                new ButtonInfo { buttonText = "Visual Settings", method =() => CurrentCategoryName = "Visual Settings", isTogglable = false, toolTip = "Opens the settings for the visual mods.", legal = true},
-                new ButtonInfo { buttonText = "Fun Settings", method =() => CurrentCategoryName = "Fun Settings", isTogglable = false, toolTip = "Opens the settings for the fun mods.", legal = true},
+                new ButtonInfo { buttonText = "Advantage Settings", method =() => CurrentCategoryName = "Advantage Settings", isTogglable = false, toolTip = "Opens the settings for the advantage mods."},
+                new ButtonInfo { buttonText = "Visual Settings", method =() => CurrentCategoryName = "Visual Settings", isTogglable = false, toolTip = "Opens the settings for the visual mods."},
+                new ButtonInfo { buttonText = "Fun Settings", method =() => CurrentCategoryName = "Fun Settings", isTogglable = false, toolTip = "Opens the settings for the fun mods."},
                 new ButtonInfo { buttonText = "Overpowered Settings", method =() => CurrentCategoryName = "Overpowered Settings", isTogglable = false, toolTip = "Opens the settings for the overpowered mods."},
                 new ButtonInfo { buttonText = "Detected Settings", method =() => CurrentCategoryName = "Detected Settings", isTogglable = false, toolTip = "Opens the settings for the detected mods."},
                 new ButtonInfo { buttonText = "Projectile Settings", method =() => CurrentCategoryName = "Projectile Settings", isTogglable = false, toolTip = "Opens the settings for the projectiles."},
-                new ButtonInfo { buttonText = "Patreon Settings", method =() => CurrentCategoryName = "Patreon Settings", isTogglable = false, toolTip = "Opens the settings for the Patreon mods."},
             },
 
             new[] { // Menu Settings [2]
-                new ButtonInfo { buttonText = "Exit Menu Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Menu Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
-                new ButtonInfo { buttonText = "Hide PC GUI", enableMethod =() => UI.Instance.isOpen = false, disableMethod =() => UI.Instance.isOpen = true, toolTip = "Hides the GUI from your PC Screen.", legal = true},
+                new ButtonInfo { buttonText = "Hide PC GUI", enableMethod =() => UI.Instance.isOpen = false, disableMethod =() => UI.Instance.isOpen = true, toolTip = "Hides the GUI from your PC Screen."},
 
-                new ButtonInfo { buttonText = "Hide Arraylist from PC GUI", enableMethod =() => UI.Instance.hideArrayList = true, disableMethod =() => UI.Instance.hideArrayList = false, toolTip = "Hides the Arraylist from the GUI on your PC Screen.", legal = true},
-                new ButtonInfo { buttonText = "Hide Room Code from PC GUI", enableMethod =() => UI.Instance.hideRoomCode = true, disableMethod =() => UI.Instance.hideRoomCode = false, toolTip = "Hides the Room Code from the GUI on your PC Screen.", legal = true},
-                new ButtonInfo { buttonText = "Hide Notifications from PC GUI", enableMethod =() => UI.Instance.hideNotifications = true, disableMethod =() => UI.Instance.hideNotifications = false, toolTip = "Hides the Notifications from the GUI on your PC Screen.", legal = true},
-                new ButtonInfo { buttonText = "Hide Controls from PC GUI", enableMethod =() => UI.Instance.hideControls = true, disableMethod =() => UI.Instance.hideControls = false, toolTip = "Hides the Controls from the GUI on your PC Screen.", legal = true},
-                new ButtonInfo { buttonText = "Hide Menu Infos from PC GUI", enableMethod =() => UI.Instance.hideMenuInfos = true, disableMethod =() => UI.Instance.hideMenuInfos = false, toolTip = "Hides the Menu Infos from the GUI on your PC Screen.", legal = true},
+                new ButtonInfo { buttonText = "Hide Arraylist from PC GUI", enableMethod =() => UI.Instance.hideArrayList = true, disableMethod =() => UI.Instance.hideArrayList = false, toolTip = "Hides the Arraylist from the GUI on your PC Screen."},
+                new ButtonInfo { buttonText = "Hide Room Code from PC GUI", enableMethod =() => UI.Instance.hideRoomCode = true, disableMethod =() => UI.Instance.hideRoomCode = false, toolTip = "Hides the Room Code from the GUI on your PC Screen."},
+                new ButtonInfo { buttonText = "Hide Notifications from PC GUI", enableMethod =() => UI.Instance.hideNotifications = true, disableMethod =() => UI.Instance.hideNotifications = false, toolTip = "Hides the Notifications from the GUI on your PC Screen."},
+                new ButtonInfo { buttonText = "Hide Controls from PC GUI", enableMethod =() => UI.Instance.hideControls = true, disableMethod =() => UI.Instance.hideControls = false, toolTip = "Hides the Controls from the GUI on your PC Screen."},
+                new ButtonInfo { buttonText = "Hide Menu Infos from PC GUI", enableMethod =() => UI.Instance.hideMenuInfos = true, disableMethod =() => UI.Instance.hideMenuInfos = false, toolTip = "Hides the Menu Infos from the GUI on your PC Screen."},
 
-                new ButtonInfo { buttonText = "Right Hand", enableMethod = Settings.RightHand, disableMethod = Settings.LeftHand, toolTip = "Puts the menu on your right hand.", legal = true},
-                new ButtonInfo { buttonText = "Both Hands", enableMethod =() => bothHands = true, disableMethod =() => bothHands = false, toolTip = "Puts the menu on your both of your hands.", legal = true},
+                new ButtonInfo { buttonText = "Right Hand", enableMethod = Settings.RightHand, disableMethod = Settings.LeftHand, toolTip = "Puts the menu on your right hand."},
+                new ButtonInfo { buttonText = "Both Hands", enableMethod =() => bothHands = true, disableMethod =() => bothHands = false, toolTip = "Puts the menu on your both of your hands."},
 
-                new ButtonInfo { buttonText = "One Handed Menu", enableMethod =() => oneHand = true, disableMethod =() => oneHand = false, toolTip = "Makes the menu open in front of you, so you can use it with one hand.", legal = true},
-                new ButtonInfo { buttonText = "Joystick Menu", enableMethod =() => joystickMenu = true, disableMethod = Settings.JoystickMenuOff, toolTip = "Makes the menu into something like Colossal, click your joysticks to open, joysticks to move between mods and pages, and click your left joystick to toggle a mod.", legal = true},
-                new ButtonInfo { buttonText = "Physical Menu", enableMethod = Settings.PhysicalMenuOn, disableMethod = Settings.PhysicalMenuOff, toolTip = "Freezes the menu in world space.", legal = true},
-                new ButtonInfo { buttonText = "Bark Menu", enableMethod =() => barkMenu = true, disableMethod =() => barkMenu = false, toolTip = "Allows you to spawn the menu similar to bark by banging on your chest.", legal = true},
-                new ButtonInfo { buttonText = "Wrist Menu", enableMethod =() => wristMenu = true, disableMethod =() => wristMenu = false, toolTip = "Turns the menu into a weird wrist watch, click your hand to open it.", legal = true},
+                new ButtonInfo { buttonText = "One Handed Menu", enableMethod =() => oneHand = true, disableMethod =() => oneHand = false, toolTip = "Makes the menu open in front of you, so you can use it with one hand."},
+                new ButtonInfo { buttonText = "Joystick Menu", enableMethod =() => joystickMenu = true, disableMethod = Settings.JoystickMenuOff, toolTip = "Makes the menu into something like Colossal, click your joysticks to open, joysticks to move between mods and pages, and click your left joystick to toggle a mod."},
+                new ButtonInfo { buttonText = "Physical Menu", enableMethod = Settings.PhysicalMenuOn, disableMethod = Settings.PhysicalMenuOff, toolTip = "Freezes the menu in world space."},
+                new ButtonInfo { buttonText = "Bark Menu", enableMethod =() => barkMenu = true, disableMethod =() => barkMenu = false, toolTip = "Allows you to spawn the menu similar to bark by banging on your chest."},
+                new ButtonInfo { buttonText = "Wrist Menu", enableMethod =() => wristMenu = true, disableMethod =() => wristMenu = false, toolTip = "Turns the menu into a weird wrist watch, click your hand to open it."},
                 new ButtonInfo { buttonText = "Watch Menu", enableMethod = Settings.WatchMenuOn, method = Settings.CheckWatchMenu, disableMethod = Settings.WatchMenuOff, toolTip = "Turns the menu into a watch, click your joystick to toggle, and move your joystick to select a mod."},
-                new ButtonInfo { buttonText = "Shiny Menu", enableMethod =() => shinyMenu = true, disableMethod =() => shinyMenu = false, toolTip = "Makes the menu's textures use the old shader.", legal = true},
-                new ButtonInfo { buttonText = "Transparent Menu", enableMethod =() => transparentMenu = true, disableMethod =() => transparentMenu = false, toolTip = "Makes the menu transparent.", legal = true},
-                new ButtonInfo { buttonText = "Crystallize Menu", enableMethod =() => { crystallizeMenu = true; CustomBoardManager.BoardMaterial = CrystalMaterial; }, disableMethod =() => { crystallizeMenu = false ; CustomBoardManager.BoardMaterial = null; }, toolTip = "Turns the menu into crystals.", legal = true},
-                new ButtonInfo { buttonText = "Explode Menu", enableMethod =() => explodeMenu = true, disableMethod =() => explodeMenu = false, toolTip = "Makes the menu explode when closing it.", legal = true},
-                new ButtonInfo { buttonText = "Thick Menu", enableMethod =() => thinMenu = false, disableMethod =() => thinMenu = true, toolTip = "Makes the menu thin.", legal = true},
-                new ButtonInfo { buttonText = "Long Menu", enableMethod =() => longmenu = true, disableMethod =() => longmenu = false, toolTip = "Makes the menu long.", legal = true},
-                new ButtonInfo { buttonText = "Flip Menu", enableMethod =() => flipMenu = true, disableMethod =() => flipMenu = false, toolTip = "Flips the menu to the back of your hand.", legal = true},
+                new ButtonInfo { buttonText = "Shiny Menu", enableMethod =() => shinyMenu = true, disableMethod =() => shinyMenu = false, toolTip = "Makes the menu's textures use the old shader."},
+                new ButtonInfo { buttonText = "Transparent Menu", enableMethod =() => transparentMenu = true, disableMethod =() => transparentMenu = false, toolTip = "Makes the menu transparent."},
+                new ButtonInfo { buttonText = "Crystallize Menu", enableMethod =() => { crystallizeMenu = true; CustomBoardManager.BoardMaterial = CrystalMaterial; }, disableMethod =() => { crystallizeMenu = false ; CustomBoardManager.BoardMaterial = null; }, toolTip = "Turns the menu into crystals."},
+                new ButtonInfo { buttonText = "Explode Menu", enableMethod =() => explodeMenu = true, disableMethod =() => explodeMenu = false, toolTip = "Makes the menu explode when closing it."},
+                new ButtonInfo { buttonText = "Thick Menu", enableMethod =() => thinMenu = false, disableMethod =() => thinMenu = true, toolTip = "Makes the menu thin."},
+                new ButtonInfo { buttonText = "Long Menu", enableMethod =() => longmenu = true, disableMethod =() => longmenu = false, toolTip = "Makes the menu long."},
+                new ButtonInfo { buttonText = "Flip Menu", enableMethod =() => flipMenu = true, disableMethod =() => flipMenu = false, toolTip = "Flips the menu to the back of your hand."},
 
-                new ButtonInfo { buttonText = "Round Menu", enableMethod =() => shouldRound = true, disableMethod =() => shouldRound = false, toolTip = "Makes the menu objects round.", legal = true},
-                new ButtonInfo { buttonText = "Outline Menu", enableMethod =() => shouldOutline = true, disableMethod =() => shouldOutline = false, toolTip = "Gives the menu objects an outline.", legal = true},
-                new ButtonInfo { buttonText = "Outline Text", enableMethod =() => outlineText = true, disableMethod =() => outlineText = false, toolTip = "Gives the text objects an outline.", legal = true},
-                new ButtonInfo { buttonText = "Strikethrough Text", enableMethod =() => strikethroughText = true, disableMethod =() => strikethroughText = false, toolTip = "Strikes out all text on the menu.", legal = true},
-                new ButtonInfo { buttonText = "Underline Text", enableMethod =() => underlineText = true, disableMethod =() => underlineText = false, toolTip = "Underlines all text on the menu.", legal = true},
-                new ButtonInfo { buttonText = "Small-Caps Text", enableMethod =() => smallCapsText = true, disableMethod =() => smallCapsText = false, toolTip = "Turns all text into a small capital version.", legal = true},
-                new ButtonInfo { buttonText = "Redact Text", enableMethod =() => redactText = true, disableMethod =() => redactText = false, toolTip = "Redacts all text on the menu.", legal = true},
-                new ButtonInfo { buttonText = "Inner Outline Menu", enableMethod =() => innerOutline = true, disableMethod =() => innerOutline = false, toolTip = "Gives the menu an outline on the inside.", legal = true},
-                new ButtonInfo { buttonText = "Smooth Menu Position", enableMethod =() => smoothMenuPosition = true, disableMethod =() => smoothMenuPosition = false, toolTip = "Smoothes the menu's position.", legal = true},
-                new ButtonInfo { buttonText = "Smooth Menu Rotation", enableMethod =() => smoothMenuRotation = true, disableMethod =() => smoothMenuRotation = false, toolTip = "Smoothes the menu's rotation.", legal = true},
+                new ButtonInfo { buttonText = "Round Menu", enableMethod =() => shouldRound = true, disableMethod =() => shouldRound = false, toolTip = "Makes the menu objects round."},
+                new ButtonInfo { buttonText = "Outline Menu", enableMethod =() => shouldOutline = true, disableMethod =() => shouldOutline = false, toolTip = "Gives the menu objects an outline."},
+                new ButtonInfo { buttonText = "Outline Text", enableMethod =() => outlineText = true, disableMethod =() => outlineText = false, toolTip = "Gives the text objects an outline."},
+                new ButtonInfo { buttonText = "Strikethrough Text", enableMethod =() => strikethroughText = true, disableMethod =() => strikethroughText = false, toolTip = "Strikes out all text on the menu."},
+                new ButtonInfo { buttonText = "Underline Text", enableMethod =() => underlineText = true, disableMethod =() => underlineText = false, toolTip = "Underlines all text on the menu."},
+                new ButtonInfo { buttonText = "Small-Caps Text", enableMethod =() => smallCapsText = true, disableMethod =() => smallCapsText = false, toolTip = "Turns all text into a small capital version."},
+                new ButtonInfo { buttonText = "Redact Text", enableMethod =() => redactText = true, disableMethod =() => redactText = false, toolTip = "Redacts all text on the menu."},
+                new ButtonInfo { buttonText = "Inner Outline Menu", enableMethod =() => innerOutline = true, disableMethod =() => innerOutline = false, toolTip = "Gives the menu an outline on the inside."},
+                new ButtonInfo { buttonText = "Smooth Menu Position", enableMethod =() => smoothMenuPosition = true, disableMethod =() => smoothMenuPosition = false, toolTip = "Smoothes the menu's position."},
+                new ButtonInfo { buttonText = "Smooth Menu Rotation", enableMethod =() => smoothMenuRotation = true, disableMethod =() => smoothMenuRotation = false, toolTip = "Smoothes the menu's rotation."},
 
-                new ButtonInfo { buttonText = "Disable Favorite Keybind", enableMethod =() => Main.disableFavoritingKeybind = true, disableMethod =() => Main.disableFavoritingKeybind = false, toolTip = "Makes it so toggling a button while holding left grip does nothing.", legal = true},
-                new ButtonInfo { buttonText = "Freeze Player in Menu", method = Settings.FreezePlayerInMenu, enableMethod =() => closePosition = GorillaTagger.Instance.rigidbody.transform.position, toolTip = "Freezes your character when inside the menu.", legal = true},
-                new ButtonInfo { buttonText = "Freeze Rig in Menu", overlapText = "Ghost Rig in Menu", method = Settings.FreezeRigInMenu, disableMethod = Movement.EnableRig, toolTip = "Freezes your rig when inside the menu.", legal = true},
-                new ButtonInfo { buttonText = "Zero Gravity Menu", enableMethod =() => zeroGravityMenu = true, disableMethod =() => zeroGravityMenu = false, toolTip = "Disables gravity on the menu when dropping it.", legal = true},
-                new ButtonInfo { buttonText = "Menu Collisions", enableMethod =() => menuCollisions = true, disableMethod =() => menuCollisions = false, toolTip = "Gives the menu collisions when dropping it.", legal = true},
-                new ButtonInfo { buttonText = "Player Scale Menu", enableMethod =() => scaleWithPlayer = true, disableMethod =() => scaleWithPlayer = false, toolTip = "Scales the menu with your player scale.", legal = true},
-                new ButtonInfo { buttonText = "Alphabetize Menu", toolTip = "Alphabetizes the entire menu.", legal = true},
-                new ButtonInfo { buttonText = "Custom Menu Name", enableMethod = Settings.CustomMenuName, disableMethod =() => doCustomName = false, toolTip = $"Changes the name of the menu to whatever. You can change the text inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/Seralyth_CustomMenuName.txt).", legal = true},
-                new ButtonInfo { buttonText = "Menu Trail", enableMethod =() => menuTrail = true, disableMethod =() => menuTrail = false, toolTip = "Gives the menu a trail when you drop.", legal = true},
+                new ButtonInfo { buttonText = "Disable Favorite Keybind", enableMethod =() => Main.disableFavoritingKeybind = true, disableMethod =() => Main.disableFavoritingKeybind = false, toolTip = "Makes it so toggling a button while holding left grip does nothing."},
+                new ButtonInfo { buttonText = "Freeze Player in Menu", method = Settings.FreezePlayerInMenu, enableMethod =() => closePosition = GorillaTagger.Instance.rigidbody.transform.position, toolTip = "Freezes your character when inside the menu."},
+                new ButtonInfo { buttonText = "Freeze Rig in Menu", overlapText = "Ghost Rig in Menu", method = Settings.FreezeRigInMenu, disableMethod = Movement.EnableRig, toolTip = "Freezes your rig when inside the menu."},
+                new ButtonInfo { buttonText = "Zero Gravity Menu", enableMethod =() => zeroGravityMenu = true, disableMethod =() => zeroGravityMenu = false, toolTip = "Disables gravity on the menu when dropping it."},
+                new ButtonInfo { buttonText = "Menu Collisions", enableMethod =() => menuCollisions = true, disableMethod =() => menuCollisions = false, toolTip = "Gives the menu collisions when dropping it."},
+                new ButtonInfo { buttonText = "Player Scale Menu", enableMethod =() => scaleWithPlayer = true, disableMethod =() => scaleWithPlayer = false, toolTip = "Scales the menu with your player scale."},
+                new ButtonInfo { buttonText = "Alphabetize Menu", toolTip = "Alphabetizes the entire menu."},
+                new ButtonInfo { buttonText = "Custom Menu Name", enableMethod = Settings.CustomMenuName, disableMethod =() => doCustomName = false, toolTip = $"Changes the name of the menu to whatever. You can change the text inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/Pixelyth_CustomMenuName.txt)."},
+                new ButtonInfo { buttonText = "Menu Trail", enableMethod =() => menuTrail = true, disableMethod =() => menuTrail = false, toolTip = "Gives the menu a trail when you drop."},
 
-                new ButtonInfo { buttonText = "Dynamic Animations", enableMethod =() => dynamicAnimations = true, disableMethod =() => dynamicAnimations = false, toolTip = "Adds more animations to the menu, giving you a better sense of control.", legal = true},
-                new ButtonInfo { buttonText = "Slow Dynamic Animations", enableMethod =() => slowDynamicAnimations = true, disableMethod =() => slowDynamicAnimations = false, toolTip = "Makes Dynamic Animations slower.", legal = true},
-                new ButtonInfo { buttonText = "Dynamic Gradients", enableMethod =() => dynamicGradients = true, disableMethod =() => dynamicGradients = false, toolTip = "Makes gradients dynamic, showing you the full gradient instead of a pulsing color.", legal = true},
-                new ButtonInfo { buttonText = "Horizontal Gradients", enableMethod =() => { horizontalGradients = true; cacheGradients.Clear(); }, disableMethod =() => { horizontalGradients = false; cacheGradients.Clear(); }, toolTip = "Rotates the dynamic gradients by 90 degrees.", legal = true},
-                new ButtonInfo { buttonText = "Scrolling Gradients", enableMethod =() => scrollingGradients = true, disableMethod =() => scrollingGradients = false, toolTip = "Scrolls the dynamic gradients over time.", legal = true},
-                new ButtonInfo { buttonText = "Dynamic Sounds", enableMethod =() => dynamicSounds = true, disableMethod =() => dynamicSounds = false, toolTip = "Adds more sounds to the menu, giving you a better sense of control.", legal = true},
-                new ButtonInfo { buttonText = "Disable Adaptive Buttons", enableMethod =() => adaptiveButtons = false, disableMethod =() => adaptiveButtons = true, toolTip = "Disables the rebinding of buttons to make your experience better based on what controllers you're using.", legal = true},
-                new ButtonInfo { buttonText = "Incremental Boost", enableMethod =() => incrementalBoost = true, disableMethod =() => incrementalBoost = false, toolTip = "Allows you to increment faster by holding down your <color=green>grip</color>.", legal = true},
-                new ButtonInfo { buttonText = "Page Scrolling", enableMethod =() => pageScrolling = true, disableMethod =() => { pageScrolling = false; pageOffset = 0; }, toolTip = "Allows you to scroll through the mods with your joystick instead of flipping through pages.", legal = true},
-                new ButtonInfo { buttonText = "Exclusive Page Sounds", enableMethod =() => exclusivePageSounds = true, disableMethod =() => exclusivePageSounds = false, toolTip = "Makes the sound that joystick menu makes when switching pages using the menu.", legal = true},
-                new ButtonInfo { buttonText = "Particle Spawn Effect", enableMethod =() => particleSpawnEffect = true, disableMethod =() => particleSpawnEffect = false, toolTip = "Spawns particles when opening the menu.", legal = true},
-                new ButtonInfo { buttonText = "Gradient Title", enableMethod =() => gradientTitle = true, disableMethod =() => gradientTitle = false, toolTip = "Gives a gradient to the title of the menu depending on your theme.", legal = true},
-                new ButtonInfo { buttonText = "Animated Title", enableMethod =() => animatedTitle = true, disableMethod =() => animatedTitle = false, toolTip = "Animates the title of the menu.", legal = true},
-                new ButtonInfo { buttonText = "Voice Commands", enableMethod = Settings.VoiceRecognitionOn, method = Settings.CheckFocus, disableMethod = Settings.VoiceRecognitionOff, toolTip = "Enable and disable mods using your voice. Activate it like how you would any other voice assistant, such as \"Jarvis, Platforms\".", legal = true},
-                new ButtonInfo { buttonText = "Chain Voice Commands", toolTip = "Makes voice commands chain together, so you don't have to repeatedly ask it to listen to you.", legal = true},
-                new ButtonInfo { buttonText = "AI Assistant", enableMethod =() => CoroutineManager.instance.StartCoroutine(Settings.DictationOn()), method = Settings.CheckFocus, disableMethod = Settings.DictationOff, toolTip = "A voice assistant with artificial intelligence capabilities.", legal = true},
+                new ButtonInfo { buttonText = "Dynamic Animations", enableMethod =() => dynamicAnimations = true, disableMethod =() => dynamicAnimations = false, toolTip = "Adds more animations to the menu, giving you a better sense of control."},
+                new ButtonInfo { buttonText = "Slow Dynamic Animations", enableMethod =() => slowDynamicAnimations = true, disableMethod =() => slowDynamicAnimations = false, toolTip = "Makes Dynamic Animations slower."},
+                new ButtonInfo { buttonText = "Dynamic Gradients", enableMethod =() => dynamicGradients = true, disableMethod =() => dynamicGradients = false, toolTip = "Makes gradients dynamic, showing you the full gradient instead of a pulsing color."},
+                new ButtonInfo { buttonText = "Horizontal Gradients", enableMethod =() => { horizontalGradients = true; cacheGradients.Clear(); }, disableMethod =() => { horizontalGradients = false; cacheGradients.Clear(); }, toolTip = "Rotates the dynamic gradients by 90 degrees."},
+                new ButtonInfo { buttonText = "Scrolling Gradients", enableMethod =() => scrollingGradients = true, disableMethod =() => scrollingGradients = false, toolTip = "Scrolls the dynamic gradients over time."},
+                new ButtonInfo { buttonText = "Dynamic Sounds", enableMethod =() => dynamicSounds = true, disableMethod =() => dynamicSounds = false, toolTip = "Adds more sounds to the menu, giving you a better sense of control."},
+                new ButtonInfo { buttonText = "Disable Adaptive Buttons", enableMethod =() => adaptiveButtons = false, disableMethod =() => adaptiveButtons = true, toolTip = "Disables the rebinding of buttons to make your experience better based on what controllers you're using."},
+                new ButtonInfo { buttonText = "Incremental Boost", enableMethod =() => incrementalBoost = true, disableMethod =() => incrementalBoost = false, toolTip = "Allows you to increment faster by holding down your <color=green>grip</color>."},
+                new ButtonInfo { buttonText = "Page Scrolling", enableMethod =() => pageScrolling = true, disableMethod =() => { pageScrolling = false; pageOffset = 0; }, toolTip = "Allows you to scroll through the mods with your joystick instead of flipping through pages."},
+                new ButtonInfo { buttonText = "Exclusive Page Sounds", enableMethod =() => exclusivePageSounds = true, disableMethod =() => exclusivePageSounds = false, toolTip = "Makes the sound that joystick menu makes when switching pages using the menu."},
+                new ButtonInfo { buttonText = "Particle Spawn Effect", enableMethod =() => particleSpawnEffect = true, disableMethod =() => particleSpawnEffect = false, toolTip = "Spawns particles when opening the menu."},
+                new ButtonInfo { buttonText = "Gradient Title", enableMethod =() => gradientTitle = true, disableMethod =() => gradientTitle = false, toolTip = "Gives a gradient to the title of the menu depending on your theme."},
+                new ButtonInfo { buttonText = "Animated Title", enableMethod =() => animatedTitle = true, disableMethod =() => animatedTitle = false, toolTip = "Animates the title of the menu."},
+                new ButtonInfo { buttonText = "Voice Commands", enableMethod = Settings.VoiceRecognitionOn, method = Settings.CheckFocus, disableMethod = Settings.VoiceRecognitionOff, toolTip = "Enable and disable mods using your voice. Activate it like how you would any other voice assistant, such as \"Jarvis, Platforms\"."},
+                new ButtonInfo { buttonText = "Chain Voice Commands", toolTip = "Makes voice commands chain together, so you don't have to repeatedly ask it to listen to you."},
+                new ButtonInfo { buttonText = "AI Assistant", enableMethod =() => CoroutineManager.instance.StartCoroutine(Settings.DictationOn()), method = Settings.CheckFocus, disableMethod = Settings.DictationOff, toolTip = "A voice assistant with artificial intelligence capabilities."},
                 //new ButtonInfo { buttonText = "Click GUI", enableMethod = Settings.EnableClickGUI, method = Settings.ClickGUI, disableMethod = Settings.DisableClickGUI, toolTip = "A modern version of the menu."},
 
-                new ButtonInfo { buttonText = "Narrate Assistant", toolTip = "Narrates what the voice assistant says locally.", legal = true},
-                new ButtonInfo { buttonText = "Global Narrate Assistant", toolTip = "Narrates what the voice assistant says globally.", legal = true},
-                new ButtonInfo { buttonText = "Global Dynamic Sounds", toolTip = "Plays the dynamic sounds through your microphone.", legal = true},
+                new ButtonInfo { buttonText = "Narrate Assistant", toolTip = "Narrates what the voice assistant says locally."},
+                new ButtonInfo { buttonText = "Global Narrate Assistant", toolTip = "Narrates what the voice assistant says globally."},
+                new ButtonInfo { buttonText = "Global Dynamic Sounds", toolTip = "Plays the dynamic sounds through your microphone."},
 
-                new ButtonInfo { buttonText = "Debug Dictation", enableMethod =() => Settings.debugDictation = true, disableMethod =() => Settings.debugDictation = false, toolTip = "Debug what you say to the AI Assistant in your Unity console.", legal = true},
+                new ButtonInfo { buttonText = "Debug Dictation", enableMethod =() => Settings.debugDictation = true, disableMethod =() => Settings.debugDictation = false, toolTip = "Debug what you say to the AI Assistant in your Unity console."},
 
-                new ButtonInfo { buttonText = "Custom System Prompt", enableMethod =() => AIManager.customPrompt = true, disableMethod =() => AIManager.customPrompt = false, toolTip = "Never resets the system prompt, allowing you to edit the file.", legal = true},
+                new ButtonInfo { buttonText = "Custom System Prompt", enableMethod =() => AIManager.customPrompt = true, disableMethod =() => AIManager.customPrompt = false, toolTip = "Never resets the system prompt, allowing you to edit the file."},
 
-                new ButtonInfo { buttonText = "Reset Voice Commands Keywords", method = Settings.ResetVoiceCommandsKeywords, isTogglable = false, toolTip = "Resets the keywords for all the voice command related mods.", legal = true},
-                new ButtonInfo { buttonText = "Reset System Prompt", method = Settings.ResetSystemPrompt, isTogglable = false, toolTip = "Resets the system prompt for the AI Assistant.", legal = true},
+                new ButtonInfo { buttonText = "Reset Voice Commands Keywords", method = Settings.ResetVoiceCommandsKeywords, isTogglable = false, toolTip = "Resets the keywords for all the voice command related mods."},
+                new ButtonInfo { buttonText = "Reset System Prompt", method = Settings.ResetSystemPrompt, isTogglable = false, toolTip = "Resets the system prompt for the AI Assistant."},
 
-                new ButtonInfo { buttonText = "Player Select", method = Settings.PlayerSelect, toolTip = "Spawns a line in your hand when moving your hand away from the menu that you can select players with.", legal = true},
+                new ButtonInfo { buttonText = "Player Select", method = Settings.PlayerSelect, toolTip = "Spawns a line in your hand when moving your hand away from the menu that you can select players with."},
                 //new ButtonInfo { buttonText = "Menu Intro", enableMethod = Settings.MenuIntro, toolTip = "Plays an intro for the menu."},
 
-                new ButtonInfo { buttonText = "Annoying Mode", enableMethod =() => annoyingMode = true, disableMethod = Settings.AnnoyingModeOff, toolTip = "Turns on the April Fools 2024 settings.", legal = true},
-                new ButtonInfo { buttonText = "Lowercase Mode", enableMethod =() => lowercaseMode = true, disableMethod =() => lowercaseMode = false, toolTip = "Makes the entire menu's text lowercase.", legal = true},
-                new ButtonInfo { buttonText = "Uppercase Mode", enableMethod =() => uppercaseMode = true, disableMethod =() => uppercaseMode = false, toolTip = "Makes the entire menu's text uppercase.", legal = true},
-                new ButtonInfo { buttonText = "Overflow Mode", enableMethod =() => NoAutoSizeText = true, disableMethod =() => NoAutoSizeText = false, toolTip = "Makes the entire menu's text overflow.", legal = true},
+                new ButtonInfo { buttonText = "Annoying Mode", enableMethod =() => annoyingMode = true, disableMethod = Settings.AnnoyingModeOff, toolTip = "Turns on the April Fools 2024 settings."},
+                new ButtonInfo { buttonText = "Lowercase Mode", enableMethod =() => lowercaseMode = true, disableMethod =() => lowercaseMode = false, toolTip = "Makes the entire menu's text lowercase."},
+                new ButtonInfo { buttonText = "Uppercase Mode", enableMethod =() => uppercaseMode = true, disableMethod =() => uppercaseMode = false, toolTip = "Makes the entire menu's text uppercase."},
+                new ButtonInfo { buttonText = "Overflow Mode", enableMethod =() => NoAutoSizeText = true, disableMethod =() => NoAutoSizeText = false, toolTip = "Makes the entire menu's text overflow."},
 
-                ButtonHelper.Create("Change Menu Language", () => Settings.LanguageNames, 0, Settings.ApplyMenuLanguage, "Changes the language of the menu.", legal: true),
-                ButtonHelper.Create("Change Menu Button", () => Settings.MenuButtonNames, menuButtonIndex, Settings.ApplyMenuButton, "Changes the button used to open menu.", legal: true),
-                new ButtonInfo { buttonText = "Menu Toggle Button", enableMethod =() => toggleButton = true, disableMethod =() => toggleButton = false, toolTip = "Allows the menu to be toggled on and off with the menu button.", legal = true},
-                ButtonHelper.Create("Change Menu Theme", () => Settings.Themes.Select(t => t.Name).ToArray(), themeType, v => Settings.ApplyMenuTheme(v), toolTip: "Changes the theme of the menu.", legal: true),
-                new ButtonInfo { buttonText = "Slow Gradient Fade", enableMethod =() => slowFadeColors = true, disableMethod =() => slowFadeColors = false, toolTip = "Makes gradient themes fade slower on the background.", legal = true},
-                ButtonHelper.CreateNumeric("Change Menu Scale", 2, 30, 10, Settings.ApplyMenuScale, v => (v / 10f).ToString(), "Changes the scale of the menu.", legal: true),
-                ButtonHelper.CreateNumeric("Change Notification Scale", 1, 20, 6, Settings.ApplyNotificationScale, v => v.ToString(), "Changes the scale of the notifications.", legal: true),
-                ButtonHelper.CreateNumeric("Change Arraylist Scale", 1, 20, 4, Settings.ApplyArraylistScale, v => v.ToString(), "Changes the scale of the arraylist.", legal: true),
-                ButtonHelper.CreateNumeric("Change Overlay Scale", 1, 20, 6, Settings.ApplyOverlayScale, v => v.ToString(), "Changes the scale of the overlay.", legal: true),
-                ButtonHelper.CreateNumeric("Change Page Size", 4, 16, _pageSize, Settings.ApplyPageSize, v => v.ToString(), "Changes the amount of buttons per page.", legal: true),
-                ButtonHelper.CreateNumeric("Change Character Distance", 0, 15, characterDistance, Settings.ApplyCharacterDistance, v => (v + 1).ToString(), "Changes the distance between characters on the menu.", legal: true),
-                new ButtonInfo { buttonText = "Custom Menu Theme", enableMethod = Settings.CustomMenuTheme, disableMethod = Settings.FixTheme, toolTip = "Changes the theme of the menu to a custom one.", legal = true},
-                new ButtonInfo { buttonText = "Change Custom Menu Theme", method = Settings.ChangeCustomMenuTheme, isTogglable = false, toolTip = "Changes the theme of custom the menu.", legal = true},
-                new ButtonInfo { buttonText = "Custom Menu Background", enableMethod = Settings.CustomMenuBackground, disableMethod = Settings.FixMenuBackground, toolTip = $"Changes the background of the menu to a custom image. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/CustomBackground.png).", legal = true},
-                new ButtonInfo { buttonText = "Custom Watermark", enableMethod = Settings.CustomWatermark, disableMethod =() => customWatermark = null, toolTip = $"Changes the watermark on the UI and the back of the menu to a custom image. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/CustomWatermark.png).", legal = true},
-                new ButtonInfo { buttonText = "Disable Watermark", enableMethod =() => disableWatermark = true, disableMethod =() => disableWatermark = false, toolTip = "Disables the watermark on the UI and the back of the menu.", legal = true},
-                ButtonHelper.CreateNumeric("Change Page Type", 1, 6, pageButtonType, Settings.ApplyPageType, toolTip: "Changes the type of page buttons.", legal: true),
-                ButtonHelper.CreateNumeric("Change Arrow Type", 0, arrowTypes.Length - 1, arrowType, Settings.ApplyArrowType, toolTip: "Changes the type of arrows on the page buttons.", legal: true),
-                ButtonHelper.CreateNumeric("Change Font Type", 0, 14, fontCycle, Settings.ApplyFontType, toolTip: "Changes the type of font.", legal: true),
-                new ButtonInfo { buttonText = "Rapid Font Changer", method = Settings.ChangeFontRapid, toolTip = "Changes the type of font every menu refresh.", legal = true},
-                new ButtonInfo { buttonText = "Custom Font Type", enableMethod = Settings.CustomFontType, method = Settings.PersistCustomFont, disableMethod = Settings.DisableCustomFont, toolTip = $"Changes the font type on the menu to a custom font. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/Seralyth_CustomWatermark.txt).", legal = true},
-                ButtonHelper.CreateNumeric("Change Font Style Type", 0, 3, Settings.fontStyleType, Settings.ApplyFontStyleType, toolTip: "Changes the style of the font.", legal: true),
-                ButtonHelper.Create("Change Input Text Color", () => Settings.InputColorNames, Settings.inputTextColorInt, Settings.ApplyInputTextColor, "Changes the color of the input indicator next to the buttons.", legal: true),
-                new ButtonInfo { buttonText = "Vibrant Text Colors", enableMethod =() => vibrantColors = true, disableMethod =() => vibrantColors = false, toolTip = "Makes certain green and purple colors more vibrant.", legal = true},
-                ButtonHelper.CreateNumeric("Change PC Menu Background", 0, 5, pcbg, Settings.ApplyPCUI, toolTip: "Changes the background of the PC ui.", legal: true),
-                ButtonHelper.CreateNumeric("Change Joystick Menu Position", 0, joystickMenuPositions.Length - 1, joystickMenuPosition, Settings.ApplyJoystickMenuPosition, toolTip: "Changes the position of the joystick menu.", legal: true),
+                ButtonHelper.Create("Change Menu Language", () => Settings.LanguageNames, 0, Settings.ApplyMenuLanguage, "Changes the language of the menu."),
+                ButtonHelper.Create("Change Menu Button", () => Settings.MenuButtonNames, menuButtonIndex, Settings.ApplyMenuButton, "Changes the button used to open menu."),
+                new ButtonInfo { buttonText = "Menu Toggle Button", enableMethod =() => toggleButton = true, disableMethod =() => toggleButton = false, toolTip = "Allows the menu to be toggled on and off with the menu button."},
+                ButtonHelper.Create("Change Menu Theme", () => Settings.Themes.Select(t => t.Name).ToArray(), themeType, v => Settings.ApplyMenuTheme(v), toolTip: "Changes the theme of the menu."),
+                new ButtonInfo { buttonText = "Slow Gradient Fade", enableMethod =() => slowFadeColors = true, disableMethod =() => slowFadeColors = false, toolTip = "Makes gradient themes fade slower on the background."},
+                ButtonHelper.CreateNumeric("Change Menu Scale", 2, 30, 10, Settings.ApplyMenuScale, v => (v / 10f).ToString(), "Changes the scale of the menu."),
+                ButtonHelper.CreateNumeric("Change Notification Scale", 1, 20, 6, Settings.ApplyNotificationScale, v => v.ToString(), "Changes the scale of the notifications."),
+                ButtonHelper.CreateNumeric("Change Arraylist Scale", 1, 20, 4, Settings.ApplyArraylistScale, v => v.ToString(), "Changes the scale of the arraylist."),
+                ButtonHelper.CreateNumeric("Change Overlay Scale", 1, 20, 6, Settings.ApplyOverlayScale, v => v.ToString(), "Changes the scale of the overlay."),
+                ButtonHelper.CreateNumeric("Change Page Size", 4, 16, _pageSize, Settings.ApplyPageSize, v => v.ToString(), "Changes the amount of buttons per page."),
+                ButtonHelper.CreateNumeric("Change Character Distance", 0, 15, characterDistance, Settings.ApplyCharacterDistance, v => (v + 1).ToString(), "Changes the distance between characters on the menu."),
+                new ButtonInfo { buttonText = "Custom Menu Theme", enableMethod = Settings.CustomMenuTheme, disableMethod = Settings.FixTheme, toolTip = "Changes the theme of the menu to a custom one."},
+                new ButtonInfo { buttonText = "Change Custom Menu Theme", method = Settings.ChangeCustomMenuTheme, isTogglable = false, toolTip = "Changes the theme of custom the menu."},
+                new ButtonInfo { buttonText = "Custom Menu Background", enableMethod = Settings.CustomMenuBackground, disableMethod = Settings.FixMenuBackground, toolTip = $"Changes the background of the menu to a custom image. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/CustomBackground.png)."},
+                new ButtonInfo { buttonText = "Custom Watermark", enableMethod = Settings.CustomWatermark, disableMethod =() => customWatermark = null, toolTip = $"Changes the watermark on the UI and the back of the menu to a custom image. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/CustomWatermark.png)."},
+                new ButtonInfo { buttonText = "Disable Watermark", enableMethod =() => disableWatermark = true, disableMethod =() => disableWatermark = false, toolTip = "Disables the watermark on the UI and the back of the menu."},
+                ButtonHelper.CreateNumeric("Change Page Type", 1, 6, pageButtonType, Settings.ApplyPageType, toolTip: "Changes the type of page buttons."),
+                ButtonHelper.CreateNumeric("Change Arrow Type", 0, arrowTypes.Length - 1, arrowType, Settings.ApplyArrowType, toolTip: "Changes the type of arrows on the page buttons."),
+                ButtonHelper.CreateNumeric("Change Font Type", 0, 14, fontCycle, Settings.ApplyFontType, toolTip: "Changes the type of font."),
+                new ButtonInfo { buttonText = "Rapid Font Changer", method = Settings.ChangeFontRapid, toolTip = "Changes the type of font every menu refresh."},
+                new ButtonInfo { buttonText = "Custom Font Type", enableMethod = Settings.CustomFontType, method = Settings.PersistCustomFont, disableMethod = Settings.DisableCustomFont, toolTip = $"Changes the font type on the menu to a custom font. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/Pixelyth_CustomWatermark.txt)."},
+                ButtonHelper.CreateNumeric("Change Font Style Type", 0, 3, Settings.fontStyleType, Settings.ApplyFontStyleType, toolTip: "Changes the style of the font."),
+                ButtonHelper.Create("Change Input Text Color", () => Settings.InputColorNames, Settings.inputTextColorInt, Settings.ApplyInputTextColor, "Changes the color of the input indicator next to the buttons."),
+                new ButtonInfo { buttonText = "Vibrant Text Colors", enableMethod =() => vibrantColors = true, disableMethod =() => vibrantColors = false, toolTip = "Makes certain green and purple colors more vibrant."},
+                ButtonHelper.CreateNumeric("Change PC Menu Background", 0, 5, pcbg, Settings.ApplyPCUI, toolTip: "Changes the background of the PC ui."),
+                ButtonHelper.CreateNumeric("Change Joystick Menu Position", 0, joystickMenuPositions.Length - 1, joystickMenuPosition, Settings.ApplyJoystickMenuPosition, toolTip: "Changes the position of the joystick menu."),
 
-                ButtonHelper.CreateNumeric("Change Notification Padding", -5, 20, 0, NotificationManager.ApplyNotificationPadding, v => (v * 0.1f).ToString(), "Changes the Distance from the Edge of the Screen where Notifications are Displayed.", legal: true),
-                ButtonHelper.CreateNumeric("Change Notification Height", -10, 10, 0, NotificationManager.ApplyNotificationHeight, v => (v * 0.1f).ToString(), "Changes the Height where Notifications are Displayed.", legal: true),
-                ButtonHelper.CreateNumeric("Change Notification Time", 0, 5, notificationDecayTime / 1000, Settings.ApplyNotificationTime, v => v.ToString(), "Changes the time before a notification is removed.", legal: true),
+                ButtonHelper.CreateNumeric("Change Notification Padding", -5, 20, 0, NotificationManager.ApplyNotificationPadding, v => (v * 0.1f).ToString(), "Changes the Distance from the Edge of the Screen where Notifications are Displayed."),
+                ButtonHelper.CreateNumeric("Change Notification Height", -10, 10, 0, NotificationManager.ApplyNotificationHeight, v => (v * 0.1f).ToString(), "Changes the Height where Notifications are Displayed."),
+                ButtonHelper.CreateNumeric("Change Notification Time", 0, 5, notificationDecayTime / 1000, Settings.ApplyNotificationTime, v => v.ToString(), "Changes the time before a notification is removed."),
 
-                ButtonHelper.Create("Change Notification Sound", () => SoundManager.Sounds["Notifications"].Keys.ToArray(), 0, v => Settings.ApplyNotificationSound(SoundManager.Sounds["Notifications"].Keys.ToArray()[v]), toolTip: "Changes the sound that plays when receiving a notification.", legal: true, onCycle: _ => { var src = audioManager?.GetComponent<AudioSource>(); src?.Stop(); SoundManager.Play(SoundManager.DefaultSounds["Notification"]); }),
-                new ButtonInfo { buttonText = "Notification Sound on Error", enableMethod =() => NotificationManager.soundOnError = true, disableMethod =() => NotificationManager.soundOnError = false, toolTip = "Plays your target notification sound when an error happens.", legal = true},
+                ButtonHelper.Create("Change Notification Sound", () => SoundManager.Sounds["Notifications"].Keys.ToArray(), 0, v => Settings.ApplyNotificationSound(SoundManager.Sounds["Notifications"].Keys.ToArray()[v]), toolTip: "Changes the sound that plays when receiving a notification.", onCycle: _ => { var src = audioManager?.GetComponent<AudioSource>(); src?.Stop(); SoundManager.Play(SoundManager.DefaultSounds["Notification"]); }),
+                new ButtonInfo { buttonText = "Notification Sound on Error", enableMethod =() => NotificationManager.soundOnError = true, disableMethod =() => NotificationManager.soundOnError = false, toolTip = "Plays your target notification sound when an error happens."},
                 
-                ButtonHelper.Create("Change Narration Voice", () => Settings.NarratorNames, narratorIndex, Settings.ApplyNarrationVoice, "Changes the voice of the narrator.", legal: true),
-                ButtonHelper.CreateNumeric("Change Pointer Position", 0, Settings.PointerPositions.Length - 1, pointerIndex, Settings.ApplyPointerPosition, toolTip: "Changes the position of the pointer.", legal: true),
+                ButtonHelper.Create("Change Narration Voice", () => Settings.NarratorNames, narratorIndex, Settings.ApplyNarrationVoice, "Changes the voice of the narrator."),
+                ButtonHelper.CreateNumeric("Change Pointer Position", 0, Settings.PointerPositions.Length - 1, pointerIndex, Settings.ApplyPointerPosition, toolTip: "Changes the position of the pointer."),
 
-                new ButtonInfo { buttonText = "Swap GUI Colors", toolTip = "Swaps the GUI's colors to the enabled color, for darker themes.", legal = true},
-                new ButtonInfo { buttonText = "Swap Button Colors", enableMethod =() => swapButtonColors = true, disableMethod =() => swapButtonColors = false, toolTip = "Swaps the colors of the page buttons, disconnect button, search button, and return button to be the opposite color.", legal = true},
-                new ButtonInfo { buttonText = "Swap Ghostview Colors", toolTip = "Swaps the ghostview's colors to the enabled color, for darker themes.", legal = true},
+                new ButtonInfo { buttonText = "Swap GUI Colors", toolTip = "Swaps the GUI's colors to the enabled color, for darker themes."},
+                new ButtonInfo { buttonText = "Swap Button Colors", enableMethod =() => swapButtonColors = true, disableMethod =() => swapButtonColors = false, toolTip = "Swaps the colors of the page buttons, disconnect button, search button, and return button to be the opposite color."},
+                new ButtonInfo { buttonText = "Swap Ghostview Colors", toolTip = "Swaps the ghostview's colors to the enabled color, for darker themes."},
 
-                ButtonHelper.Create("Change Gun Line Quality", () => Settings.GunQualityNames, 2, Settings.ApplyGunLineQuality, "Changes the amount of points on your gun.", legal: true),
-                ButtonHelper.Create("Change Gun Variation", () => Settings.GunVariationNames, gunVariation, Settings.ApplyGunVariation, "Changes the look of the gun.", legal: true),
-                ButtonHelper.Create("Change Gun Direction", () => Settings.GunDirectionNames, GunDirection, Settings.ApplyGunDirection, "Changes the direction of the gun.", legal: true),
+                ButtonHelper.Create("Change Gun Line Quality", () => Settings.GunQualityNames, 2, Settings.ApplyGunLineQuality, "Changes the amount of points on your gun."),
+                ButtonHelper.Create("Change Gun Variation", () => Settings.GunVariationNames, gunVariation, Settings.ApplyGunVariation, "Changes the look of the gun."),
+                ButtonHelper.Create("Change Gun Direction", () => Settings.GunDirectionNames, GunDirection, Settings.ApplyGunDirection, "Changes the direction of the gun."),
 
-                new ButtonInfo { buttonText = "Gun Sounds", enableMethod =() => GunSounds = true, disableMethod =() => GunSounds = false, toolTip = "Plays laser sounds when interacting with the gun.", legal = true},
-                new ButtonInfo { buttonText = "Gun Vibrations", enableMethod =() => GunVibrations = true, disableMethod =() => GunVibrations = false, toolTip = "Vibrates your controller when interacting with the gun.", legal = true},
-                new ButtonInfo { buttonText = "Gun Particles", enableMethod =() => GunParticles = true, disableMethod =() => GunParticles = false, toolTip = "Gives the gun particles when you shoot it.", legal = true},
-                new ButtonInfo { buttonText = "Swap Gun Hand", enableMethod =() => SwapGunHand = true, disableMethod =() => SwapGunHand = false, toolTip = "Swaps the hand gun mods work with.", legal = true},
-                new ButtonInfo { buttonText = "Gripless Guns", enableMethod =() => GriplessGuns = true, disableMethod =() => GriplessGuns = false, toolTip = "Forces your grip to be held for guns.", legal = true},
-                new ButtonInfo { buttonText = "Triggerless Guns", enableMethod =() => TriggerlessGuns = true, disableMethod =() => TriggerlessGuns = false, toolTip = "Forces your trigger to be held for guns.", legal = true},
-                new ButtonInfo { buttonText = "Hard Gun Lock", enableMethod =() => HardGunLocks = true, disableMethod =() => HardGunLocks = false, toolTip = "Locks the guns even when letting go of grip until you press <color=green>B</color>.", legal = true},
-                new ButtonInfo { buttonText = "Small Gun Pointer", enableMethod =() => smallGunPointer = true, disableMethod =() => smallGunPointer = false, toolTip = "Makes the ball at the end of every gun mod smaller.", legal = true},
-                new ButtonInfo { buttonText = "Smooth Gun Pointer", enableMethod =() => SmoothGunPointer = true, disableMethod =() => SmoothGunPointer = false, toolTip = "Makes the ball at the end of every gun mod smoother.", legal = true},
-                new ButtonInfo { buttonText = "Disable Gun Pointer", enableMethod =() => disableGunPointer = true, disableMethod =() => disableGunPointer = false, toolTip = "Disables the ball at the end of every gun mod.", legal = true},
-                new ButtonInfo { buttonText = "Disable Gun Line", enableMethod =() => disableGunLine = true, disableMethod =() => disableGunLine = false, toolTip = "Disables the gun from your hand to the end of every gun mod.", legal = true},
+                new ButtonInfo { buttonText = "Gun Sounds", enableMethod =() => GunSounds = true, disableMethod =() => GunSounds = false, toolTip = "Plays laser sounds when interacting with the gun."},
+                new ButtonInfo { buttonText = "Gun Vibrations", enableMethod =() => GunVibrations = true, disableMethod =() => GunVibrations = false, toolTip = "Vibrates your controller when interacting with the gun."},
+                new ButtonInfo { buttonText = "Gun Particles", enableMethod =() => GunParticles = true, disableMethod =() => GunParticles = false, toolTip = "Gives the gun particles when you shoot it."},
+                new ButtonInfo { buttonText = "Swap Gun Hand", enableMethod =() => SwapGunHand = true, disableMethod =() => SwapGunHand = false, toolTip = "Swaps the hand gun mods work with."},
+                new ButtonInfo { buttonText = "Gripless Guns", enableMethod =() => GriplessGuns = true, disableMethod =() => GriplessGuns = false, toolTip = "Forces your grip to be held for guns."},
+                new ButtonInfo { buttonText = "Triggerless Guns", enableMethod =() => TriggerlessGuns = true, disableMethod =() => TriggerlessGuns = false, toolTip = "Forces your trigger to be held for guns."},
+                new ButtonInfo { buttonText = "Hard Gun Lock", enableMethod =() => HardGunLocks = true, disableMethod =() => HardGunLocks = false, toolTip = "Locks the guns even when letting go of grip until you press <color=green>B</color>."},
+                new ButtonInfo { buttonText = "Small Gun Pointer", enableMethod =() => smallGunPointer = true, disableMethod =() => smallGunPointer = false, toolTip = "Makes the ball at the end of every gun mod smaller."},
+                new ButtonInfo { buttonText = "Smooth Gun Pointer", enableMethod =() => SmoothGunPointer = true, disableMethod =() => SmoothGunPointer = false, toolTip = "Makes the ball at the end of every gun mod smoother."},
+                new ButtonInfo { buttonText = "Disable Gun Pointer", enableMethod =() => disableGunPointer = true, disableMethod =() => disableGunPointer = false, toolTip = "Disables the ball at the end of every gun mod."},
+                new ButtonInfo { buttonText = "Disable Gun Line", enableMethod =() => disableGunLine = true, disableMethod =() => disableGunLine = false, toolTip = "Disables the gun from your hand to the end of every gun mod."},
 
-                new ButtonInfo { buttonText = "Checkbox Buttons", enableMethod =() => checkMode = true, disableMethod =() => checkMode = false, toolTip = "Turns the buttons into checkboxes.", legal = true},
-                ButtonHelper.Create("Change Button Sound", () => SoundManager.Sounds["Buttons"].Keys.ToArray(), 0, v => Settings.ApplyButtonSound(SoundManager.Sounds["Buttons"].Keys.ToArray()[v]), toolTip: "Changes the button click sound.", legal: true,
+                new ButtonInfo { buttonText = "Checkbox Buttons", enableMethod =() => checkMode = true, disableMethod =() => checkMode = false, toolTip = "Turns the buttons into checkboxes."},
+                ButtonHelper.Create("Change Button Sound", () => SoundManager.Sounds["Buttons"].Keys.ToArray(), 0, v => Settings.ApplyButtonSound(SoundManager.Sounds["Buttons"].Keys.ToArray()[v]), toolTip: "Changes the button click sound.",
                     onCycle: _ =>
                     {
                         if (VRRig.LocalRig == null) return;
@@ -253,11 +254,11 @@ namespace Seralyth.Menu
                         VRRig.LocalRig.rightHandPlayer?.Stop();
                         SoundManager.Play(SoundManager.DefaultSounds["Button"]);
                     }),
-                ButtonHelper.CreateNumeric("Change Button Volume", 0, 10, buttonClickVolume, Settings.ApplyButtonVolume, v => v.ToString(), "Changes the volume of the buttons.", legal: true, onCycle: Settings.PreviewButtonVolume),
+                ButtonHelper.CreateNumeric("Change Button Volume", 0, 10, buttonClickVolume, Settings.ApplyButtonVolume, v => v.ToString(), "Changes the volume of the buttons.", onCycle: Settings.PreviewButtonVolume),
                 new ButtonInfo { buttonText = "Serversided Button Sounds", enableMethod =() => serversidedButtonSounds = true, disableMethod =() => serversidedButtonSounds = false, toolTip = "Lets everyone in the the room hear the buttons."},
                 new ButtonInfo { buttonText = "Disable Button Vibration", enableMethod =() => doButtonsVibrate = false, disableMethod =() => doButtonsVibrate = true, toolTip = "Disables the slight vibration that happens when you click a button."},
 
-                ButtonHelper.Create("Change Menu Soundpack", () => SoundManager.Soundpacks.Keys.ToArray(), SoundManager.DefaultSoundpack, v => Settings.ApplyMenuSoundpack(SoundManager.Soundpacks.Keys.ToArray()[v]), toolTip: "Changes the sound pack used for the menu.", legal: true,
+                ButtonHelper.Create("Change Menu Soundpack", () => SoundManager.Soundpacks.Keys.ToArray(), SoundManager.DefaultSoundpack, v => Settings.ApplyMenuSoundpack(SoundManager.Soundpacks.Keys.ToArray()[v]), toolTip: "Changes the sound pack used for the menu.",
                     onCycle: _ =>
                     {
                         if (VRRig.LocalRig == null) return;
@@ -267,76 +268,76 @@ namespace Seralyth.Menu
                     }
                 ),
 
-                new ButtonInfo { buttonText = "Clear Notifications on Disconnect", enableMethod =() => clearNotificationsOnDisconnect = true, disableMethod =() => clearNotificationsOnDisconnect = false, toolTip = "Clears all notifications on disconnect.", legal = true},
-                new ButtonInfo { buttonText = "Stack Notifications", enableMethod =() => stackNotifications = true, disableMethod =() => stackNotifications = false, toolTip = "Stacks repeated notifications into one notification.", legal = true},
-                new ButtonInfo { buttonText = "Narrate Notifications", enableMethod =() => NotificationManager.narrateNotifications = true, disableMethod =() => NotificationManager.narrateNotifications = false, toolTip = "Narrates all notifications with text to speech.", legal = true},
-                new ButtonInfo { buttonText = "No Prefix Narration", enableMethod =() => NotificationManager.noPrefix = true, disableMethod =() => NotificationManager.noPrefix = false, toolTip = "Stops the prefix on notifications from narrating itself.", legal = true},
-                new ButtonInfo { buttonText = "Hide Notification Brackets", enableMethod =() => hideBrackets = true, disableMethod =() => hideBrackets = false, toolTip = "Hides brackets on all notifications.", legal = true},
+                new ButtonInfo { buttonText = "Clear Notifications on Disconnect", enableMethod =() => clearNotificationsOnDisconnect = true, disableMethod =() => clearNotificationsOnDisconnect = false, toolTip = "Clears all notifications on disconnect."},
+                new ButtonInfo { buttonText = "Stack Notifications", enableMethod =() => stackNotifications = true, disableMethod =() => stackNotifications = false, toolTip = "Stacks repeated notifications into one notification."},
+                new ButtonInfo { buttonText = "Narrate Notifications", enableMethod =() => NotificationManager.narrateNotifications = true, disableMethod =() => NotificationManager.narrateNotifications = false, toolTip = "Narrates all notifications with text to speech."},
+                new ButtonInfo { buttonText = "No Prefix Narration", enableMethod =() => NotificationManager.noPrefix = true, disableMethod =() => NotificationManager.noPrefix = false, toolTip = "Stops the prefix on notifications from narrating itself."},
+                new ButtonInfo { buttonText = "Hide Notification Brackets", enableMethod =() => hideBrackets = true, disableMethod =() => hideBrackets = false, toolTip = "Hides brackets on all notifications."},
 
-                new ButtonInfo { buttonText = "Conduct Notifications", enableMethod =() => { GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/CodeOfConductHeadingText").GetComponent<TextMeshPro>().text = "Seralyth Menu"; GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/COCBodyText_TitleData").GetComponent<TextMeshPro>().richText = true; }, method =() => GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/COCBodyText_TitleData").GetComponent<TextMeshPro>().text = NotificationManager.notificationText.text, toolTip = "Shows notifications on the code of conduct instead.", legal = true},
-                new ButtonInfo { buttonText = "Disable Notification Rich Text", enableMethod =() => NotificationManager.noRichText = true, disableMethod =() => NotificationManager.noRichText = false, toolTip = "Removes rich text from notifications.", legal = true},
+                new ButtonInfo { buttonText = "Conduct Notifications", enableMethod =() => { GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/CodeOfConductHeadingText").GetComponent<TextMeshPro>().text = "Pixelyth Menu"; GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/COCBodyText_TitleData").GetComponent<TextMeshPro>().richText = true; }, method =() => GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/COCBodyText_TitleData").GetComponent<TextMeshPro>().text = NotificationManager.notificationText.text, toolTip = "Shows notifications on the code of conduct instead."},
+                new ButtonInfo { buttonText = "Disable Notification Rich Text", enableMethod =() => NotificationManager.noRichText = true, disableMethod =() => NotificationManager.noRichText = false, toolTip = "Removes rich text from notifications."},
 
-                new ButtonInfo { buttonText = "Disable RPC Protection", enableMethod =() => Seralyth.Patches.Safety.RPCProtection.OpRaiseEventPatch.enabled = false, disableMethod =() => Seralyth.Patches.Safety.RPCProtection.OpRaiseEventPatch.enabled = true, toolTip = "Disables the client-side protection limiting you to sending 500 RPCs a second.", legal = true},
-                new ButtonInfo { buttonText = "Disable Notifications", enableMethod =() => disableNotifications = true, disableMethod =() => disableNotifications = false, toolTip = "Disables all notifications.", legal = true},
-                new ButtonInfo { buttonText = "Disable Master Client Notifications", enableMethod =() => disableMasterClientNotifications = true, disableMethod =() => disableMasterClientNotifications = false, toolTip = "Disables all notifications regarding master client.", legal = true},
-                new ButtonInfo { buttonText = "Disable Room Notifications", enableMethod =() => disableRoomNotifications = true, disableMethod =() => disableRoomNotifications = false, toolTip = "Disables all notifications regarding the room.", legal = true},
-                new ButtonInfo { buttonText = "Disable Player Notifications", enableMethod =() => disablePlayerNotifications = true, disableMethod =() => disablePlayerNotifications = false, toolTip = "Disables all notifications regarding players.", legal = true},
-                new ButtonInfo { buttonText = "Disable Enabled GUI", overlapText = "Disable Arraylist GUI", enableMethod =() => showEnabledModsVR = false, disableMethod =() => showEnabledModsVR = true, toolTip = "Disables the GUI that shows the enabled mods.", legal = true},
-                new ButtonInfo { buttonText = "Disable Incremental Buttons", enableMethod =() => incrementalButtons = false, disableMethod =() => incrementalButtons = true, toolTip = "Disables the buttons with the increment and decrement buttons next to it.", legal = true},
-                new ButtonInfo { buttonText = "Disable Disconnect Button", enableMethod =() => disableDisconnectButton = true, disableMethod =() => disableDisconnectButton = false, toolTip = "Disables the disconnect button at the top of the menu.", legal = true},
-                new ButtonInfo { buttonText = "Disable Menu Title", enableMethod =() => { buttonOffset = pageButtonType == 2 ? 1 : -1; hidetitle = true; }, method =() => { buttonOffset = pageButtonType == 2 ? 1 : -1; hidetitle = true; }, disableMethod =() => { buttonOffset = pageButtonType == 2 ? 2 : 0; hidetitle = false; }, toolTip = "Hides the menu title, allowing for more buttons per page.", legal = true},
-                new ButtonInfo { buttonText = "Disable Search Button", enableMethod =() => disableSearchButton = true, disableMethod =() => disableSearchButton = false, toolTip = "Disables the search button at the bottom of the menu.", legal = true},
-                new ButtonInfo { buttonText = "Disable Return Button", enableMethod =() => disableReturnButton = true, disableMethod =() => disableReturnButton = false, toolTip = "Disables the return button at the bottom of the menu.", legal = true},
-                new ButtonInfo { buttonText = "Disable Page Buttons", enableMethod = Settings.DisablePageButtons, disableMethod =() => disablePageButtons = false, toolTip = "Disables the page buttons. Recommended with Joystick Menu.", legal = true},
-                new ButtonInfo { buttonText = "Disable Page Number", enableMethod =() => noPageNumber = true, disableMethod =() => noPageNumber = false, toolTip = "Disables the current page number in the title text.", legal = true},
-                new ButtonInfo { buttonText = "Disable FPS Counter", enableMethod =() => disableFpsCounter = true, disableMethod =() => disableFpsCounter = false, toolTip = "Disables the FPS counter.", legal = true},
-                new ButtonInfo { buttonText = "Disable Drop Menu", enableMethod =() => dropOnRemove = false, disableMethod =() => dropOnRemove = true, toolTip = "Makes the menu despawn instead of falling.", legal = true},
-                new ButtonInfo { buttonText = "Disable Board Colors", overlapText = "Disable Custom Boards", enableMethod =() => CustomBoardManager.CustomBoardsEnabled = false, disableMethod =() => CustomBoardManager.CustomBoardsEnabled = true, toolTip = "Disables the board colors to look legitimate on screen share.", legal = true},
-                new ButtonInfo { buttonText = "Disable Custom Text Colors", enableMethod =() => CustomBoardManager.CustomBoardTextEnabled = false, disableMethod =() => CustomBoardManager.CustomBoardTextEnabled = true, toolTip = "Disables the text colors on the boards to make them match their original theme.", legal = true},
-                new ButtonInfo { buttonText = "Custom Board Fonts", enableMethod =() => CustomBoardManager.CustomBoardFonts = true, disableMethod =() => CustomBoardManager.CustomBoardFonts = false, toolTip = "Applies the menu's font to the boards.", legal = true},
+                new ButtonInfo { buttonText = "Disable RPC Protection", enableMethod =() => Pixelyth.Patches.Safety.RPCProtection.OpRaiseEventPatch.enabled = false, disableMethod =() => Pixelyth.Patches.Safety.RPCProtection.OpRaiseEventPatch.enabled = true, toolTip = "Disables the client-side protection limiting you to sending 500 RPCs a second."},
+                new ButtonInfo { buttonText = "Disable Notifications", enableMethod =() => disableNotifications = true, disableMethod =() => disableNotifications = false, toolTip = "Disables all notifications."},
+                new ButtonInfo { buttonText = "Disable Master Client Notifications", enableMethod =() => disableMasterClientNotifications = true, disableMethod =() => disableMasterClientNotifications = false, toolTip = "Disables all notifications regarding master client."},
+                new ButtonInfo { buttonText = "Disable Room Notifications", enableMethod =() => disableRoomNotifications = true, disableMethod =() => disableRoomNotifications = false, toolTip = "Disables all notifications regarding the room."},
+                new ButtonInfo { buttonText = "Disable Player Notifications", enableMethod =() => disablePlayerNotifications = true, disableMethod =() => disablePlayerNotifications = false, toolTip = "Disables all notifications regarding players."},
+                new ButtonInfo { buttonText = "Disable Enabled GUI", overlapText = "Disable Arraylist GUI", enableMethod =() => showEnabledModsVR = false, disableMethod =() => showEnabledModsVR = true, toolTip = "Disables the GUI that shows the enabled mods."},
+                new ButtonInfo { buttonText = "Disable Incremental Buttons", enableMethod =() => incrementalButtons = false, disableMethod =() => incrementalButtons = true, toolTip = "Disables the buttons with the increment and decrement buttons next to it."},
+                new ButtonInfo { buttonText = "Disable Disconnect Button", enableMethod =() => disableDisconnectButton = true, disableMethod =() => disableDisconnectButton = false, toolTip = "Disables the disconnect button at the top of the menu."},
+                new ButtonInfo { buttonText = "Disable Menu Title", enableMethod =() => { buttonOffset = pageButtonType == 2 ? 1 : -1; hidetitle = true; }, method =() => { buttonOffset = pageButtonType == 2 ? 1 : -1; hidetitle = true; }, disableMethod =() => { buttonOffset = pageButtonType == 2 ? 2 : 0; hidetitle = false; }, toolTip = "Hides the menu title, allowing for more buttons per page."},
+                new ButtonInfo { buttonText = "Disable Search Button", enableMethod =() => disableSearchButton = true, disableMethod =() => disableSearchButton = false, toolTip = "Disables the search button at the bottom of the menu."},
+                new ButtonInfo { buttonText = "Disable Return Button", enableMethod =() => disableReturnButton = true, disableMethod =() => disableReturnButton = false, toolTip = "Disables the return button at the bottom of the menu."},
+                new ButtonInfo { buttonText = "Disable Page Buttons", enableMethod = Settings.DisablePageButtons, disableMethod =() => disablePageButtons = false, toolTip = "Disables the page buttons. Recommended with Joystick Menu."},
+                new ButtonInfo { buttonText = "Disable Page Number", enableMethod =() => noPageNumber = true, disableMethod =() => noPageNumber = false, toolTip = "Disables the current page number in the title text."},
+                new ButtonInfo { buttonText = "Disable FPS Counter", enableMethod =() => disableFpsCounter = true, disableMethod =() => disableFpsCounter = false, toolTip = "Disables the FPS counter."},
+                new ButtonInfo { buttonText = "Disable Drop Menu", enableMethod =() => dropOnRemove = false, disableMethod =() => dropOnRemove = true, toolTip = "Makes the menu despawn instead of falling."},
+                new ButtonInfo { buttonText = "Disable Board Colors", enableMethod =() => CustomBoardManager.CustomBoardColorsEnabled = false, disableMethod =() => CustomBoardManager.CustomBoardColorsEnabled = true, toolTip = "Disables the board colors to look legitimate on screen share."},
+                new ButtonInfo { buttonText = "Disable Board Text", enableMethod =() => CustomBoardManager.CustomBoardTextEnabled = false, disableMethod =() => CustomBoardManager.CustomBoardTextEnabled = true, toolTip = "Disables the board texts to look legitimate on screen share."},
+                new ButtonInfo { buttonText = "Custom Board Fonts", enableMethod =() => CustomBoardManager.CustomBoardFonts = true, disableMethod =() => CustomBoardManager.CustomBoardFonts = false, toolTip = "Applies the menu's font to the boards."},
 
-                new ButtonInfo { buttonText = "Disable Keyboard Delay", toolTip = "Disables the delay between pressing keys on the keyboard.", legal = true},
-                new ButtonInfo { buttonText = "Disable PC Keyboard Sounds", enableMethod =() => pcKeyboardSounds = false, disableMethod =() => pcKeyboardSounds = true, toolTip = "Disables the sound for pressing keys on PC.", legal = true},
+                new ButtonInfo { buttonText = "Disable Keyboard Delay", toolTip = "Disables the delay between pressing keys on the keyboard."},
+                new ButtonInfo { buttonText = "Disable PC Keyboard Sounds", enableMethod =() => pcKeyboardSounds = false, disableMethod =() => pcKeyboardSounds = true, toolTip = "Disables the sound for pressing keys on PC."},
 
                 new ButtonInfo { buttonText = "Info Hide ID", enableMethod =() => Settings.hideId = true, disableMethod =() => Settings.hideId = false, toolTip = "Hides your ID in the information page."},
                 new ButtonInfo { buttonText = "Conduct Info", method = Visuals.ConductDebug, toolTip = "Shows debug information on the code of conduct."},
                 new ButtonInfo { buttonText = "Info Button", enableMethod =() => enableDebugButton = true, disableMethod =() => enableDebugButton = false, toolTip = "Shows an information button at the bottom of the menu."},
 
                 new ButtonInfo { buttonText = "Hide Text on Camera", enableMethod =() => hideTextOnCamera = true, disableMethod =() => hideTextOnCamera = false, overlapText = "Streamer Mode Menu Text", toolTip = "Makes the menu's text only render on VR."},
-                new ButtonInfo { buttonText = "Hide Pointer", enableMethod =() => hidePointer = true, disableMethod =() => hidePointer = false, toolTip = "Hides the pointer above your hand.", legal = true},
-                new ButtonInfo { buttonText = "Hide Settings", enableMethod =() => hideSettings = true, disableMethod =() => hideSettings = false, toolTip = "Hides all settings from the Enabled Mods tab, and all arraylists.", legal = true},
+                new ButtonInfo { buttonText = "Hide Pointer", enableMethod =() => hidePointer = true, disableMethod =() => hidePointer = false, toolTip = "Hides the pointer above your hand."},
+                new ButtonInfo { buttonText = "Hide Settings", enableMethod =() => hideSettings = true, disableMethod =() => hideSettings = false, toolTip = "Hides all settings from the Enabled Mods tab, and all arraylists."},
                 new ButtonInfo { buttonText = "Hide Macros", enableMethod =() => hideMacros = true, disableMethod =() => hideMacros = false, toolTip = "Hides all macros from the Enabled Mods tab." },
 
-                new ButtonInfo { buttonText = "Advanced Arraylist", enableMethod =() => advancedArraylist = true, disableMethod =() => advancedArraylist = false, toolTip = "Updates the FPS Counter less, making it easier to read.", legal = true},
-                new ButtonInfo { buttonText = "Flip Arraylist", enableMethod =() => flipArraylist = true, disableMethod =() => flipArraylist = false, toolTip = "Flips the arraylist at the top of the screen.", legal = true},
+                new ButtonInfo { buttonText = "Advanced Arraylist", enableMethod =() => advancedArraylist = true, disableMethod =() => advancedArraylist = false, toolTip = "Updates the FPS Counter less, making it easier to read."},
+                new ButtonInfo { buttonText = "Flip Arraylist", enableMethod =() => flipArraylist = true, disableMethod =() => flipArraylist = false, toolTip = "Flips the arraylist at the top of the screen."},
 
-                new ButtonInfo { buttonText = "Slow FPS Counter", enableMethod =() => fpsCountTimed = true, disableMethod =() => fpsCountTimed = false, toolTip = "Updates the FPS Counter less, making it easier to read.", legal = true},
-                new ButtonInfo { buttonText = "Average FPS Counter", enableMethod =() => fpsCountAverage = true, disableMethod =() => fpsCountAverage = false, toolTip = "Smooths out the FPS Counter, making it easier to read.", legal = true},
-                new ButtonInfo { buttonText = "Frametime Counter", enableMethod =() => ftCount = true, disableMethod =() => ftCount = false, toolTip = "Replace the FPS Counter to show frametime in ms instead.", legal = true},
+                new ButtonInfo { buttonText = "Slow FPS Counter", enableMethod =() => fpsCountTimed = true, disableMethod =() => fpsCountTimed = false, toolTip = "Updates the FPS Counter less, making it easier to read."},
+                new ButtonInfo { buttonText = "Average FPS Counter", enableMethod =() => fpsCountAverage = true, disableMethod =() => fpsCountAverage = false, toolTip = "Smooths out the FPS Counter, making it easier to read."},
+                new ButtonInfo { buttonText = "Frametime Counter", enableMethod =() => ftCount = true, disableMethod =() => ftCount = false, toolTip = "Replace the FPS Counter to show frametime in ms instead."},
 
                 new ButtonInfo { buttonText = "Disable Ghostview", enableMethod =() => disableGhostview = true, disableMethod =() => disableGhostview = false, toolTip = "Disables the transparent rig when you're in ghost."},
                 new ButtonInfo { buttonText = "Legacy Ghostview", enableMethod =() => legacyGhostview = true, disableMethod =() => legacyGhostview = false, toolTip = "Reverts the transparent rig to the two balls when you're in ghost."},
 
-                new ButtonInfo { buttonText = "No Global Search", enableMethod =() => nonGlobalSearch = true, disableMethod =() => nonGlobalSearch = false, toolTip = "Makes the search button only search for mods in the current subcategory, unless on the main page.", legal = true},
-                new ButtonInfo { buttonText = "Joystick Menu Search", enableMethod =() => joystickMenuSearching = true, disableMethod =() => joystickMenuSearching = false, toolTip = "Allows you to move your selected item down to the search button with joystick menu.", legal = true},
+                new ButtonInfo { buttonText = "No Global Search", enableMethod =() => nonGlobalSearch = true, disableMethod =() => nonGlobalSearch = false, toolTip = "Makes the search button only search for mods in the current subcategory, unless on the main page."},
+                new ButtonInfo { buttonText = "Joystick Menu Search", enableMethod =() => joystickMenuSearching = true, disableMethod =() => joystickMenuSearching = false, toolTip = "Allows you to move your selected item down to the search button with joystick menu."},
 
                 new ButtonInfo { buttonText = "Menu Presets", method =() => CurrentCategoryName = "Menu Presets", isTogglable = false, toolTip = "Opens the page of presets."},
-                new ButtonInfo { buttonText = "Backup Preferences", enableMethod =() => backupPreferences = true, disableMethod =() => backupPreferences = false, toolTip = "Automatically saves a copy of your preferences every minute.", legal = true},
-                new ButtonInfo { buttonText = "Save Preferences", method = Preferences.Save, isTogglable = false, toolTip = "Saves your preferences to a file.", legal = true},
-                new ButtonInfo { buttonText = "Load Preferences", method = Preferences.Load, isTogglable = false, toolTip = "Loads your preferences from a file.", legal = true},
-                new ButtonInfo { buttonText = "Disable Autosave", enableMethod = () => Preferences.DisableAutoSave = true, disableMethod = () => Preferences.DisableAutoSave = false, toolTip = "Disables the auto save mechanism.", legal = true},
-                new ButtonInfo { buttonText = "Panic", method = Settings.Panic, isTogglable = false, toolTip = "Disables every single active mod.", legal = true},
+                new ButtonInfo { buttonText = "Backup Preferences", enableMethod =() => backupPreferences = true, disableMethod =() => backupPreferences = false, toolTip = "Automatically saves a copy of your preferences every minute."},
+                new ButtonInfo { buttonText = "Save Preferences", method = Preferences.Save, isTogglable = false, toolTip = "Saves your preferences to a file."},
+                new ButtonInfo { buttonText = "Load Preferences", method = Preferences.Load, isTogglable = false, toolTip = "Loads your preferences from a file."},
+                new ButtonInfo { buttonText = "Disable Autosave", enableMethod = () => Preferences.DisableAutoSave = true, disableMethod = () => Preferences.DisableAutoSave = false, toolTip = "Disables the auto save mechanism."},
+                new ButtonInfo { buttonText = "Panic", method = Settings.Panic, isTogglable = false, toolTip = "Disables every single active mod."},
             },
 
             new[] { // Room Settings [3]
-                new ButtonInfo { buttonText = "Exit Room Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Room Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 new ButtonInfo { buttonText = "20 Player Rooms", toolTip = "Changes Create Public and Create Private to support 20 players." },
-                ButtonHelper.CreateNumeric("Change Reconnect Time", 1, 5, Important.reconnectDelay, Settings.ApplyReconnectTime, v => v.ToString(), "Changes the amount of time waited before attempting to reconnect again.", legal: true),
+                ButtonHelper.CreateNumeric("Change Reconnect Time", 1, 5, Important.reconnectDelay, Settings.ApplyReconnectTime, v => v.ToString(), "Changes the amount of time waited before attempting to reconnect again."),
             },
 
             new[] { // Movement Settings [4]
-                new ButtonInfo { buttonText = "Exit Movement Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Movement Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 ButtonHelper.Create("Change Platform Type", () => Movement.PlatformTypeNames, Movement.platformMode, Movement.ApplyPlatformType, "Changes the type of the platforms."),
                 ButtonHelper.Create("Change Platform Shape", () => Movement.PlatformShapeNames, Movement.platformShape, Movement.ApplyPlatformShape, "Changes the shape of the platforms."),
@@ -389,7 +390,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Projectile Settings [5]
-                new ButtonInfo { buttonText = "Exit Projectile Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Projectile Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 ButtonHelper.Create("Change Projectile", () => Projectiles.GetAll()?.Select(e => e.Name).ToArray() ?? Array.Empty<string>(), Projectiles.ProjectileMode, v => Projectiles.ProjectileMode = v, toolTip: "Changes the projectile of the projectile mods."),
                 new ButtonInfo { buttonText = "Random Projectile", toolTip = "Makes the projectiles random." },
@@ -433,27 +434,27 @@ namespace Seralyth.Menu
             },
 
             new[] { // Room Mods [6]
-                new ButtonInfo { buttonText = "Exit Room Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Room Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Room Creator", method = Important.RoomCreator, isTogglable = false, toolTip = "Create your own custom room!"},
 
-                new ButtonInfo { buttonText = "Disconnect", method =() => NetworkSystem.Instance.ReturnToSinglePlayer(), isTogglable = false, toolTip = "Disconnects you from the the room.", legal = true}, // I'm keeping this legal because Developer9998's InfoWatch mod has it.
-                new ButtonInfo { buttonText = "Reconnect", aliases = new[] { "Rejoin" }, method = Important.Reconnect, isTogglable = false, toolTip = "Reconnects you from and to the the room.", legal = true},
+                new ButtonInfo { buttonText = "Disconnect", method =() => NetworkSystem.Instance.ReturnToSinglePlayer(), isTogglable = false, toolTip = "Disconnects you from the the room."},
+                new ButtonInfo { buttonText = "Reconnect", aliases = new[] { "Rejoin" }, method = Important.Reconnect, isTogglable = false, toolTip = "Reconnects you from and to the the room."},
 
-                new ButtonInfo { buttonText = "Cancel Reconnect", method = Important.CancelReconnect, isTogglable = false, toolTip = "Cancels the reconnection loop.", legal = true},
+                new ButtonInfo { buttonText = "Cancel Reconnect", method = Important.CancelReconnect, isTogglable = false, toolTip = "Cancels the reconnection loop."},
 
-                new ButtonInfo { buttonText = "Join Last Room", method =() => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom(lastRoom, JoinType.Solo), isTogglable = false, toolTip = "Joins the last room you left.", legal = true},
-                new ButtonInfo { buttonText = "Join Random", method = Important.JoinRandom, isTogglable = false, toolTip = "Joins a random public room.", legal = true},
+                new ButtonInfo { buttonText = "Join Last Room", method =() => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom(lastRoom, JoinType.Solo), isTogglable = false, toolTip = "Joins the last room you left."},
+                new ButtonInfo { buttonText = "Join Random", method = Important.JoinRandom, isTogglable = false, toolTip = "Joins a random public room."},
 
                 new ButtonInfo { buttonText = "Create Public", method =() => Important.CreateRoom(Important.RandomRoomName(), true), isTogglable = false, toolTip = "Creates a public room."},
-                new ButtonInfo { buttonText = "Create Private", method =() => Important.CreateRoom(Important.RandomRoomName(), false), isTogglable = false, toolTip = "Creates a private room.", legal = true},
+                new ButtonInfo { buttonText = "Create Private", method =() => Important.CreateRoom(Important.RandomRoomName(), false), isTogglable = false, toolTip = "Creates a private room."},
 
-                new ButtonInfo { buttonText = "Fast Disconnect", method =() => SinglePlayerPatch.enabled = true, disableMethod =() =>  SinglePlayerPatch.enabled = false, toolTip = "Uses the fastest method of disconnecting possible.", legal = true},
-                new ButtonInfo { buttonText = "Join Menu Room", method =() => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom($"<$SERALYTH_{PluginInfo.Version}>", JoinType.Solo), isTogglable = false, toolTip = "Connects you to a room that is exclusive to <b>Seralyth Menu</b> users.", legal = true},
+                new ButtonInfo { buttonText = "Fast Disconnect", method =() => SinglePlayerPatch.enabled = true, disableMethod =() =>  SinglePlayerPatch.enabled = false, toolTip = "Uses the fastest method of disconnecting possible."},
+                new ButtonInfo { buttonText = "Join Menu Room", method =() => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom($"<$PIXELYTH$>", JoinType.Solo), isTogglable = false, toolTip = "Connects you to a room that is exclusive to <b>Pixelyth-Menu</b> users."},
 
                 new ButtonInfo { buttonText = "Bypass Join Room Type", enableMethod =() => JoinedRoomPatch.enabled = true, disableMethod =() => JoinedRoomPatch.enabled = false, toolTip = "Bypasses the immediate disconnection when trying to join a room that is in another map."},
 
-                new ButtonInfo { buttonText = "Auto Join Room", method =() => PromptText("What room would you like to join?", () => Important.QueueRoom(keyboardInput), null, "Done", "Cancel"), isTogglable = false, toolTip = "Automatically attempts to connect to whatever room you desire every couple of seconds until connected.", legal = true},
+                new ButtonInfo { buttonText = "Auto Join Room", method =() => PromptText("What room would you like to join?", () => Important.QueueRoom(keyboardInput), null, "Done", "Cancel"), isTogglable = false, toolTip = "Automatically attempts to connect to whatever room you desire every couple of seconds until connected."},
 
                 new ButtonInfo { buttonText = "Auto Join Room \"RUN\"", method =() => Important.QueueRoom("RUN"), isTogglable = false, toolTip = "Automatically attempts to connect to room \"RUN\" every couple of seconds until connected." },
                 new ButtonInfo { buttonText = "Auto Join Room \"HIDE\"", method =() => Important.QueueRoom("HIDE"), isTogglable = false, toolTip = "Automatically attempts to connect to room \"HIDE\" every couple of seconds until connected." },
@@ -492,27 +493,27 @@ namespace Seralyth.Menu
             },
 
             new[] { // Important Mods [7]
-                new ButtonInfo { buttonText = "Exit Important Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Important Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
-                new ButtonInfo { buttonText = "Exit Gorilla Tag", aliases = new[] { "Quit Gorilla Tag", "Exit Game", "Quit Game", "Exit App", "Quit App" }, method = () => Prompt("Are you sure you want to exit Gorilla Tag?", () => { Preferences.Save(); Application.Quit(); }), isTogglable = false, toolTip = "Closes Gorilla Tag.", legal = true},
-                new ButtonInfo { buttonText = "Restart Gorilla Tag", aliases = new[] { "Restart Game", "Restart App" }, method = () => Prompt("Are you sure you want to restart Gorilla Tag?", Important.RestartGame), isTogglable = false, toolTip = "Restarts Gorilla Tag.", legal = true},
-                new ButtonInfo { buttonText = "Open Gorilla Tag Folder", method = Important.OpenGorillaTagFolder, isTogglable = false, toolTip = "Opens the folder in which your game is located.", legal = true},
+                new ButtonInfo { buttonText = "Exit Gorilla Tag", aliases = new[] { "Quit Gorilla Tag", "Exit Game", "Quit Game", "Exit App", "Quit App" }, method = () => Prompt("Are you sure you want to exit Gorilla Tag?", () => { Preferences.Save(); Application.Quit(); }), isTogglable = false, toolTip = "Closes Gorilla Tag."},
+                new ButtonInfo { buttonText = "Restart Gorilla Tag", aliases = new[] { "Restart Game", "Restart App" }, method = () => Prompt("Are you sure you want to restart Gorilla Tag?", Important.RestartGame), isTogglable = false, toolTip = "Restarts Gorilla Tag."},
+                new ButtonInfo { buttonText = "Open Gorilla Tag Folder", method = Important.OpenGorillaTagFolder, isTogglable = false, toolTip = "Opens the folder in which your game is located."},
 
-                new ButtonInfo { buttonText = "Discord RPC", aliases = new[] { "Self Tracker" }, method = Important.DiscordRPC, disableMethod = Important.DisableDiscordRPC, toolTip = "Gives you a indicator on Discord that you are using Seralyth Menu.", legal = true},
-                new ButtonInfo { buttonText = "Media Integration", aliases = new[] { "Spotify" }, enableMethod = Important.EnsureIntegrationProgram, method = Important.MediaIntegration, disableMethod = Important.DisableMediaIntegration, toolTip = "Shows you what media you are watching/listening to in the top left. To switch media, open the menu and use your left joystick.", legal = true},
+                new ButtonInfo { buttonText = "Discord RPC", aliases = new[] { "Self Tracker" }, method = Important.DiscordRPC, disableMethod = Important.DisableDiscordRPC, toolTip = "Gives you a indicator on Discord that you are using Pixelyth Menu."},
+                new ButtonInfo { buttonText = "Media Integration", aliases = new[] { "Spotify" }, enableMethod = Important.EnsureIntegrationProgram, method = Important.MediaIntegration, disableMethod = Important.DisableMediaIntegration, toolTip = "Shows you what media you are watching/listening to in the top left. To switch media, open the menu and use your left joystick."},
 
                 new ButtonInfo { buttonText = "Anti Hand Tap", enableMethod =() => HandTapPatch.enabled = true, disableMethod =() => HandTapPatch.enabled = false, toolTip = "Stops all hand tap sounds from being played."},
-                new ButtonInfo { buttonText = "First Person Camera", enableMethod = Important.EnableFPC, postMethod = Important.MoveFPC, disableMethod = Important.DisableFPC, toolTip = "Makes your camera output what you see in VR.", legal = true},
-                new ButtonInfo { buttonText = "Force Enable Hands", enableMethod =() => Important.ForceEnableHands(), disableMethod =() => Important.ForceEnableHands(false), toolTip = "Prevents your hands from disconnecting.", legal = true},
+                new ButtonInfo { buttonText = "First Person Camera", enableMethod = Important.EnableFPC, postMethod = Important.MoveFPC, disableMethod = Important.DisableFPC, toolTip = "Makes your camera output what you see in VR."},
+                new ButtonInfo { buttonText = "Force Enable Hands", enableMethod =() => Important.ForceEnableHands(), disableMethod =() => Important.ForceEnableHands(false), toolTip = "Prevents your hands from disconnecting."},
 
                 new ButtonInfo { buttonText = "Oculus Report Menu <color=grey>[</color><color=green>X</color><color=grey>]</color>", method = Important.OculusReportMenu, toolTip = "Opens the Oculus report menu when holding <color=green>X</color>."},
 
                 new ButtonInfo { buttonText = "Accept TOS", enableMethod =() => TOSPatches.enabled = true, method = Important.AcceptTOS, disableMethod =() => TOSPatches.enabled = false, toolTip = "Accepts the Terms of Service for you."},
                 new ButtonInfo { buttonText = "Bypass K-ID Restrictions", overlapText = "Bypass k-ID Restrictions", method =() => PermissionPatch.enabled = true, disableMethod =() => PermissionPatch.enabled = false, toolTip = "Bypasses the permission restrictions held by k-ID for underage users."},
 
-                new ButtonInfo { buttonText = "Copy Player Position", method = Important.CopyPlayerPosition, isTogglable = false, toolTip = "Copies the current player position to the clipboard.", legal = true },
+                new ButtonInfo { buttonText = "Copy Player Position", method = Important.CopyPlayerPosition, isTogglable = false, toolTip = "Copies the current player position to the clipboard." },
 
-                new ButtonInfo { buttonText = "Clear Notifications", method = NotificationManager.ClearAllNotifications, isTogglable = false, toolTip = "Clears your notifications.", legal = true},
+                new ButtonInfo { buttonText = "Clear Notifications", method = NotificationManager.ClearAllNotifications, isTogglable = false, toolTip = "Clears your notifications."},
 
                 new ButtonInfo { buttonText = "Anti AFK", enableMethod =() => PhotonNetworkController.Instance.disableAFKKick = true, disableMethod =() => PhotonNetworkController.Instance.disableAFKKick = false, toolTip = "Doesn't let you get kicked for being AFK."},
                 new ButtonInfo { buttonText = "Disable Network Triggers", enableMethod =() => NetworkTriggerPatch.enabled = true, disableMethod =() => NetworkTriggerPatch.enabled = false, toolTip = "Disables the network triggers, so you can change maps without disconnecting."},
@@ -523,7 +524,7 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Block on Mute", method = Important.BlockOnMute, toolTip = "Disables any muted players' rig unless you need to see them."},
 
                 new ButtonInfo { buttonText = "Steam Refund Timer", method =() => { if (playTime > 6000f) { NotificationManager.information["REFUND"] = "Refund soon"; } else { NotificationManager.information.Remove("REFUND"); } }, enableMethod = Important.CheckNewAcc, disableMethod =() => NotificationManager.information.Remove("REFUND"), toolTip = "Alerts you when you are nearby the steam refund time."},
-                new ButtonInfo { buttonText = "Advanced Ban Message", enableMethod =() => ErrorPatches.enabled = true, disableMethod =() => ErrorPatches.enabled = false, toolTip = "Shows more information, such as remaining time and unban date, when banned.", legal = true},
+                new ButtonInfo { buttonText = "Advanced Ban Message", enableMethod =() => ErrorPatches.enabled = true, disableMethod =() => ErrorPatches.enabled = false, toolTip = "Shows more information, such as remaining time and unban date, when banned."},
 
                 new ButtonInfo { buttonText = "120 FPS", method =() => Important.CapFPS(120), toolTip = "Caps your FPS at 120 frames per second."},
                 new ButtonInfo { buttonText = "90 FPS", method =() => Important.CapFPS(90), toolTip = "Caps your FPS at 90 frames per second."},
@@ -560,11 +561,11 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Connect to US West", aliases = new[] { "Connect to USW", "USW VPN", "US West VPN", "Connect to United States West", "United States West VPN" }, method =() => Important.ConnectToRegion("usw"), toolTip = "Connects you to the western United States servers."},
                 new ButtonInfo { buttonText = "Connect to EU", aliases = new[] { "EU VPN", "Connect to Europe", "Europe VPN" }, method =() => Important.ConnectToRegion("eu"), toolTip = "Connects you to the Europe servers."},
 
-                new ButtonInfo { buttonText = "Reauthenticate", method = MothershipAuthenticator.Instance.BeginLoginFlow, isTogglable = false, toolTip = "Restarts the login flow that happens at the beginning of the game.", legal = true},
+                new ButtonInfo { buttonText = "Reauthenticate", method = MothershipAuthenticator.Instance.BeginLoginFlow, isTogglable = false, toolTip = "Restarts the login flow that happens at the beginning of the game."},
             },
 
             new[] { // Safety Mods [8]
-                new ButtonInfo { buttonText = "Exit Safety Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Safety Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "No Finger Movement", aliases = new[] { "Disable Fingers" }, postMethod = Safety.NoFinger, toolTip = "Makes your fingers not move, so you can use wall walk without getting called out." },
 
@@ -578,12 +579,12 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Support Page Spoof", method = Safety.SpoofSupportPage, toolTip = "Makes the support page appear as if you are on Oculus."},
 
                 new ButtonInfo { buttonText = "Flush RPCs", method = RPCProtection, isTogglable = false, toolTip = "Flushes all RPC calls, good after you stop spamming." },
-                new ButtonInfo { buttonText = "Anti Crash", overlapText = "Exploit Guard", aliases = new[] { "Anti Crash" }, enableMethod =() => AntiCrashPatches.enabled = true, disableMethod =() => AntiCrashPatches.enabled = false, toolTip = "Prevents crashers from completely annihilating your computer.", legal = true},
+                new ButtonInfo { buttonText = "Anti Crash", overlapText = "Exploit Guard", aliases = new[] { "Anti Crash" }, enableMethod =() => AntiCrashPatches.enabled = true, disableMethod =() => AntiCrashPatches.enabled = false, toolTip = "Prevents crashers from completely annihilating your computer."},
                 new ButtonInfo { buttonText = "Anti Ban Crash", enableMethod =() => BanPatches.AntiBanCrash1.enabled = true, disableMethod =() => BanPatches.AntiBanCrash1.enabled = false, toolTip = "Prevents your game from crashing when you are banned."},
                 new ButtonInfo { buttonText = "Anti Kick", enableMethod = Experimental.OnlySerializeNecessary, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Only networks the necessities to prevent getting kicked."},
                 new ButtonInfo { buttonText = "Anti Name Ban", enableMethod =() => BanPatches.enabled = true, method = Safety.AntiNameBan, disableMethod =() => BanPatches.enabled = false, toolTip = "Prevents you from getting banned for setting your name to bad things."},
-                new ButtonInfo { buttonText = "Anti Stump Kick", enableMethod =() => GroupPatch.enabled = true, disableMethod =() => GroupPatch.enabled = false, toolTip = "Stops people from group kicking you.", legal = true},
-                new ButtonInfo { buttonText = "Auto Clear Cache", method = Safety.AutoClearCache, toolTip = "Automatically clears your game's cache (garbage collector) every minute to prevent memory leaks.", legal = true},
+                new ButtonInfo { buttonText = "Anti Stump Kick", enableMethod =() => GroupPatch.enabled = true, disableMethod =() => GroupPatch.enabled = false, toolTip = "Stops people from group kicking you."},
+                new ButtonInfo { buttonText = "Auto Clear Cache", method = Safety.AutoClearCache, toolTip = "Automatically clears your game's cache (garbage collector) every minute to prevent memory leaks."},
 
                 new ButtonInfo { buttonText = "Anti Moderator <color=grey>[</color><color=green>Disconnect</color><color=grey>]</color>", method = Safety.AntiModeratorDisconnect, toolTip = "When someone with the stick joins, you get disconnected and their player ID and room code gets saved to a file."},
                 new ButtonInfo { buttonText = "Anti Moderator <color=grey>[</color><color=green>Notify</color><color=grey>]</color>", method = Safety.AntiModeratorNotify, toolTip = "Tells you, when someone with the stick joins."},
@@ -593,7 +594,7 @@ namespace Seralyth.Menu
 
                 new ButtonInfo { buttonText = "Cosmetic Notifications", method = Safety.CosmeticNotifications, toolTip = "Sends you a notification if there is a Finger Painter, Illustrator, Administrator, Stick, Forest Guide, or Another Axiom Creator in your room."},
 
-                new ButtonInfo { buttonText = "Steam Detector", method = Important.SteamDetector, toolTip = "Detects when a player in your room is on Steam.", legal = true},
+                new ButtonInfo { buttonText = "Steam Detector", method = Important.SteamDetector, toolTip = "Detects when a player in your room is on Steam."},
 
                 new ButtonInfo { buttonText = "Bypass Automod", method = Safety.BypassAutomod, toolTip = "Attempts to bypass automod muting yourself and others."},
                 new ButtonInfo { buttonText = "Bypass Mod Checkers", enableMethod =() => PropertiesPatches.enabled = true, method = Safety.BypassModCheckers, disableMethod =() => PropertiesPatches.enabled = false, toolTip = "Tells players using mod checkers that you have no mods."},
@@ -633,7 +634,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Movement Mods [9]
-                new ButtonInfo { buttonText = "Exit Movement Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Movement Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Platforms", overlapText = "Platforms <color=grey>[</color><color=green>G</color><color=grey>]</color>", postMethod =() => Movement.Platforms(), toolTip = "Spawns platforms on your hands when holding <color=green>grip</color>."},
                 new ButtonInfo { buttonText = "Trigger Platforms", overlapText = "Trigger Platforms <color=grey>[</color><color=green>T</color><color=grey>]</color>", postMethod =() => Movement.Platforms(leftTrigger > 0.5f, rightTrigger > 0.5f), toolTip = "Spawns platforms on your hands when holding <color=green>trigger</color>."},
@@ -860,7 +861,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Advantage Mods [10]
-                new ButtonInfo { buttonText = "Exit Advantage Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Advantage Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Tag Self", method = Advantages.TagSelf, disableMethod = Movement.EnableRig, toolTip = "Attempts to tags yourself."},
                 new ButtonInfo { buttonText = "Tag Gun", method = Advantages.TagGun, toolTip = "Tags whoever your hand desires."},
@@ -902,7 +903,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Visual Mods [11]
-                new ButtonInfo { buttonText = "Exit Visual Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Visual Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Morning Time", method =() => BetterDayNightManager.instance.SetTimeOfDay(1), toolTip = "Sets your time of day to morning."},
                 new ButtonInfo { buttonText = "Day Time", method =() => BetterDayNightManager.instance.SetTimeOfDay(3), toolTip = "Sets your time of day to daytime."},
@@ -924,26 +925,26 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Disable Fog", method = Visuals.DisableFog, disableMethod = Visuals.ResetFog, toolTip = "Disables the fog."},
                 new ButtonInfo { buttonText = "Enable Fog", method = Visuals.EnableFog, disableMethod = Visuals.ResetFog, toolTip = "Enables the fog."},
 
-                new ButtonInfo { buttonText = "Disable Ambience", enableMethod = Visuals.DisableAmbience, disableMethod = Visuals.EnableAmbience, toolTip = "Disables all ambient effects.", legal = true},
+                new ButtonInfo { buttonText = "Disable Ambience", enableMethod = Visuals.DisableAmbience, disableMethod = Visuals.EnableAmbience, toolTip = "Disables all ambient effects."},
 
-                new ButtonInfo { buttonText = "Custom Skybox Color", aliases = new[] { "Custom Sky Color" }, enableMethod = Visuals.DoCustomSkyboxColor, method = Visuals.CustomSkyboxColor, disableMethod = Visuals.UnCustomSkyboxColor, toolTip = "Changes the skybox color to match the menu.", legal = true},
-                new ButtonInfo { buttonText = "Draw Gun", method = Visuals.DrawGun, disableMethod = Visuals.DisableDrawGun, toolTip = "Lets you draw on whatever your hand desires.", legal = true},
+                new ButtonInfo { buttonText = "Custom Skybox Color", aliases = new[] { "Custom Sky Color" }, enableMethod = Visuals.DoCustomSkyboxColor, method = Visuals.CustomSkyboxColor, disableMethod = Visuals.UnCustomSkyboxColor, toolTip = "Changes the skybox color to match the menu."},
+                new ButtonInfo { buttonText = "Draw Gun", method = Visuals.DrawGun, disableMethod = Visuals.DisableDrawGun, toolTip = "Lets you draw on whatever your hand desires."},
                 new ButtonInfo { buttonText = "Gamesense Ring", aliases = new[] { "Fortnite Ring" }, enableMethod =() => HandTapPatch.OnHandTap += Visuals.OnHandTapGamesenseRing, method = Visuals.GamesenseRing, disableMethod = Visuals.DisableGamesenseRing, toolTip = "Shows the direction of where people walk around you." },
 
-                new ButtonInfo { buttonText = "Velocity Label", method = Visuals.VelocityLabel, toolTip = "Puts text on your right hand, showing your velocity.", legal = true},
+                new ButtonInfo { buttonText = "Velocity Label", method = Visuals.VelocityLabel, toolTip = "Puts text on your right hand, showing your velocity."},
                 new ButtonInfo { buttonText = "Nearby Label", method = Visuals.NearbyTaggerLabel, toolTip = "Puts text on your left hand, showing you the distance of the nearest tagger."},
-                new ButtonInfo { buttonText = "Last Label", method = Visuals.LastLabel, toolTip = "Puts text on your left hand, showing you how many untagged people are left.", legal = true},
-                new ButtonInfo { buttonText = "Time Label", method = Visuals.TimeLabel, toolTip = "Puts text on your right hand, showing how long you've been playing for without getting tagged.", legal = true},
+                new ButtonInfo { buttonText = "Last Label", method = Visuals.LastLabel, toolTip = "Puts text on your left hand, showing you how many untagged people are left."},
+                new ButtonInfo { buttonText = "Time Label", method = Visuals.TimeLabel, toolTip = "Puts text on your right hand, showing how long you've been playing for without getting tagged."},
 
-                new ButtonInfo { buttonText = "FPS Overlay", method =() => NotificationManager.information["FPS"] = lastDeltaTime.ToString(), disableMethod =() => NotificationManager.information.Remove("FPS"), toolTip = "Displays your FPS on your screen.", legal = true},
-                new ButtonInfo { buttonText = "Ping Overlay", method = Visuals.PingOverlay, disableMethod =() => NotificationManager.information.Remove("Ping"), toolTip = "Displays the server's ping on your screen.", legal = true},
-                new ButtonInfo { buttonText = "Time Overlay", method =() => NotificationManager.information["Time"] = DateTime.Now.ToString("hh:mm tt"), disableMethod =() => NotificationManager.information.Remove("Time"), toolTip = "Displays your current time on your screen.", legal = true},
-                new ButtonInfo { buttonText = "Playtime Overlay", method =() => { NotificationManager.information["Playtime"] = Visuals.OverallPlaytime; Visuals.UpdatePlaytime(); }, disableMethod =() => NotificationManager.information.Remove("Playtime"), toolTip = "Displays your play time from when the mod was enabled on your screen.", legal = true},
-                new ButtonInfo { buttonText = "Room Information Overlay", overlapText = "Important Room Info Overlay", method =() => { if (NetworkSystem.Instance.InRoom) { NotificationManager.information["Room Code"] = PhotonNetwork.CurrentRoom.Name; NotificationManager.information["Players"] = PhotonNetwork.PlayerList.Length.ToString(); } else { NotificationManager.information.Remove("Room Code"); NotificationManager.information.Remove("Players"); } }, disableMethod =() => { NotificationManager.information.Remove("Room Code"); NotificationManager.information.Remove("Players"); }, toolTip = "Displays basic information about the room on your screen.", legal = true},
+                new ButtonInfo { buttonText = "FPS Overlay", method =() => NotificationManager.information["FPS"] = lastDeltaTime.ToString(), disableMethod =() => NotificationManager.information.Remove("FPS"), toolTip = "Displays your FPS on your screen."},
+                new ButtonInfo { buttonText = "Ping Overlay", method = Visuals.PingOverlay, disableMethod =() => NotificationManager.information.Remove("Ping"), toolTip = "Displays the server's ping on your screen."},
+                new ButtonInfo { buttonText = "Time Overlay", method =() => NotificationManager.information["Time"] = DateTime.Now.ToString("hh:mm tt"), disableMethod =() => NotificationManager.information.Remove("Time"), toolTip = "Displays your current time on your screen."},
+                new ButtonInfo { buttonText = "Playtime Overlay", method =() => { NotificationManager.information["Playtime"] = Visuals.OverallPlaytime; Visuals.UpdatePlaytime(); }, disableMethod =() => NotificationManager.information.Remove("Playtime"), toolTip = "Displays your play time from when the mod was enabled on your screen."},
+                new ButtonInfo { buttonText = "Room Information Overlay", overlapText = "Important Room Info Overlay", method =() => { if (NetworkSystem.Instance.InRoom) { NotificationManager.information["Room Code"] = PhotonNetwork.CurrentRoom.Name; NotificationManager.information["Players"] = PhotonNetwork.PlayerList.Length.ToString(); } else { NotificationManager.information.Remove("Room Code"); NotificationManager.information.Remove("Players"); } }, disableMethod =() => { NotificationManager.information.Remove("Room Code"); NotificationManager.information.Remove("Players"); }, toolTip = "Displays basic information about the room on your screen."},
                 new ButtonInfo { buttonText = "Extra Room Info Overlay", method =() => Visuals.ExtraRoomInfo(), disableMethod =() => Visuals.ExtraRoomInfo(false), toolTip = "Displays extra information about the room on your screen."},
-                new ButtonInfo { buttonText = "Networking Overlay", method =() => { NotificationManager.information["Ping"] = PhotonNetwork.GetPing().ToString(); NotificationManager.information["Region"] = NetworkSystem.Instance.regionNames[NetworkSystem.Instance.currentRegionIndex].ToUpper(); }, disableMethod =() => { NotificationManager.information.Remove("Ping"); NotificationManager.information.Remove("Region"); }, toolTip = "Displays information about networking on your screen.", legal = true},
-                new ButtonInfo { buttonText = "Clipboard Overlay", method =() => NotificationManager.information["Clip"] = GUIUtility.systemCopyBuffer.Length > 20 ? GUIUtility.systemCopyBuffer[..20] : GUIUtility.systemCopyBuffer, disableMethod =() => NotificationManager.information.Remove("Clip"), toolTip = "Displays your current clipboard on your screen.", legal = true},
-                new ButtonInfo { buttonText = "Velocity Overlay", method =() => NotificationManager.information["Velocity"] = $"{GorillaTagger.Instance.rigidbody.linearVelocity.magnitude:F1}m/s", disableMethod =() => NotificationManager.information.Remove("Velocity"), toolTip = "Displays your velocity on your screen.", legal = true},
+                new ButtonInfo { buttonText = "Networking Overlay", method =() => { NotificationManager.information["Ping"] = PhotonNetwork.GetPing().ToString(); NotificationManager.information["Region"] = NetworkSystem.Instance.regionNames[NetworkSystem.Instance.currentRegionIndex].ToUpper(); }, disableMethod =() => { NotificationManager.information.Remove("Ping"); NotificationManager.information.Remove("Region"); }, toolTip = "Displays information about networking on your screen."},
+                new ButtonInfo { buttonText = "Clipboard Overlay", method =() => NotificationManager.information["Clip"] = GUIUtility.systemCopyBuffer.Length > 20 ? GUIUtility.systemCopyBuffer[..20] : GUIUtility.systemCopyBuffer, disableMethod =() => NotificationManager.information.Remove("Clip"), toolTip = "Displays your current clipboard on your screen."},
+                new ButtonInfo { buttonText = "Velocity Overlay", method =() => NotificationManager.information["Velocity"] = $"{GorillaTagger.Instance.rigidbody.linearVelocity.magnitude:F1}m/s", disableMethod =() => NotificationManager.information.Remove("Velocity"), toolTip = "Displays your velocity on your screen."},
                 new ButtonInfo { buttonText = "Nearby Overlay", method = Visuals.NearbyTaggerOverlay, disableMethod =() => NotificationManager.information.Remove("Nearby"), toolTip = "Displays the distance to the nearest tagger/target on your screen."},
                 new ButtonInfo { buttonText = "Info Overlay Gun", method = Visuals.InfoOverlayGun, toolTip = "Displays an overlay, showing the information of whoever your hand desires."},
 
@@ -953,7 +954,7 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Leaderboard Info", enableMethod =() => UpdatePatch.enabled = true, method = Visuals.LeaderboardInfo, disableMethod =() => UpdatePatch.enabled = false, toolTip = "Shows info next to players' names on the leaderboard."},
 
                 new ButtonInfo { buttonText = "FPS Boost", aliases = new[] { "Low Quality" }, enableMethod =() => QualitySettings.globalTextureMipmapLimit = int.MaxValue, disableMethod =() => QualitySettings.globalTextureMipmapLimit = 1, toolTip = "Makes everything low quality in an attempt to boost your FPS.", },
-                new ButtonInfo { buttonText = "Freeze In Background", enableMethod =() => Application.runInBackground = false, disableMethod =() => Application.runInBackground = true, toolTip = "Freezes the game when the application is not focused.", legal = true},
+                new ButtonInfo { buttonText = "Freeze In Background", enableMethod =() => Application.runInBackground = false, disableMethod =() => Application.runInBackground = true, toolTip = "Freezes the game when the application is not focused."},
 
                 new ButtonInfo { buttonText = "Fake Unban Self", method = Visuals.FakeUnbanSelf, isTogglable = false, toolTip = "Makes it appear as if you're not banned." },
 
@@ -961,20 +962,20 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Hitbox Predictions", method = Visuals.HitboxPredictions, disableMethod = Visuals.DisableHitboxPredictions, toolTip = "Shows capsules where other players' hitboxes are."},
                 new ButtonInfo { buttonText = "Paintbrawl Trajectories", overlapText = "Projectile Trajectories", method = Visuals.PaintbrawlTrajectories, disableMethod = Visuals.DisablePaintbrawlTrajectories, toolTip = "Shows a visualizer of where all projectiles and your slingshot will hit."},
 
-                new ButtonInfo { buttonText = "Audio Visualizer", enableMethod = Visuals.CreateAudioVisualizer, method = Visuals.AudioVisualizer, disableMethod = Visuals.DestroyAudioVisualizer, toolTip = "Shows a visualizer of your microphone loudness below your player.", legal = true},
-                new ButtonInfo { buttonText = "Show Server Position", method = Visuals.ShowServerPosition, disableMethod = Visuals.DisableShowServerPosition, toolTip = "Shows your current syncronized position on the server.", legal = true},
+                new ButtonInfo { buttonText = "Audio Visualizer", enableMethod = Visuals.CreateAudioVisualizer, method = Visuals.AudioVisualizer, disableMethod = Visuals.DestroyAudioVisualizer, toolTip = "Shows a visualizer of your microphone loudness below your player."},
+                new ButtonInfo { buttonText = "Show Server Position", method = Visuals.ShowServerPosition, disableMethod = Visuals.DisableShowServerPosition, toolTip = "Shows your current syncronized position on the server."},
                 new ButtonInfo { buttonText = "Show Scheduled Objects", enableMethod = Visuals.ShowScheduledObjects, toolTip = "Shows all scheduled and planned objects before their target date."},
 
                 new ButtonInfo { buttonText = "Visualize Network Triggers", method = Visuals.VisualizeNetworkTriggers, toolTip = "Visualizes the network joining and leaving triggers."},
                 new ButtonInfo { buttonText = "Visualize Wind Barriers", aliases = new[] { "Visualize Air" }, method = Visuals.VisualizeWindBarriers, toolTip = "Visualizes the wind barriers."},
                 new ButtonInfo { buttonText = "Visualize Map Triggers", method = Visuals.VisualizeMapTriggers, toolTip = "Visualizes the map loading and unloading triggers."},
 
-                new ButtonInfo { buttonText = "Name Tags", method = Visuals.NameTags, disableMethod = Visuals.DisableNameTags, toolTip = "Gives players name tags above their heads that show their nickname.", legal = true},
+                new ButtonInfo { buttonText = "Name Tags", method = Visuals.NameTags, disableMethod = Visuals.DisableNameTags, toolTip = "Gives players name tags above their heads that show their nickname."},
                 new ButtonInfo { buttonText = "Velocity Name Tags", method = Visuals.VelocityTags, disableMethod = Visuals.DisableVelocityTags, toolTip = "Gives players name tags above their heads that show their velocity."},
                 new ButtonInfo { buttonText = "FPS Name Tags", method = Visuals.FPSTags, disableMethod = Visuals.DisableFPSTags, toolTip = "Gives players name tags above their heads that show their FPS."},
                 new ButtonInfo { buttonText = "Target FPS Name Tags", method = Visuals.TargetFPSTags, disableMethod = Visuals.DisableTargetFPSTags, toolTip = "Gives players name tags above their heads that show their maximum FPS."},
                 new ButtonInfo { buttonText = "ID Name Tags", method = Visuals.IDTags, disableMethod = Visuals.DisableIDTags, toolTip = "Gives players name tags above their heads that show their ID."},
-                new ButtonInfo { buttonText = "Platform Name Tags", method = Visuals.PlatformTags, disableMethod = Visuals.DisablePlatformTags, toolTip = "Gives players name tags above their heads that show what platform they're playing on.", legal = true},
+                new ButtonInfo { buttonText = "Platform Name Tags", method = Visuals.PlatformTags, disableMethod = Visuals.DisablePlatformTags, toolTip = "Gives players name tags above their heads that show what platform they're playing on."},
                 new ButtonInfo { buttonText = "k-ID Name Tags", method = Visuals.KIDNameTags, disableMethod = Visuals.DisableKIDNameTags, toolTip = "Gives players name tags above their heads that show if they have k-ID restrictions."},
                 new ButtonInfo { buttonText = "Subscriber Name Tags", method = Visuals.SubscriberNameTags, disableMethod = Visuals.DisableSubscriberNameTags, toolTip = "Gives players name tags above their heads that show if they're subscribed to the fan club."},
                 new ButtonInfo { buttonText = "Creation Date Name Tags", method = Visuals.CreationDateTags, disableMethod = Visuals.DisableCreationDateTags, toolTip = "Gives players name tags above their heads that show their creation date."},
@@ -986,10 +987,10 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Verified Name Tags", method = Visuals.VerifiedTags, disableMethod = Visuals.DisableVerifiedTags, toolTip = "Gives players name tags above their heads if they are a verified player."},
                 new ButtonInfo { buttonText = "Lag Name Tags", method = Visuals.CrashedTags, disableMethod = Visuals.DisableCrashedTags, toolTip = "Gives players name tags above their heads if they are lagging."},
                 new ButtonInfo { buttonText = "Compact Name Tags", overlapText = "VRChat Name Tags", aliases = new[] { "Compact Name Tags" }, method = Visuals.CompactTags, disableMethod = Visuals.DisableCompactTags, toolTip = "Gives players name tags above their heads that show a lot of information compactly. Credits to snake for the mod idea."},
-                new ButtonInfo { buttonText = "Minecraft Name Tags", method = Visuals.MinecraftTags, disableMethod = Visuals.DisableMinecraftTags, toolTip = "Gives players the same nametags that are shown in Minecraft.", legal = true},
-                new ButtonInfo { buttonText = "Casting Name Tags", method = Visuals.CastingTags, disableMethod = Visuals.DisableCastingTags, toolTip = "Gives players a very simplistic nametag, only showing platform and name. Inspired by BingusNameTags++.", legal = true},
+                new ButtonInfo { buttonText = "Minecraft Name Tags", method = Visuals.MinecraftTags, disableMethod = Visuals.DisableMinecraftTags, toolTip = "Gives players the same nametags that are shown in Minecraft."},
+                new ButtonInfo { buttonText = "Casting Name Tags", method = Visuals.CastingTags, disableMethod = Visuals.DisableCastingTags, toolTip = "Gives players a very simplistic nametag, only showing platform and name. Inspired by BingusNameTags++."},
 
-                new ButtonInfo { buttonText = "Fix Rig Colors", method = Visuals.FixRigColors, toolTip = "Fixes a Steam bug where other players' color would be wrong between servers.", legal = true},
+                new ButtonInfo { buttonText = "Fix Rig Colors", method = Visuals.FixRigColors, toolTip = "Fixes a Steam bug where other players' color would be wrong between servers."},
                 new ButtonInfo { buttonText = "Disable Rig Lerping", overlapText = "Disable Rig Smoothing", method = Visuals.NoSmoothRigs, disableMethod = Visuals.ReSmoothRigs, toolTip = "Disable the smoothing on the other player's rigs."},
                 new ButtonInfo { buttonText = "Better Rig Lerping", overlapText = "Better Rig Smoothing", enableMethod =() => PlayerSerializePatch.OnPlayerSerialize += Visuals.BetterRigLerping, disableMethod =() => PlayerSerializePatch.OnPlayerSerialize -= Visuals.BetterRigLerping, toolTip = "Estimates the inbetween positions using a real velocity emulator on the other player's rigs."},
                 new ButtonInfo { buttonText = "Remove Leaves", enableMethod = Visuals.EnableRemoveLeaves, disableMethod = Visuals.DisableRemoveLeaves, toolTip = "Removes leaves on trees, good for branching."},
@@ -999,7 +1000,7 @@ namespace Seralyth.Menu
 
                 new ButtonInfo { buttonText = "Special Cosmetic Indicators", aliases = new[] { "Cosmetic ESP" }, method = Visuals.CosmeticIndicators, disableMethod = Visuals.DisableCosmeticIndicators, toolTip = "Shows icons above people's heads if they are a Finger Painter, Illustrator, Administrator, Stick, Forest Guide, or Another Axiom Creator."},
 
-                new ButtonInfo { buttonText = "Voice ESP", method = Visuals.VoiceESP, disableMethod = Visuals.DisableVoiceIndicators, toolTip = "Puts voice indicators above people's heads when they're talking.", legal = true},
+                new ButtonInfo { buttonText = "Voice ESP", method = Visuals.VoiceESP, disableMethod = Visuals.DisableVoiceIndicators, toolTip = "Puts voice indicators above people's heads when they're talking."},
 
                 new ButtonInfo { buttonText = "Grabbable Indicators", method = Visuals.GripESP, disableMethod = Visuals.DisableGripESP, toolTip = "Puts indicators above people's heads when they can be grabbed."},
 
@@ -1071,7 +1072,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Fun Mods [12]
-                new ButtonInfo { buttonText = "Exit Fun Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Fun Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Custom Map Mods", aliases = new[] { "Virtual Stump Mods" }, method =() => CurrentCategoryName = "Custom Map Mods", isTogglable = false, toolTip = "Opens the custom map mods tab."},
 
@@ -1123,26 +1124,26 @@ namespace Seralyth.Menu
 
                 new ButtonInfo { buttonText = "Tag Sounds", enableMethod = Fun.PreloadTagSounds, method =() => TagPatch.enabled = true, disableMethod =() => TagPatch.enabled = false, toolTip = "Plays a selection of dramatic sound effects when tagging players. Credits to Wyndigo for the idea."},
 
-                new ButtonInfo { buttonText = "Free Camera <color=grey>[</color><color=green>J</color><color=grey>]</color>", postMethod = Fun.Freecam, disableMethod = Fun.DisableFreecam, toolTip = "Exit your own body and fly around to your free will.", legal = true},
+                new ButtonInfo { buttonText = "Free Camera <color=grey>[</color><color=green>J</color><color=grey>]</color>", postMethod = Fun.Freecam, disableMethod = Fun.DisableFreecam, toolTip = "Exit your own body and fly around to your free will."},
                 new ButtonInfo { buttonText = "Third Person Camera", postMethod = Fun.ThirdPersonCamera, disableMethod = Fun.DisableFreecam, toolTip = "Moves your camera to behind your head."},
                 new ButtonInfo { buttonText = "Flip Camera", postMethod = Fun.FlipCamera, disableMethod = Fun.DisableFreecam, toolTip = "Flips your camera 180 degrees."},
-                new ButtonInfo { buttonText = "Camera FOV", postMethod = Fun.CameraFOV, disableMethod = Fun.FixCameraFOV, toolTip = "Changes the FOV of your PC camera.", legal = true},
+                new ButtonInfo { buttonText = "Camera FOV", postMethod = Fun.CameraFOV, disableMethod = Fun.FixCameraFOV, toolTip = "Changes the FOV of your PC camera."},
                 new ButtonInfo { buttonText = "Spectate Gun", postMethod = Fun.SpectateGun, disableMethod = Fun.DisableFreecam, toolTip = "Lets you see through the eyes of whoever your hand desires."},
 
                 //new ButtonInfo { buttonText = "Echolocation", enableMethod = Fun.EcholocationOn, method = Fun.Echolocation, disableMethod = Fun.EcholocationOff, toolTip = "Blinds your vision, only showing a player whenever they speak."},
 
                 new ButtonInfo { buttonText = "Nausea", aliases = new[] { "Sick", "Nautious", "Drunk" }, postMethod = Fun.Nausea, disableMethod = Fun.DisableFreecam, toolTip = "Gives you the Nausea effect from Minecraft."},
-                new ButtonInfo { buttonText = "LSD", aliases = new[] { "Drugs", "High" }, method =() => { Color rgb = Color.HSVToRGB(Time.frameCount / 180f % 1f, 1f, 1f); Fun.HueShift(new Color(rgb.r, rgb.g, rgb.b, 0.1f)); }, disableMethod =() => Fun.HueShift(Color.clear), toolTip = "Hue shifts your game to a rainbow color.", legal = true},
+                new ButtonInfo { buttonText = "LSD", aliases = new[] { "Drugs", "High" }, method =() => { Color rgb = Color.HSVToRGB(Time.frameCount / 180f % 1f, 1f, 1f); Fun.HueShift(new Color(rgb.r, rgb.g, rgb.b, 0.1f)); }, disableMethod =() => Fun.HueShift(Color.clear), toolTip = "Hue shifts your game to a rainbow color."},
                 new ButtonInfo { buttonText = "Jumpscare on Tag", enableMethod = Fun.PreloadJumpscareData, method = Fun.JumpscareOnTag, toolTip = "Gives a 1/2000 chance of a jumpscare happening when getting tagged."},
-                new ButtonInfo { buttonText = "Spam Jumpscare", method = Fun.Jumpscare, toolTip = "Repeatedly jumpscares you.", legal = true},
-                new ButtonInfo { buttonText = "Jumpscare", method = Fun.Jumpscare, isTogglable = false, toolTip = "Jumpscares you.", legal = true},
+                new ButtonInfo { buttonText = "Spam Jumpscare", method = Fun.Jumpscare, toolTip = "Repeatedly jumpscares you."},
+                new ButtonInfo { buttonText = "Jumpscare", method = Fun.Jumpscare, isTogglable = false, toolTip = "Jumpscares you."},
 
-                new ButtonInfo { buttonText = "Prioritize Voice Gun", method = Fun.PrioritizeVoiceGun, toolTip = "Prioritizes whoever your hand desires' voice.", legal = true},
-                new ButtonInfo { buttonText = "Deprioritize Voice Gun", method = Fun.DeprioritizeVoiceGun, toolTip = "Deprioritizes whoever your hand desires' voice.", legal = true},
-                new ButtonInfo { buttonText = "Reset Voice", isTogglable = false, method = Fun.ResetVoiceAll, toolTip = "Resets everyones voice back to normal.", legal = true},
+                new ButtonInfo { buttonText = "Prioritize Voice Gun", method = Fun.PrioritizeVoiceGun, toolTip = "Prioritizes whoever your hand desires' voice."},
+                new ButtonInfo { buttonText = "Deprioritize Voice Gun", method = Fun.DeprioritizeVoiceGun, toolTip = "Deprioritizes whoever your hand desires' voice."},
+                new ButtonInfo { buttonText = "Reset Voice", isTogglable = false, method = Fun.ResetVoiceAll, toolTip = "Resets everyones voice back to normal."},
 
-                new ButtonInfo { buttonText = "Mute Gun", method = Fun.MuteGun, toolTip = "Mutes or unmutes whoever your hand desires.", legal = true},
-                new ButtonInfo { buttonText = "Mute All", method = Fun.MuteAll, disableMethod = Fun.UnmuteAll, toolTip = "Mutes everyone in the room.", legal = true},
+                new ButtonInfo { buttonText = "Mute Gun", method = Fun.MuteGun, toolTip = "Mutes or unmutes whoever your hand desires."},
+                new ButtonInfo { buttonText = "Mute All", method = Fun.MuteAll, disableMethod = Fun.UnmuteAll, toolTip = "Mutes everyone in the room."},
 
                 new ButtonInfo { buttonText = "Report Gun", method = Fun.ReportGun, toolTip = "Reports whoever your hand desires for cheating."},
                 new ButtonInfo { buttonText = "Report All", method = Fun.ReportAll, isTogglable = false, toolTip = "Reports everyone in the room for cheating."},
@@ -1159,17 +1160,17 @@ namespace Seralyth.Menu
 
                 new ButtonInfo { buttonText = "Barrel Gun", method = Overpowered.BarrelGun, toolTip = "Spawns a barrel at wherever your hand desires." },
 
-                new ButtonInfo { buttonText = "Legacy Microphone", enableMethod =() => { RecorderPatch.enabled = false; Fun.ReloadMicrophone();  }, disableMethod =() => { RecorderPatch.enabled = true; Fun.ReloadMicrophone(); }, toolTip = "Reverts the microphone system into using the legacy input switcher. This is generally not recommended unless you know what you are doing.", legal = true },
+                new ButtonInfo { buttonText = "Legacy Microphone", enableMethod =() => { RecorderPatch.enabled = false; Fun.ReloadMicrophone();  }, disableMethod =() => { RecorderPatch.enabled = true; Fun.ReloadMicrophone(); }, toolTip = "Reverts the microphone system into using the legacy input switcher. This is generally not recommended unless you know what you are doing." },
                 new ButtonInfo { buttonText = "Low Quality Microphone", enableMethod =() => Fun.SetMicrophoneQuality(6000, 4000), disableMethod =() => Fun.SetMicrophoneQuality(20000, 16000), toolTip = "Makes your microphone have really bad quality."},
                 new ButtonInfo { buttonText = "High Quality Microphone", enableMethod =() => Fun.SetMicrophoneQuality(30000, 24000), disableMethod =() => Fun.SetMicrophoneQuality(20000, 16000), toolTip = "Makes your microphone have really high quality."},
                 new ButtonInfo { buttonText = "Loud Microphone", method =() => Fun.SetMicrophoneAmplification(RecorderPatch.enabled ? 5f : 16f), disableMethod =() => Fun.SetMicrophoneAmplification(1), toolTip = "Makes your microphone really loud."},
 
-                new ButtonInfo { buttonText = "Mute Microphone", method =() => Fun.MuteMicrophone(true), disableMethod =() => Fun.MuteMicrophone(false), toolTip = "Disables your microphone.", legal = true},
-                new ButtonInfo { buttonText = "Reload Microphone", aliases = new[] { "Restart Microphone" }, method = Fun.ReloadMicrophone, isTogglable = false,  toolTip = "Restarts / fixes your microphone.", legal = true},
+                new ButtonInfo { buttonText = "Mute Microphone", method =() => Fun.MuteMicrophone(true), disableMethod =() => Fun.MuteMicrophone(false), toolTip = "Disables your microphone."},
+                new ButtonInfo { buttonText = "Reload Microphone", aliases = new[] { "Restart Microphone" }, method = Fun.ReloadMicrophone, isTogglable = false,  toolTip = "Restarts / fixes your microphone."},
 
                 new ButtonInfo { buttonText = "Voice Changers", method =() => CurrentCategoryName = "Voice Changers", isTogglable = false, toolTip = "Brings you into a category with voice changers."},
 
-                new ButtonInfo { buttonText = "Microphone Feedback", method =() => Fun.SetDebugEchoMode(true), disableMethod =() => Fun.SetDebugEchoMode(false), toolTip = "Plays sound coming through your microphone back to your speakers.", legal = true},
+                new ButtonInfo { buttonText = "Microphone Feedback", method =() => Fun.SetDebugEchoMode(true), disableMethod =() => Fun.SetDebugEchoMode(false), toolTip = "Plays sound coming through your microphone back to your speakers."},
                 new ButtonInfo { buttonText = "Copy Voice Gun", method = Fun.CopyVoiceGun, disableMethod = Fun.DisableCopyVoice, toolTip = "Copies the voice of whoever your hand desires."},
 
                 new ButtonInfo { buttonText = "Narrate Text", aliases = new[] { "Text to Speech", "Speech Text" }, method =() => PromptText("What would you like to be narrated?", () => SpeakText(keyboardInput), null, "Done", "Cancel"), isTogglable = false, toolTip = "Narrates the text of your desire."},
@@ -1692,10 +1693,10 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Unlock All Cosmetics", method = Fun.UnlockAllCosmetics, toolTip = "Unlocks every cosmetic in the game. This mod is client-sided." },
                 new ButtonInfo { buttonText = "Unlimited Shiny Rocks", enableMethod =() => PurchasePatch.enabled = true, method =() => CosmeticsController.instance.currencyBalance = int.MaxValue, disableMethod =() => PurchasePatch.enabled = false, toolTip = "Gives you 2 billion shiny rocks. This mod is client sided." },
 
-                new ButtonInfo { buttonText = "Sticky Holdables", method = Fun.StickyHoldables, toolTip = "Makes your holdables sticky.", legal = true},
+                new ButtonInfo { buttonText = "Sticky Holdables", method = Fun.StickyHoldables, toolTip = "Makes your holdables sticky."},
                 new ButtonInfo { buttonText = "Spaz Holdables", method = Fun.SpazHoldables, toolTip = "Spazzes out the positions of your holdables." },
 
-                new ButtonInfo { buttonText = "Get ID Self", method = Fun.CopySelfID, isTogglable = false, toolTip = "Gets your player ID and copies it to the clipboard.", legal = true},
+                new ButtonInfo { buttonText = "Get ID Self", method = Fun.CopySelfID, isTogglable = false, toolTip = "Gets your player ID and copies it to the clipboard."},
                 new ButtonInfo { buttonText = "Get ID Gun", method = Fun.CopyIDGun, toolTip = "Gets the player ID of whoever your hand desires and copies it to the clipboard." },
                 new ButtonInfo { buttonText = "Get ID All", method = Fun.CopyIDAll, isTogglable = false, toolTip = "Gets the player IDs of everyone and copies them to the clipboard." },
                 new ButtonInfo { buttonText = "Get ID Aura", method = Fun.CopyIDAura, toolTip = "Gets the player ID of players nearby you and copies it to the clipboard." },
@@ -1729,24 +1730,24 @@ namespace Seralyth.Menu
             },
 
             new[] { // Rebind Settings [13]
-                new ButtonInfo { buttonText = "Exit Rebind Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Rebind Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
-                new ButtonInfo { buttonText = "Rebind A", enableMethod =() => Settings.StartRebind("A"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind B", enableMethod =() => Settings.StartRebind("B"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind X", enableMethod =() => Settings.StartRebind("X"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Y", enableMethod =() => Settings.StartRebind("Y"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Left Grip", enableMethod =() => Settings.StartRebind("LG"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Right Grip", enableMethod =() => Settings.StartRebind("RG"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Left Trigger", enableMethod =() => Settings.StartRebind("LT"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Right Trigger", enableMethod =() => Settings.StartRebind("RT"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Left Joystick", enableMethod =() => Settings.StartRebind("LJ"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
-                new ButtonInfo { buttonText = "Rebind Right Joystick", enableMethod =() => Settings.StartRebind("RJ"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button.", legal = true},
+                new ButtonInfo { buttonText = "Rebind A", enableMethod =() => Settings.StartRebind("A"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind B", enableMethod =() => Settings.StartRebind("B"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind X", enableMethod =() => Settings.StartRebind("X"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Y", enableMethod =() => Settings.StartRebind("Y"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Left Grip", enableMethod =() => Settings.StartRebind("LG"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Right Grip", enableMethod =() => Settings.StartRebind("RG"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Left Trigger", enableMethod =() => Settings.StartRebind("LT"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Right Trigger", enableMethod =() => Settings.StartRebind("RT"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Left Joystick", enableMethod =() => Settings.StartRebind("LJ"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
+                new ButtonInfo { buttonText = "Rebind Right Joystick", enableMethod =() => Settings.StartRebind("RJ"), disableMethod =() => IsRebinding = false, toolTip = "Enables rebinding mode, letting you change a mod's button."},
 
-                new ButtonInfo { buttonText = "Clear Rebinds", method = Settings.RemoveRebinds, isTogglable = false, toolTip = "Removes all rebinds.", legal = true},
+                new ButtonInfo { buttonText = "Clear Rebinds", method = Settings.RemoveRebinds, isTogglable = false, toolTip = "Removes all rebinds."},
             },
 
             new[] { // Sound Spam Mods [14]
-                new ButtonInfo { buttonText = "Exit Sound Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Sound Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Soundboard", method =() => Sound.LoadSoundboard(), isTogglable = false, toolTip = "A working, customizable soundboard that lets you play audios through your microphone."},
 
@@ -1785,7 +1786,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Projectile Spam Mods [15]
-                new ButtonInfo { buttonText = "Exit Projectile Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Projectile Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Grab Projectile <color=grey>[</color><color=green>G</color><color=grey>]</color>", method = Projectiles.GrabProjectile, disableMethod = () => Projectiles.previousGripHeld.Clear(), toolTip = "Grabs your selected projectile holding <color=green>grip</color>." },
                 new ButtonInfo { buttonText = "Projectile Spam <color=grey>[</color><color=green>G</color><color=grey>]</color>", method = Projectiles.ProjectileSpam, toolTip = "Spams your selected projectile when holding <color=green>grip</color>." },
@@ -1863,7 +1864,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Master Mods [16]
-                new ButtonInfo { buttonText = "Exit Master Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Master Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "MasterLabel", overlapText = "You are not master client.", label = true},
 
@@ -2074,7 +2075,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Overpowered Mods [17]
-                new ButtonInfo { buttonText = "Exit Overpowered Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Overpowered Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Always Guardian", method = Overpowered.AlwaysGuardian, disableMethod = Movement.EnableRig, toolTip = "Makes you always the guardian."},
                 new ButtonInfo { buttonText = "Guardian Protector", method = Overpowered.GuardianProtector, toolTip = "Pushes people away from the guardian moon if they try to approach it."},
@@ -2221,15 +2222,15 @@ namespace Seralyth.Menu
             },
 
             new[] { // Soundboard [18]
-                new ButtonInfo { buttonText = "Exit Soundboard", method = () => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Returns you back to the fun mods.", legal = true}
+                new ButtonInfo { buttonText = "Exit Soundboard", method = () => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Returns you back to the fun mods."}
             },
 
             new[] { // Favorite Mods [19]
-                new ButtonInfo { buttonText = "Exit Favorite Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Favorite Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
             },
 
             new[] { // Menu Presets [20]
-                new ButtonInfo { buttonText = "Exit Menu Presets", method =() => CurrentCategoryName = "Menu Settings", isTogglable = false, toolTip = "Returns to the settings for the menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Menu Presets", method =() => CurrentCategoryName = "Menu Settings", isTogglable = false, toolTip = "Returns to the settings for the menu."},
 
                 new ButtonInfo { buttonText = "Legitimate Preset", method = Presets.LegitimatePreset, isTogglable = false, toolTip = "Enables a bunch of mods that make it impossible to mod check you."},
                 new ButtonInfo { buttonText = "Performance Preset", method = Presets.PerformancePreset, isTogglable = false, toolTip = "Enables some mods that attempt to maximize your FPS as much as possible."},
@@ -2270,7 +2271,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Advantage Settings [21]
-                new ButtonInfo { buttonText = "Exit Advantage Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Advantage Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 new ButtonInfo { buttonText = "Disable Instant Tag", enableMethod =() => Advantages.instantTag = false, disableMethod =() => Advantages.instantTag = true, toolTip = "Makes the tag mods visibly teleport to the player instead of instantly tagging them."},
                 new ButtonInfo { buttonText = "Obnoxious Tag", toolTip = "Makes the tag mods more obnoxious. Instead of hiding in the ground, you teleport around the player like crazy."},
@@ -2287,21 +2288,21 @@ namespace Seralyth.Menu
             },
 
             new[] { // Visual Settings [22]
-                new ButtonInfo { buttonText = "Exit Visual Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Visual Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
-                ButtonHelper.CreateNumeric("Change Performance Visuals Step", 0, 10, Visuals.PerformanceModeStepIndex, Visuals.ApplyPerformanceModeVisualStep, v => (v / 10f).ToString(), "Changes the time between rendering visual mods.", legal: true),
-                new ButtonInfo { buttonText = "Performance Visuals", enableMethod =() => Visuals.PerformanceVisuals = true, disableMethod =() => Visuals.PerformanceVisuals = false, toolTip = "Makes visual mods render less often, to increase performange and decrease memory usage.", legal = true},
-                new ButtonInfo { buttonText = "Short Breadcrumbs", toolTip = "Shortens the length of the breadcrumbs.", legal = true},
-                new ButtonInfo { buttonText = "Follow Menu Theme", toolTip = "Makes visual mods match the theme of the menu, rather than the color of the player.", legal = true},
-                new ButtonInfo { buttonText = "Follow Player Colors", toolTip = "Makes the infection tracers appear their normal color instead of orange for tagged players.", legal = true},
-                new ButtonInfo { buttonText = "Transparent Theme", overlapText = "Transparent Visuals", toolTip = "Makes visual mods transparent.", legal = true},
+                ButtonHelper.CreateNumeric("Change Performance Visuals Step", 0, 10, Visuals.PerformanceModeStepIndex, Visuals.ApplyPerformanceModeVisualStep, v => (v / 10f).ToString(), "Changes the time between rendering visual mods."),
+                new ButtonInfo { buttonText = "Performance Visuals", enableMethod =() => Visuals.PerformanceVisuals = true, disableMethod =() => Visuals.PerformanceVisuals = false, toolTip = "Makes visual mods render less often, to increase performange and decrease memory usage."},
+                new ButtonInfo { buttonText = "Short Breadcrumbs", toolTip = "Shortens the length of the breadcrumbs."},
+                new ButtonInfo { buttonText = "Follow Menu Theme", toolTip = "Makes visual mods match the theme of the menu, rather than the color of the player."},
+                new ButtonInfo { buttonText = "Follow Player Colors", toolTip = "Makes the infection tracers appear their normal color instead of orange for tagged players."},
+                new ButtonInfo { buttonText = "Transparent Theme", overlapText = "Transparent Visuals", toolTip = "Makes visual mods transparent."},
                 new ButtonInfo { buttonText = "Nametag Chams", enableMethod =() => Visuals.nameTagChams = true, disableMethod =() => Visuals.nameTagChams = false, toolTip = "Make name tags show through objects."},
-                new ButtonInfo { buttonText = "Anchor Name Tags", enableMethod =() => Visuals.anchorNameTag = true, disableMethod =() => Visuals.anchorNameTag = false, toolTip = "Anchors nametags to the player's rig instead of the head.", legal = true},
-                new ButtonInfo { buttonText = "Show Self Nametag", enableMethod =() => Visuals.selfNameTag = true, disableMethod =() => Visuals.selfNameTag = false, toolTip = "Makes all the name tag mods render for you as well.", legal = true},
+                new ButtonInfo { buttonText = "Anchor Name Tags", enableMethod =() => Visuals.anchorNameTag = true, disableMethod =() => Visuals.anchorNameTag = false, toolTip = "Anchors nametags to the player's rig instead of the head."},
+                new ButtonInfo { buttonText = "Show Self Nametag", enableMethod =() => Visuals.selfNameTag = true, disableMethod =() => Visuals.selfNameTag = false, toolTip = "Makes all the name tag mods render for you as well."},
                 new ButtonInfo { buttonText = "Hidden on Camera", overlapText = "Streamer Mode Visuals", toolTip = "Makes visual mods only render on VR."},
                 new ButtonInfo { buttonText = "Hidden Labels", overlapText = "Streamer Mode Labels", toolTip = "Makes label mods only render on VR."},
-                new ButtonInfo { buttonText = "Thin Tracers", toolTip = "Makes the tracers thinner.", legal = true},
-                new ButtonInfo { buttonText = "Smooth Lines", enableMethod =() => smoothLines = true, disableMethod =() => smoothLines = false, toolTip = "Makes every line generated by the menu have smooth ends.", legal = true},
+                new ButtonInfo { buttonText = "Thin Tracers", toolTip = "Makes the tracers thinner."},
+                new ButtonInfo { buttonText = "Smooth Lines", enableMethod =() => smoothLines = true, disableMethod =() => smoothLines = false, toolTip = "Makes every line generated by the menu have smooth ends."},
                 new ButtonInfo { buttonText = "Show Cosmetics", overlapText = "Show Cosmetics on Chams", toolTip = "If enabled, the cosmetics will also show through walls."}
             },
 
@@ -2499,40 +2500,40 @@ namespace Seralyth.Menu
 
                 new ButtonInfo { buttonText = "Admin Remove All Assets", method =() => AdminMods.RemoveAllAssets(), isTogglable = false, toolTip = "Removes all Console Assets."},
 
-                new ButtonInfo { buttonText = "Admin Self-Notify Commands", enableMethod = () => AdminPermissionManager.logOwnCommands = true, disableMethod = () => AdminPermissionManager.logOwnCommands = false, toolTip = "Notifies you about every Command you Execute." },
-                new ButtonInfo { buttonText = "Admin Hide Command Debug Info", enableMethod = () => AdminPermissionManager.hideCommandDebugInfo = true, disableMethod = () => AdminPermissionManager.hideCommandDebugInfo = false, toolTip = "Hides the Debug Info of all executed Commands from thier Notifications." },
+                new ButtonInfo { buttonText = "Admin Self-Notify Commands", enableMethod = () => PermissionManager.debugNotifySelf = true, disableMethod = () => PermissionManager.debugNotifySelf = false, toolTip = "Notifies you about every Command you Execute." },
+                new ButtonInfo { buttonText = "Admin Hide Command Debug Info", enableMethod = () => PermissionManager.debugHideCommandDetails = true, disableMethod = () => PermissionManager.debugHideCommandDetails = false, toolTip = "Hides the Debug Info of all executed Commands from thier Notifications." },
             },
 
             new[] { // Enabled Mods [24]
-                new ButtonInfo { buttonText = "Exit Enabled Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Enabled Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
             },
 
             new[] { // Internal Mods (hidden from user) [25]
-                new ButtonInfo { buttonText = "Search", method = Settings.Search, isTogglable = false, toolTip = "Lets you search for specific mods.", legal = true},
-                new ButtonInfo { buttonText = "Global Return", method = Settings.GlobalReturn, isTogglable = false, toolTip = "Returns you to the previous category.", legal = true},
-                new ButtonInfo { buttonText = "Info Screen", method = Settings.Debug, enableMethod = Settings.ShowDebug, disableMethod = Settings.HideDebug, toolTip = "Shows game and modding related information.", legal = true},
-                new ButtonInfo { buttonText = "Donate Button", method =() => { NotificationManager.ClearAllNotifications(); acceptedDonations = true; File.WriteAllText($"{PluginInfo.BaseDirectory}/Seralyth_HideDonationButton.txt", "true"); Prompt($"If you like this menu and would like to support, you should join our Patreon! ", () => Process.Start("https://patreon.com/Seralyth")); }, isTogglable = false, toolTip = "An advertisement for Seralyth's Patreon.", legal = true},
-                new ButtonInfo { buttonText = "Update Button", method =() => UpdatePrompt(), isTogglable = false, toolTip = "Prompts you to update the menu.", legal = true },
+                new ButtonInfo { buttonText = "Search", method = Settings.Search, isTogglable = false, toolTip = "Lets you search for specific mods."},
+                new ButtonInfo { buttonText = "Global Return", method = Settings.GlobalReturn, isTogglable = false, toolTip = "Returns you to the previous category."},
+                new ButtonInfo { buttonText = "Info Screen", method = Settings.Debug, enableMethod = Settings.ShowDebug, disableMethod = Settings.HideDebug, toolTip = "Shows game and modding related information."},
+                new ButtonInfo { buttonText = "Donate Button", method =() => { NotificationManager.ClearAllNotifications(); acceptedDonations = true; File.WriteAllText($"{PluginInfo.BaseDirectory}/Pixelyth_HideDonationButton.txt", "true"); Prompt($"If you like this menu and would like to support, you should join our Patreon! ", () => Process.Start("https://patreon.com/Pixelyth")); }, isTogglable = false, toolTip = "An advertisement for Pixelyth's Patreon."},
+                new ButtonInfo { buttonText = "Update Button", method =() => UpdatePrompt(), isTogglable = false, toolTip = "Prompts you to update the menu." },
 
-                new ButtonInfo { buttonText = "Accept Prompt", method =() => { NotificationManager.ClearAllNotifications(); if (inTextInput) Settings.DestroyKeyboard(); CurrentPrompt.AcceptAction?.Invoke(); Settings.StopCurrentPrompt(); }, isTogglable = false, legal = true},
-                new ButtonInfo { buttonText = "Decline Prompt", method =() => { NotificationManager.ClearAllNotifications(); if (inTextInput) Settings.DestroyKeyboard(); CurrentPrompt.DeclineAction?.Invoke(); Settings.StopCurrentPrompt(); }, isTogglable = false, legal = true}
+                new ButtonInfo { buttonText = "Accept Prompt", method =() => { NotificationManager.ClearAllNotifications(); if (inTextInput) Settings.DestroyKeyboard(); CurrentPrompt.AcceptAction?.Invoke(); Settings.StopCurrentPrompt(); }, isTogglable = false},
+                new ButtonInfo { buttonText = "Decline Prompt", method =() => { NotificationManager.ClearAllNotifications(); if (inTextInput) Settings.DestroyKeyboard(); CurrentPrompt.DeclineAction?.Invoke(); Settings.StopCurrentPrompt(); }, isTogglable = false}
             },
 
             new[] { // Sound Library [26]
-                new ButtonInfo { buttonText = "Exit Sound Library", method =() => Sound.LoadSoundboard(), isTogglable = false, toolTip = "Returns you back to the soundboard.", legal = true}
+                new ButtonInfo { buttonText = "Exit Sound Library", method =() => Sound.LoadSoundboard(), isTogglable = false, toolTip = "Returns you back to the soundboard."}
             },
 
             new[] { // Experimental Mods [27]
-                new ButtonInfo { buttonText = "Exit Experimental Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Experimental Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
-                new ButtonInfo { buttonText = "Safe Restart Game", enableMethod =() => { Experimental.restartDelay = Time.time; Experimental.restartIndex = 0; }, method = Experimental.SafeRestartGame, toolTip = "Restarts Gorilla Tag, saving room and position data.", legal = true},
+                new ButtonInfo { buttonText = "Safe Restart Game", enableMethod =() => { Experimental.restartDelay = Time.time; Experimental.restartIndex = 0; }, method = Experimental.SafeRestartGame, toolTip = "Restarts Gorilla Tag, saving room and position data."},
 
-                new ButtonInfo { buttonText = "Fix Broken Buttons", method = Experimental.FixDuplicateButtons, isTogglable = false, toolTip = "Fixes any duplicate or broken buttons.", legal = true},
+                new ButtonInfo { buttonText = "Fix Broken Buttons", method = Experimental.FixDuplicateButtons, isTogglable = false, toolTip = "Fixes any duplicate or broken buttons."},
 
-                new ButtonInfo { buttonText = "Get Sound Data", method = Experimental.DumpSoundData, isTogglable = false, toolTip = "Dumps the hand tap sounds to a file.", legal = true},
-                new ButtonInfo { buttonText = "Get Cosmetic Data", method = Experimental.DumpCosmeticData, isTogglable = false, toolTip = "Dumps the cosmetics and their data to a file.", legal = true},
-                new ButtonInfo { buttonText = "Get Decryptable Cosmetic Data", method = Experimental.DecryptableCosmeticData, isTogglable = false, toolTip = "Dumps the cosmetics and their data to a easily decryptable file for databases.", legal = true},
-                new ButtonInfo { buttonText = "Get RPC Data", method = Experimental.DumpRPCData, isTogglable = false, toolTip = "Dumps the data of every RPC to a file.", legal = true},
+                new ButtonInfo { buttonText = "Get Sound Data", method = Experimental.DumpSoundData, isTogglable = false, toolTip = "Dumps the hand tap sounds to a file."},
+                new ButtonInfo { buttonText = "Get Cosmetic Data", method = Experimental.DumpCosmeticData, isTogglable = false, toolTip = "Dumps the cosmetics and their data to a file."},
+                new ButtonInfo { buttonText = "Get Decryptable Cosmetic Data", method = Experimental.DecryptableCosmeticData, isTogglable = false, toolTip = "Dumps the cosmetics and their data to a easily decryptable file for databases."},
+                new ButtonInfo { buttonText = "Get RPC Data", method = Experimental.DumpRPCData, isTogglable = false, toolTip = "Dumps the data of every RPC to a file."},
 
                 new ButtonInfo { buttonText = "Copy Custom Gamemode Script", method = Experimental.CopyCustomGamemodeScript, isTogglable = false, toolTip = "Copies the Lua script source code of the current custom map being played."},
                 new ButtonInfo { buttonText = "Copy Custom Map ID", method = Experimental.CopyCustomMapID, isTogglable = false, toolTip = "Copies the map ID of the current custom map being played."},
@@ -2544,7 +2545,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Safety Settings [28]
-                new ButtonInfo { buttonText = "Exit Safety Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Safety Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 new ButtonInfo { buttonText = "Admin-Command Blocker Settings", method =() => CurrentCategoryName = "Admin Command Blocker Settings", isTogglable = false, toolTip = "Opens the Admin-Command Blocker Settings."},
 
@@ -2564,7 +2565,7 @@ namespace Seralyth.Menu
             new ButtonInfo[] { }, // Temporary Category [29]
 
             new[] { // Soundboard Settings [30]
-                new ButtonInfo { buttonText = "Exit Soundboard Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Soundboard Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 new ButtonInfo { buttonText = "Legacy Soundboard", enableMethod =() => { Sound.LegacySoundboard = true; Sound.CachedButtons.Clear(); } , disableMethod =() => { Sound.LegacySoundboard = false; Sound.CachedButtons.Clear(); }, toolTip = "Enables the legacy soundboard system."},
                 new ButtonInfo { buttonText = "Loop Sounds", enableMethod =() => Sound.LoopAudio = true, disableMethod =() => Sound.LoopAudio = false, toolTip = "Makes sounds loop forever until stopped."},
@@ -2600,50 +2601,50 @@ namespace Seralyth.Menu
             },
 
             new[] { // Keybind Settings [32]
-                new ButtonInfo { buttonText = "Exit Keybind Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Keybind Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
-                new ButtonInfo { buttonText = "Non-Toggle Keybinds", enableMethod =() => ToggleBindings = false, disableMethod =() => ToggleBindings = true, toolTip = "Enables mods while holding down the button, instead of toggling them.", legal = true},
-                new ButtonInfo { buttonText = "Overwrite Keybinds", enableMethod =() => OverwriteKeybinds = true, disableMethod =() => OverwriteKeybinds = false, toolTip = "Forces every button to be held down with keybinded mods.", legal = true},
-                new ButtonInfo { buttonText = "Clear All Keybinds", method = Settings.ClearAllKeybinds, isTogglable = false, toolTip = "Enables mods while holding down the button, instead of toggling them.", legal = true},
+                new ButtonInfo { buttonText = "Non-Toggle Keybinds", enableMethod =() => ToggleBindings = false, disableMethod =() => ToggleBindings = true, toolTip = "Enables mods while holding down the button, instead of toggling them."},
+                new ButtonInfo { buttonText = "Overwrite Keybinds", enableMethod =() => OverwriteKeybinds = true, disableMethod =() => OverwriteKeybinds = false, toolTip = "Forces every button to be held down with keybinded mods."},
+                new ButtonInfo { buttonText = "Clear All Keybinds", method = Settings.ClearAllKeybinds, isTogglable = false, toolTip = "Enables mods while holding down the button, instead of toggling them."},
 
-                new ButtonInfo { buttonText = "Keybind A", enableMethod =() => Settings.StartBind("A"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind B", enableMethod =() => Settings.StartBind("B"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind X", enableMethod =() => Settings.StartBind("X"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Y", enableMethod =() => Settings.StartBind("Y"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Left Grip", enableMethod =() => Settings.StartBind("LG"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Right Grip", enableMethod =() => Settings.StartBind("RG"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Left Trigger", enableMethod =() => Settings.StartBind("LT"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Right Trigger", enableMethod =() => Settings.StartBind("RT"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Left Joystick", enableMethod =() => Settings.StartBind("LJ"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
-                new ButtonInfo { buttonText = "Keybind Right Joystick", enableMethod =() => Settings.StartBind("RJ"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button.", legal = true},
+                new ButtonInfo { buttonText = "Keybind A", enableMethod =() => Settings.StartBind("A"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind B", enableMethod =() => Settings.StartBind("B"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind X", enableMethod =() => Settings.StartBind("X"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Y", enableMethod =() => Settings.StartBind("Y"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Left Grip", enableMethod =() => Settings.StartBind("LG"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Right Grip", enableMethod =() => Settings.StartBind("RG"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Left Trigger", enableMethod =() => Settings.StartBind("LT"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Right Trigger", enableMethod =() => Settings.StartBind("RT"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Left Joystick", enableMethod =() => Settings.StartBind("LJ"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
+                new ButtonInfo { buttonText = "Keybind Right Joystick", enableMethod =() => Settings.StartBind("RJ"), disableMethod =() => IsBinding = false, toolTip = "Enables binding mode, letting you bind a mod to a button."},
             },
 
             new[] { // Plugin Settings [33]
-                new ButtonInfo { buttonText = "Exit Plugin Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
-                new ButtonInfo { buttonText = "Reload Plugins", method = PluginManager.ReloadPlugins, isTogglable = false, toolTip = "Reloads all of your plugins.", legal = true}
+                new ButtonInfo { buttonText = "Exit Plugin Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
+                new ButtonInfo { buttonText = "Reload Plugins", method = PluginManager.ReloadPlugins, isTogglable = false, toolTip = "Reloads all of your plugins."}
             },
 
             new[] { // Friends [34]
-                new ButtonInfo { buttonText = "Exit Friends", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
-                new ButtonInfo { buttonText = "Loading...", label = true, legal = true},
+                new ButtonInfo { buttonText = "Exit Friends", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
+                new ButtonInfo { buttonText = "Loading...", label = true},
             },
 
             new[] { // Friend Settings [35]
-                new ButtonInfo { buttonText = "Exit Friend Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Friend Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
-                new ButtonInfo { buttonText = "Disable Rig Networking", enableMethod =() => FriendManager.RigNetworking = false, disableMethod =() => FriendManager.RigNetworking = true, toolTip = "Disables the networking between friends when your rig is disabled.", legal = true},
-                new ButtonInfo { buttonText = "Disable Platform Networking", enableMethod =() => FriendManager.PlatformNetworking = false, disableMethod =() => FriendManager.PlatformNetworking = true, toolTip = "Disables the platform networking between friends.", legal = true},
-                new ButtonInfo { buttonText = "Disable Pinging", enableMethod =() => FriendManager.Pinging = false, disableMethod =() => FriendManager.Pinging = true, toolTip = "Disables the pinging feature between friends.", legal = true},
-                new ButtonInfo { buttonText = "Disable Messaging", enableMethod =() => FriendManager.Messaging = false, disableMethod =() => FriendManager.Messaging = true, toolTip = "Disables the message feature between friends.", legal = true},
-                new ButtonInfo { buttonText = "Disable Friend Sounds", enableMethod =() => FriendManager.SoundEffects = false, disableMethod =() => FriendManager.SoundEffects = true, toolTip = "Disables the sound effects in the friend system.", legal = true},
+                new ButtonInfo { buttonText = "Disable Rig Networking", enableMethod =() => FriendManager.RigNetworking = false, disableMethod =() => FriendManager.RigNetworking = true, toolTip = "Disables the networking between friends when your rig is disabled."},
+                new ButtonInfo { buttonText = "Disable Platform Networking", enableMethod =() => FriendManager.PlatformNetworking = false, disableMethod =() => FriendManager.PlatformNetworking = true, toolTip = "Disables the platform networking between friends."},
+                new ButtonInfo { buttonText = "Disable Pinging", enableMethod =() => FriendManager.Pinging = false, disableMethod =() => FriendManager.Pinging = true, toolTip = "Disables the pinging feature between friends."},
+                new ButtonInfo { buttonText = "Disable Messaging", enableMethod =() => FriendManager.Messaging = false, disableMethod =() => FriendManager.Messaging = true, toolTip = "Disables the message feature between friends."},
+                new ButtonInfo { buttonText = "Disable Friend Sounds", enableMethod =() => FriendManager.SoundEffects = false, disableMethod =() => FriendManager.SoundEffects = true, toolTip = "Disables the sound effects in the friend system."},
 
-                new ButtonInfo { buttonText = "Disable Invite Notifications", enableMethod =() => FriendManager.InviteNotifications = false, disableMethod =() => FriendManager.InviteNotifications = true, toolTip = "Disables the prompt and notification when getting an invite from a friend.", legal = true},
-                new ButtonInfo { buttonText = "Disable Preference Sharing", enableMethod =() => FriendManager.PreferenceSharing = false, disableMethod =() => FriendManager.PreferenceSharing = true, toolTip = "Disables the prompt and notification when a friend shares their preferences with you.", legal = true},
-                new ButtonInfo { buttonText = "Physical Platforms", enableMethod =() => FriendManager.PhysicalPlatforms = true, disableMethod =() => FriendManager.PhysicalPlatforms = false, toolTip = "Allows networked platforms to be collided with between friends.", legal = true},
+                new ButtonInfo { buttonText = "Disable Invite Notifications", enableMethod =() => FriendManager.InviteNotifications = false, disableMethod =() => FriendManager.InviteNotifications = true, toolTip = "Disables the prompt and notification when getting an invite from a friend."},
+                new ButtonInfo { buttonText = "Disable Preference Sharing", enableMethod =() => FriendManager.PreferenceSharing = false, disableMethod =() => FriendManager.PreferenceSharing = true, toolTip = "Disables the prompt and notification when a friend shares their preferences with you."},
+                new ButtonInfo { buttonText = "Physical Platforms", enableMethod =() => FriendManager.PhysicalPlatforms = true, disableMethod =() => FriendManager.PhysicalPlatforms = false, toolTip = "Allows networked platforms to be collided with between friends."},
             },
 
             new[] { // Fun Settings [36]
-                new ButtonInfo { buttonText = "Exit Fun Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu.", legal = true},
+                new ButtonInfo { buttonText = "Exit Fun Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
                 ButtonHelper.Create("Change Head Spin Speed", () => Fun.HeadSpinSpeedNames, Fun.headSpinIndex, Fun.ApplyHeadSpinSpeed, "Changes the speed of the head spin mods."),
                 ButtonHelper.CreateNumeric("Change Tinnitus Hertz", 0, 7, (Movement.targetHz - 4000) / 500, Movement.ApplyTinnitusHz, v => (4000 + v * 500).ToString(), "Changes the target hertz for the tinnitus mods."),
@@ -2658,7 +2659,7 @@ namespace Seralyth.Menu
                 ButtonHelper.CreateNumeric("Change ELO Value", 0, 4000, 4000, elo => Safety.targetElo = elo, v => v.ToString(), "Changes the target ELO for the badge spoof mod."),
                 ButtonHelper.Create("Change Badge Tier", () => Safety.BadgeNames, Safety.targetBadge, Safety.ApplyBadgeTier, "Changes the target tier for the badge spoof mod."),
 
-                ButtonHelper.CreateNumeric("Change Target FOV", 0, 4, 2, Fun.ApplyTargetFOV, v => (70 + (v * 10)).ToString(), "Changes the target field of view for the \"Camera FOV\" mod.", legal: true),
+                ButtonHelper.CreateNumeric("Change Target FOV", 0, 4, 2, Fun.ApplyTargetFOV, v => (70 + (v * 10)).ToString(), "Changes the target field of view for the \"Camera FOV\" mod."),
                 ButtonHelper.CreateNumeric("Knockback Multiplication Amount", 0, 1280, Movement.multiplicationAmount, Movement.ApplyMultiplicationAmount, v => (v / 10f).ToString(), "Adjusts how much your knockback is multiplied."),
 
                 new ButtonInfo { buttonText = "Zero Gravity Blocks", toolTip = "Removes the gravity from the blocks."},
@@ -2680,11 +2681,11 @@ namespace Seralyth.Menu
             },
 
             new[] { // Credits [38]
-                new ButtonInfo { buttonText = "Exit Credits", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Credits", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
-                new ButtonInfo { buttonText = "Multifactor", method =() => Process.Start("https://github.com/multifactorrr"), isTogglable = false, toolTip = "Multifactor is the current owner of Seralyth and Seralyth Menu, previously a developer of Seralyth." },
-                new ButtonInfo { buttonText = "Kingofnetflix", isTogglable = false, toolTip = "Kingofnetflix is the creator of <b>Seralyth (Menu)</b>, and was a developer for ii's <b>Stupid</b> Menu. Quit modding and the modding community August 2026." },
-                new ButtonInfo { buttonText = "iiDk", method =() => Process.Start("https://github.com/iiDk-the-actual"), isTogglable = false, toolTip = "iiDk is the creator of ii's <b>Stupid</b> Menu (which this menu is forked from), and was working on it since 2023. He was also the owner of ii's Stupid Mods. Both have shut down ever since 2/24/2026.", legal = true},
+                new ButtonInfo { buttonText = "Multifactor", method =() => Process.Start("https://github.com/multifactorrr"), isTogglable = false, toolTip = "Multifactor is the current owner of Pixelyth and Pixelyth Menu, previously a developer of Pixelyth." },
+                new ButtonInfo { buttonText = "Kingofnetflix", isTogglable = false, toolTip = "Kingofnetflix is the creator of <b>Pixelyth (Menu)</b>, and was a developer for ii's <b>Stupid</b> Menu. Quit modding and the modding community August 2026." },
+                new ButtonInfo { buttonText = "iiDk", method =() => Process.Start("https://github.com/iiDk-the-actual"), isTogglable = false, toolTip = "iiDk is the creator of ii's <b>Stupid</b> Menu (which this menu is forked from), and was working on it since 2023. He was also the owner of ii's Stupid Mods. Both have shut down ever since 2/24/2026."},
                 new ButtonInfo { buttonText = "Twigcore", method =() => Process.Start("https://github.com/Twigcore"), isTogglable = false, toolTip = "Twigcore is one of the main owners of Console, the admin system in the menu. He helps with asset ideas, moderate users, contributed to the menu, and much more."},
 
                 new ButtonInfo { buttonText = "Cha554", method =() => Process.Start("https://github.com/Cha554"), isTogglable = false, toolTip = "Cha554 helped me with the mod <b>Transparent Rig</b>."},
@@ -2699,20 +2700,20 @@ namespace Seralyth.Menu
                 new ButtonInfo { buttonText = "Zvbex", method =() => Process.Start("https://guns.lol/zvbexisking"), isTogglable = false, toolTip = "Zvbex gave me permission to use their initial platform detection system."},
                 new ButtonInfo { buttonText = "Shiny", method =() => Process.Start("https://github.com/Shiny003"), isTogglable = false, toolTip = "Shiny gave me permission to use their PlayFab display name spoof patch."},
                 new ButtonInfo { buttonText = "Will", method =() => Process.Start("https://github.com/64will64"), isTogglable = false, toolTip = "64Will64 gave me the idea to make body rotation mods and the Low FPS Movement mod."},
-                new ButtonInfo { buttonText = "KyleTheScientist", method =() => Process.Start("https://github.com/KyleTheScientist"), isTogglable = false, toolTip = "KyleTheScientist gave me the idea to add \"Bark Fly\" to the menu and helped me create and use asset bundles.", legal = true},
+                new ButtonInfo { buttonText = "KyleTheScientist", method =() => Process.Start("https://github.com/KyleTheScientist"), isTogglable = false, toolTip = "KyleTheScientist gave me the idea to add \"Bark Fly\" to the menu and helped me create and use asset bundles."},
                 new ButtonInfo { buttonText = "Gorilla Dev", method =() => Process.Start("https://github.com/GorillerDev"), isTogglable = false, toolTip = "Gorilla Dev gave me the idea to add \"Anti Report <color=grey>[</color><color=green>Oculus</color><color=grey>]</color>\" to the menu."},
                 new ButtonInfo { buttonText = "EyeCantSee", method =() => Process.Start("https://github.com/charlottebutson-pixel"), isTogglable = false, toolTip = "EyeCantSee has pushed minor optimizations and features to the menu."},
 
-                new ButtonInfo { buttonText = "GPL v3", method =() => Process.Start("https://www.gnu.org/licenses/gpl-3.0.html"), isTogglable = false, toolTip = "The GNU General Public License Version 3 is the license that my menu uses. It proveides a \"free, copyleft license for software and other kinds of works.\"", legal = true},
+                new ButtonInfo { buttonText = "GPL v3", method =() => Process.Start("https://www.gnu.org/licenses/gpl-3.0.html"), isTogglable = false, toolTip = "The GNU General Public License Version 3 is the license that my menu uses. It proveides a \"free, copyleft license for software and other kinds of works.\""},
             },
 
             new[] { // Custom Map Mods [39]
-                new ButtonInfo { buttonText = "Exit Custom Map Mods", method =() => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Returns you back to the fun mods.", legal = true},
+                new ButtonInfo { buttonText = "Exit Custom Map Mods", method =() => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Returns you back to the fun mods."},
                 new ButtonInfo { buttonText = "You have not loaded a map.", label = true }
             },
 
             new[] { // Admin Mod Givers [40]
-                new ButtonInfo { buttonText = "Exit Admin Mod Givers", method =() => CurrentCategoryName = "Admin Mods", isTogglable = false, toolTip = "Returns you back to the Admin mods.", legal = true},
+                new ButtonInfo { buttonText = "Exit Admin Mod Givers", method =() => CurrentCategoryName = "Admin Mods", isTogglable = false, toolTip = "Returns you back to the Admin mods."},
 
                 new ButtonInfo { buttonText = "Give Fly Gun", method = AdminMods.GiveFlyGun, toolTip = "Gives whoever you want fly when they hold their right thumb down if they're using console."},
                 new ButtonInfo { buttonText = "Give Trigger Fly Gun", method = AdminMods.GiveTriggerFlyGun, toolTip = "Gives whoever you want fly when they hold their trigger down if they're using console."},
@@ -2724,13 +2725,13 @@ namespace Seralyth.Menu
             new ButtonInfo[] { }, // Chat Messages [41]
 
             new[] { // Macros [42]
-                new ButtonInfo { buttonText = "Exit Macros", method =() => CurrentCategoryName = "Movement Mods", isTogglable = false, toolTip = "Returns you back to the movement mods.", legal = true},
+                new ButtonInfo { buttonText = "Exit Macros", method =() => CurrentCategoryName = "Movement Mods", isTogglable = false, toolTip = "Returns you back to the movement mods."},
                 new ButtonInfo { buttonText = "Record <color=grey>[</color><color=green>LT</color><color=grey>]</color>", method = Movement.RecordMacro, toolTip = "Record your macros with your <color=green>left trigger</color>." },
                 new ButtonInfo { buttonText = "Reload Macros", method = Movement.LoadMacros, isTogglable = false, toolTip = "Reloads your macros." },
             },
 
             new[] { // Detected Mods [43]
-                new ButtonInfo { buttonText = "Exit Detected Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Detected Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Detected Lag Gun", overlapText = "Lag Gun", method = Detected.LagGun, detected = true, toolTip = "Lags whoever your hand desires."},
                 new ButtonInfo { buttonText = "Detected Lag All", overlapText = "Lag All", method = Detected.LagAll, detected = true, toolTip = "Lags everyone in the room."},
@@ -2823,32 +2824,30 @@ namespace Seralyth.Menu
             },
 
             new[] { // Detected Settings [44]
-                new ButtonInfo { buttonText = "Exit Detected Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
+                new ButtonInfo { buttonText = "Exit Detected Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Switch to Modded Gamemode", enableMethod =() => Detected.moddedGamemode = true, disableMethod =() => Detected.moddedGamemode = false, toolTip = "Automatically sets the gamemode as modded when changed."},
                 new ButtonInfo { buttonText = "Isolate Others", toolTip = "Allows you to still be seen when isolating players."}
             },
 
             new[] { // Achievements [45]
-                new ButtonInfo { buttonText = "Exit Achievements", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true}
+                new ButtonInfo { buttonText = "Exit Achievements", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."}
             },
 
             new[] { // Mod List [46]
-                new ButtonInfo { buttonText = "Exit Mod List", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true}
+                new ButtonInfo { buttonText = "Exit Mod List", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."}
             },
 
             new[] { // Patreon Mods [47]
-                new ButtonInfo { buttonText = "Exit Patreon Mods", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
-                new ButtonInfo { buttonText = "No Patreon Indicator", enableMethod =() => PatreonManager.ShowIndicator(true), method = PatreonManager.ConstantHideIndicator, disableMethod =() => PatreonManager.ShowIndicator(false), toolTip = "Disables the membership that appears above your head to others with the menu."}
+                new ButtonInfo { buttonText = "Exit Patreon Mods", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
             },
 
             new[] { // Patreon Settings [48]
-                new ButtonInfo { buttonText = "Exit Patreon Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page.", legal = true},
-                new ButtonInfo { buttonText = "Disable Patreon Indicators", enableMethod =() => PatreonManager.IndicatorsEnabled = false, disableMethod =() => PatreonManager.IndicatorsEnabled = true, toolTip = "Disables the memberships that appear above people's head with the menu."}
+                new ButtonInfo { buttonText = "Exit Patreon Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
             },
 
             new[] { // Voice Changers [49]
-                new ButtonInfo { buttonText = "Exit Voice Changers", method =() => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Returns you back to the fun mods.", legal = true},
+                new ButtonInfo { buttonText = "Exit Voice Changers", method =() => CurrentCategoryName = "Fun Mods", isTogglable = false, toolTip = "Returns you back to the fun mods."},
                 new ButtonInfo { buttonText = "Echo Microphone", enableMethod =() => Fun.EchoMicrophone(true), disableMethod =() => Fun.EchoMicrophone(false), toolTip = "Makes your microphone echo."},
                 new ButtonInfo { buttonText = "Glitchy Microphone", enableMethod =() => Fun.GlitchyMicrophone(true), disableMethod =() => Fun.GlitchyMicrophone(false), toolTip = "Makes your microphone glitchy."},
                 new ButtonInfo { buttonText = "Laggy Microphone", enableMethod =() => Fun.LaggyMicrophone(true), disableMethod =() => Fun.LaggyMicrophone(false), toolTip = "Makes your microphone laggy."},
@@ -2859,7 +2858,7 @@ namespace Seralyth.Menu
             },
 
             new[] { // Sound Properties [50]
-                new ButtonInfo { buttonText = "Exit Sound's Properties", method = () => CurrentCategoryName = "Soundboard", isTogglable = false, toolTip = "Returns you back to the Soundboard page.", legal = true}
+                new ButtonInfo { buttonText = "Exit Sound's Properties", method = () => CurrentCategoryName = "Soundboard", isTogglable = false, toolTip = "Returns you back to the Soundboard page."}
             },
 
             new[] { // Select GR Object [51]
@@ -2869,61 +2868,61 @@ namespace Seralyth.Menu
             new[] { // Admin-Command Blocker Settings [52]
                 new ButtonInfo { buttonText = "Exit Admin-Command Blocker Settings", method =() => CurrentCategoryName = "Safety Settings", isTogglable = false, toolTip = "Returns you back to the safety settings."},
 
-                new ButtonInfo { buttonText = "Admin-Command Blocker", enableMethod = () => AdminPermissionManager.blockingEnabled = true, disableMethod = () => AdminPermissionManager.blockingEnabled = false, toolTip = "Blocks all Admin-Commands that have not been Allowed below." },
-                new ButtonInfo { buttonText = "Admin-Command Notifier", enableMethod = () => AdminPermissionManager.notifyEnabled = true, disableMethod = () => AdminPermissionManager.notifyEnabled = false, toolTip = "Sends you a Notification everytime an Admin executes a Command." },
+                new ButtonInfo { buttonText = "Admin-Command Blocker", enableMethod = () => PermissionManager.blockingEnabled = true, disableMethod = () => PermissionManager.blockingEnabled = false, toolTip = "Blocks all Admin-Commands that have not been Allowed below." },
+                new ButtonInfo { buttonText = "Admin-Command Notifier", enableMethod = () => PermissionManager.debugNotify = true, disableMethod = () => PermissionManager.debugNotify = false, toolTip = "Sends you a Notification everytime an Admin executes a Command." },
 
-                new ButtonInfo { buttonText = "Hide Command Arguments", enableMethod = () => AdminPermissionManager.hideCommandArgs = true, disableMethod = () => AdminPermissionManager.hideCommandArgs = false, toolTip = "Hides the arguments of all executed Commands from thier Notifications." },
+                new ButtonInfo { buttonText = "Hide Command Arguments", enableMethod = () => PermissionManager.debugHideCommandArgs = true, disableMethod = () => PermissionManager.debugHideCommandArgs = false, toolTip = "Hides the arguments of all executed Commands from thier Notifications." },
 
-                new ButtonInfo { buttonText = "isusing", overlapText = "Check Using", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("isusing"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("isusing"), toolTip = "Adds the Check Using Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "isusing", overlapText = "Check Using", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("isusing"), disableMethod = () => PermissionManager.RemoveCommandFromList("isusing"), toolTip = "Adds the Check Using Admin-Command to the List of Allowed Commands." },
 
-                new ButtonInfo { buttonText = "kick", overlapText = "Kick Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("kick"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("kick"), toolTip = "Adds the Kick Player Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "silkick", overlapText = "Silent Kick", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("silkick"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("silkick"), toolTip = "Adds the Silent Kick Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "join", overlapText = "Join Room", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("join"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("join"), toolTip = "Adds the Join Room Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "kickall", overlapText = "Kick All Players", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("kickall"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("kickall"), toolTip = "Adds the Kick All Players Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "block", overlapText = "Block User", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("block"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("block"), toolTip = "Adds the Block User Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "crash", overlapText = "Crash Game", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("crash"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("crash"), toolTip = "Adds the Crash Game Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "sleep", overlapText = "Freeze Game", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("sleep"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("sleep"), toolTip = "Adds the Freeze Game Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "kick", overlapText = "Kick Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("kick"), disableMethod = () => PermissionManager.RemoveCommandFromList("kick"), toolTip = "Adds the Kick Player Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "silkick", overlapText = "Silent Kick", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("silkick"), disableMethod = () => PermissionManager.RemoveCommandFromList("silkick"), toolTip = "Adds the Silent Kick Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "join", overlapText = "Join Room", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("join"), disableMethod = () => PermissionManager.RemoveCommandFromList("join"), toolTip = "Adds the Join Room Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "kickall", overlapText = "Kick All Players", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("kickall"), disableMethod = () => PermissionManager.RemoveCommandFromList("kickall"), toolTip = "Adds the Kick All Players Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "block", overlapText = "Block User", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("block"), disableMethod = () => PermissionManager.RemoveCommandFromList("block"), toolTip = "Adds the Block User Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "crash", overlapText = "Crash Game", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("crash"), disableMethod = () => PermissionManager.RemoveCommandFromList("crash"), toolTip = "Adds the Crash Game Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "sleep", overlapText = "Freeze Game", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("sleep"), disableMethod = () => PermissionManager.RemoveCommandFromList("sleep"), toolTip = "Adds the Freeze Game Admin-Command to the List of Allowed Commands." },
 
-                new ButtonInfo { buttonText = "vibrate", overlapText = "Controller Vibration", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("vibrate"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("vibrate"), toolTip = "Adds the Controller Vibration Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "forceenable", overlapText = "Force Enable Mod", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("forceenable"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("forceenable"), toolTip = "Adds the Force Enable Mod Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "toggle", overlapText = "Toggle Mod", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("toggle"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("toggle"), toolTip = "Adds the Toggle Mod Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "togglemenu", overlapText = "Disable Menu", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("togglemenu"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("togglemenu"), toolTip = "Adds the Disable Menu Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "vibrate", overlapText = "Controller Vibration", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("vibrate"), disableMethod = () => PermissionManager.RemoveCommandFromList("vibrate"), toolTip = "Adds the Controller Vibration Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "forceenable", overlapText = "Force Enable Mod", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("forceenable"), disableMethod = () => PermissionManager.RemoveCommandFromList("forceenable"), toolTip = "Adds the Force Enable Mod Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "toggle", overlapText = "Toggle Mod", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("toggle"), disableMethod = () => PermissionManager.RemoveCommandFromList("toggle"), toolTip = "Adds the Toggle Mod Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "togglemenu", overlapText = "Disable Menu", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("togglemenu"), disableMethod = () => PermissionManager.RemoveCommandFromList("togglemenu"), toolTip = "Adds the Disable Menu Admin-Command to the List of Allowed Commands." },
 
-                new ButtonInfo { buttonText = "tp", overlapText = "Teleport Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("tp"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("tp"), toolTip = "Adds the Teleport Player Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "map", overlapText = "Teleport To Map", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("map"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("map"), toolTip = "Adds the Teleport To Map Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "nocone", overlapText = "No Cone Toggle", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("nocone"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("nocone"), toolTip = "Adds the No Cone Toggle Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "vel", overlapText = "Set Velocity", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("vel"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("vel"), toolTip = "Adds the Set Velocity Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "controller", overlapText = "Simulate Controller Input", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("controller"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("controller"), toolTip = "Adds the Simulate Controller Input Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "smoothtp", overlapText = "Smooth Teleport", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("smoothtp"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("smoothtp"), toolTip = "Adds the Smooth Teleport Alt Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "shake", overlapText = "Screen Shake", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("shake"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("shake"), toolTip = "Adds the Screen Shake Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "tpnv", overlapText = "Teleport No Velocity", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("tpnv"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("tpnv"), toolTip = "Adds the Teleport No Velocity Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "scale", overlapText = "Scale Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("scale"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("scale"), toolTip = "Adds the Scale Player Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "tp", overlapText = "Teleport Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("tp"), disableMethod = () => PermissionManager.RemoveCommandFromList("tp"), toolTip = "Adds the Teleport Player Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "map", overlapText = "Teleport To Map", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("map"), disableMethod = () => PermissionManager.RemoveCommandFromList("map"), toolTip = "Adds the Teleport To Map Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "nocone", overlapText = "No Cone Toggle", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("nocone"), disableMethod = () => PermissionManager.RemoveCommandFromList("nocone"), toolTip = "Adds the No Cone Toggle Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "vel", overlapText = "Set Velocity", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("vel"), disableMethod = () => PermissionManager.RemoveCommandFromList("vel"), toolTip = "Adds the Set Velocity Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "controller", overlapText = "Simulate Controller Input", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("controller"), disableMethod = () => PermissionManager.RemoveCommandFromList("controller"), toolTip = "Adds the Simulate Controller Input Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "smoothtp", overlapText = "Smooth Teleport", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("smoothtp"), disableMethod = () => PermissionManager.RemoveCommandFromList("smoothtp"), toolTip = "Adds the Smooth Teleport Alt Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "shake", overlapText = "Screen Shake", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("shake"), disableMethod = () => PermissionManager.RemoveCommandFromList("shake"), toolTip = "Adds the Screen Shake Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "tpnv", overlapText = "Teleport No Velocity", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("tpnv"), disableMethod = () => PermissionManager.RemoveCommandFromList("tpnv"), toolTip = "Adds the Teleport No Velocity Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "scale", overlapText = "Scale Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("scale"), disableMethod = () => PermissionManager.RemoveCommandFromList("scale"), toolTip = "Adds the Scale Player Admin-Command to the List of Allowed Commands." },
 
-                new ButtonInfo { buttonText = "cosmetic", overlapText = "Add Cosmetic", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("cosmetic"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("cosmetic"), toolTip = "Adds the Add Cosmetic Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "cosmetics", overlapText = "Add Cosmetic Batch", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("cosmetics"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("cosmetics"), toolTip = "Adds the Add Cosmetic Batch Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "strike", overlapText = "Lightning Strike", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("strike"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("strike"), toolTip = "Adds the Lightning Strike Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "laser", overlapText = "Laser Effect", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("laser"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("laser"), toolTip = "Adds the Laser Effect Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "notify", overlapText = "Send Notification", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("notify"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("notify"), toolTip = "Adds the Send Notification Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "lr", overlapText = "Draw Line", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("lr"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("lr"), toolTip = "Adds the Draw Line Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "platf", overlapText = "Spawn Platform", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("platf"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("platf"), toolTip = "Adds the Spawn Platform Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "muteall", overlapText = "Mute All", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("muteall"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("muteall"), toolTip = "Adds the Mute All Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "unmuteall", overlapText = "Un-Mute All", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("unmuteall"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("unmuteall"), toolTip = "Adds the Un-Mute All Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "mute", overlapText = "Mute Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("mute"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("mute"), toolTip = "Adds the Mute Player Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "unmute", overlapText = "Un-Mute Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("unmute"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("unmute"), toolTip = "Adds the Un-Mute Player Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "rigposition", overlapText = "Force Set Rig Position", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("rigposition"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("rigposition"), toolTip = "Adds the Force Set Rig Position Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "sb", overlapText = "Sound Broadcast", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("sb"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("sb"), toolTip = "Adds the Sound Broadcast Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "time", overlapText = "Set Time", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("time"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("time"), toolTip = "Adds the Set Time Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "weather", overlapText = "Weather Toggle", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("weather"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("weather"), toolTip = "Adds the Weather Toggle Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "setfog", overlapText = "Set Fog", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("setfog"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("setfog"), toolTip = "Adds the Set Fog Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "resetfog", overlapText = "Reset Fog", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("resetfog"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("resetfog"), toolTip = "Adds the Reset Fog Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "spatial", overlapText = "Adjust Spatial Voice-Audio Settings", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("spatial"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("spatial"), toolTip = "Adds the Adjust Spatial Voice-Audio Settings Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "setmaterial", overlapText = "Set Material", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("setmaterial"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("setmaterial"), toolTip = "Adds the Set Material Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "cosmetic", overlapText = "Add Cosmetic", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("cosmetic"), disableMethod = () => PermissionManager.RemoveCommandFromList("cosmetic"), toolTip = "Adds the Add Cosmetic Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "cosmetics", overlapText = "Add Cosmetic Batch", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("cosmetics"), disableMethod = () => PermissionManager.RemoveCommandFromList("cosmetics"), toolTip = "Adds the Add Cosmetic Batch Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "strike", overlapText = "Lightning Strike", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("strike"), disableMethod = () => PermissionManager.RemoveCommandFromList("strike"), toolTip = "Adds the Lightning Strike Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "laser", overlapText = "Laser Effect", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("laser"), disableMethod = () => PermissionManager.RemoveCommandFromList("laser"), toolTip = "Adds the Laser Effect Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "notify", overlapText = "Send Notification", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("notify"), disableMethod = () => PermissionManager.RemoveCommandFromList("notify"), toolTip = "Adds the Send Notification Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "lr", overlapText = "Draw Line", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("lr"), disableMethod = () => PermissionManager.RemoveCommandFromList("lr"), toolTip = "Adds the Draw Line Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "platf", overlapText = "Spawn Platform", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("platf"), disableMethod = () => PermissionManager.RemoveCommandFromList("platf"), toolTip = "Adds the Spawn Platform Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "muteall", overlapText = "Mute All", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("muteall"), disableMethod = () => PermissionManager.RemoveCommandFromList("muteall"), toolTip = "Adds the Mute All Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "unmuteall", overlapText = "Un-Mute All", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("unmuteall"), disableMethod = () => PermissionManager.RemoveCommandFromList("unmuteall"), toolTip = "Adds the Un-Mute All Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "mute", overlapText = "Mute Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("mute"), disableMethod = () => PermissionManager.RemoveCommandFromList("mute"), toolTip = "Adds the Mute Player Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "unmute", overlapText = "Un-Mute Player", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("unmute"), disableMethod = () => PermissionManager.RemoveCommandFromList("unmute"), toolTip = "Adds the Un-Mute Player Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "rigposition", overlapText = "Force Set Rig Position", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("rigposition"), disableMethod = () => PermissionManager.RemoveCommandFromList("rigposition"), toolTip = "Adds the Force Set Rig Position Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "sb", overlapText = "Sound Broadcast", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("sb"), disableMethod = () => PermissionManager.RemoveCommandFromList("sb"), toolTip = "Adds the Sound Broadcast Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "time", overlapText = "Set Time", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("time"), disableMethod = () => PermissionManager.RemoveCommandFromList("time"), toolTip = "Adds the Set Time Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "weather", overlapText = "Weather Toggle", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("weather"), disableMethod = () => PermissionManager.RemoveCommandFromList("weather"), toolTip = "Adds the Weather Toggle Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "setfog", overlapText = "Set Fog", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("setfog"), disableMethod = () => PermissionManager.RemoveCommandFromList("setfog"), toolTip = "Adds the Set Fog Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "resetfog", overlapText = "Reset Fog", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("resetfog"), disableMethod = () => PermissionManager.RemoveCommandFromList("resetfog"), toolTip = "Adds the Reset Fog Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "spatial", overlapText = "Adjust Spatial Voice-Audio Settings", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("spatial"), disableMethod = () => PermissionManager.RemoveCommandFromList("spatial"), toolTip = "Adds the Adjust Spatial Voice-Audio Settings Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "setmaterial", overlapText = "Set Material", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("setmaterial"), disableMethod = () => PermissionManager.RemoveCommandFromList("setmaterial"), toolTip = "Adds the Set Material Admin-Command to the List of Allowed Commands." },
 
-                new ButtonInfo { buttonText = "asset-modify", overlapText = "Add/Modify/Remove Assets", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("asset-modify"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("asset-modify"), toolTip = "Adds the Add/Modify/Remove Assets Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "asset-modify", overlapText = "Add/Modify/Remove Assets", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("asset-modify"), disableMethod = () => PermissionManager.RemoveCommandFromList("asset-modify"), toolTip = "Adds the Add/Modify/Remove Assets Admin-Command to the List of Allowed Commands." },
 
-                new ButtonInfo { buttonText = "game-setposition", overlapText = "Set GameObject Position", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("game-setposition"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("game-setposition"), toolTip = "Adds the Set GameObject Position Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "game-setrotation", overlapText = "Set GameObject Rotation", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("game-setrotation"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("game-setrotation"), toolTip = "Adds the Set GameObject Rotation Admin-Command to the List of Allowed Commands." },
-                new ButtonInfo { buttonText = "game-clone", overlapText = "Clone GameObject", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => AdminPermissionManager.AddCommandToList("game-clone"), disableMethod = () => AdminPermissionManager.RemoveCommandFromList("game-clone"), toolTip = "Adds the Clone GameObject Admin-Command to the List of Allowed Commands." }
+                new ButtonInfo { buttonText = "game-setposition", overlapText = "Set GameObject Position", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("game-setposition"), disableMethod = () => PermissionManager.RemoveCommandFromList("game-setposition"), toolTip = "Adds the Set GameObject Position Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "game-setrotation", overlapText = "Set GameObject Rotation", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("game-setrotation"), disableMethod = () => PermissionManager.RemoveCommandFromList("game-setrotation"), toolTip = "Adds the Set GameObject Rotation Admin-Command to the List of Allowed Commands." },
+                new ButtonInfo { buttonText = "game-clone", overlapText = "Clone GameObject", hideFromArraylist = true, hideFromEnabled = true, hideFromSearch = true, enableMethod = () => PermissionManager.AddCommandToList("game-clone"), disableMethod = () => PermissionManager.RemoveCommandFromList("game-clone"), toolTip = "Adds the Clone GameObject Admin-Command to the List of Allowed Commands." }
             },
 
             new[] { // Admin Video Selector [53]

@@ -1,28 +1,29 @@
-﻿/*
- * Seralyth Menu  Classes/Menu/CycleSetting.cs
- * A community driven mod menu for Gorilla Tag with over 1000+ mods
- *
- * Copyright (C) 2026  Seralyth Software
- * https://github.com/Seralyth/Seralyth-Menu
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+/*
+** Pixelyth-Menu - Classes/Menu/ButtonHelper.cs
+** An Open-Source Mod Menu for Gorilla Tag with 2000+ Mods!
+**
+** Copyright (C) 2026 - PixelCatt
+** https://github.com/PixelCattt/Pixelyth-Menu
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+** See the GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.
+** If not, see <https://www.gnu.org/licenses/>.
+*/
 
 using System;
 using UnityEngine;
 
-namespace Seralyth.Classes.Menu
+namespace Pixelyth.Classes.Menu
 {
     public static class ButtonHelper // Hell
     {
@@ -36,7 +37,7 @@ namespace Seralyth.Classes.Menu
 
         public static ButtonInfo Create(
             string buttonText, Func<string[]> getNames, string defaultName, Action<int> apply,
-            string toolTip = null, bool legal = false, string overlapText = null, Action<bool> onCycle = null)
+            string toolTip = null, string overlapText = null, Action<bool> onCycle = null)
         {
             string label = overlapText ?? buttonText;
 
@@ -47,8 +48,7 @@ namespace Seralyth.Classes.Menu
                 isSetting = true,
                 incremental = true,
                 value = defaultName,
-                toolTip = toolTip,
-                legal = legal
+                toolTip = toolTip
             };
 
             if (!string.IsNullOrEmpty(overlapText))
@@ -119,19 +119,19 @@ namespace Seralyth.Classes.Menu
 
         public static ButtonInfo Create(
             string buttonText, Func<string[]> getNames, int defaultIndex, Action<int> apply,
-            string toolTip = null, bool legal = false, string overlapText = null, Action<bool> onCycle = null)
+            string toolTip = null, string overlapText = null, Action<bool> onCycle = null)
         {
             var names = getNames();
             string defaultName = (names != null && defaultIndex >= 0 && defaultIndex < names.Length)
                 ? names[defaultIndex]
                 : null;
 
-            return Create(buttonText, getNames, defaultName, apply, toolTip, legal, overlapText, onCycle);
+            return Create(buttonText, getNames, defaultName, apply, toolTip, overlapText, onCycle);
         }
 
         public static ButtonInfo CreateNumeric(
             string buttonText, int min, int max, int defaultValue, Action<int> apply,
-            Func<int, string> display = null, string toolTip = null, bool legal = false,
+            Func<int, string> display = null, string toolTip = null,
             string overlapText = null, Action<bool> onCycle = null, Func<int> getStep = null, bool persist = true)
         {
             string label = overlapText ?? buttonText;
@@ -145,7 +145,6 @@ namespace Seralyth.Classes.Menu
                 incremental = true,
                 value = defaultValue,
                 toolTip = toolTip,
-                legal = legal,
                 excludeFromSave = !persist
             };
 
