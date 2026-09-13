@@ -3,7 +3,7 @@
 
   An Open-Source Mod Menu for Gorilla Tag with 2000+ Mods!
 
-  <a href="https://github.com/PixelCattt/Pixelyth-Menu/compare/91e9318...master">
+  <a href="https://github.com/PixelCattt/Pixelyth-Menu/compare/91e9318...9.0.0">
     <img src="https://img.shields.io/badge/view-changes-lime?style=for-the-badge"</img>
   </a>
 
