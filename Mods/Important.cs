@@ -190,6 +190,11 @@ namespace Pixelyth.Mods
         public static Coroutine queueCoroutine;
         public static int reconnectDelay = 1;
 
+        public static bool twentyPlayerRooms;
+
+        public static int roomLogAmount = 25;
+        private static string RoomLogFilePath => $"{PluginInfo.BaseDirectory}/Pixelyth_RoomLog.txt";
+
         public static IEnumerator QueueRoomCoroutine(string roomName)
         {
             NetworkSystemPUN instance = (NetworkSystemPUN)NetworkSystem.Instance;
@@ -232,6 +237,86 @@ namespace Pixelyth.Mods
 
             partyLastCode = null;
             partyKickReconnecting = false;
+        }
+
+        public static void OpenRoomLog()
+        {
+            List<ButtonInfo> roomButtons = new List<ButtonInfo>
+            {
+                new ButtonInfo { buttonText = "Exit Room Log", method = () => Buttons.CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the Main Page." }
+            };
+
+            try
+            {
+                if (File.Exists(RoomLogFilePath))
+                {
+                    foreach (string roomCode in File.ReadAllLines(RoomLogFilePath).Where(code => !string.IsNullOrWhiteSpace(code)).Take(roomLogAmount))
+                    {
+                        string code = roomCode.Trim();
+                        roomButtons.Add(new ButtonInfo
+                        {
+                            buttonText = code,
+                            method = () => Prompt(code,
+                                () => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom(code, JoinType.Solo),
+                                () => GUIUtility.systemCopyBuffer = code,
+                                "JOIN",
+                                "COPY"),
+                            isTogglable = false,
+                            toolTip = $"Join room {code} or copy its code to the clipboard."
+                        });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogManager.LogError($"Failed to load room log: {e.Message}");
+            }
+
+            if (roomButtons.Count == 1)
+                roomButtons.Add(new ButtonInfo { buttonText = "No Rooms Logged", label = true });
+
+            Buttons.buttons[Buttons.GetCategory("Room Log")] = roomButtons.ToArray();
+            Buttons.CurrentCategoryName = "Room Log";
+            Main.ReloadMenu();
+        }
+
+        public static void RecordRoomLog(string roomCode)
+        {
+            if (string.IsNullOrWhiteSpace(roomCode))
+                return;
+
+            try
+            {
+                Directory.CreateDirectory(PluginInfo.BaseDirectory);
+                List<string> roomCodes = File.Exists(RoomLogFilePath)
+                    ? File.ReadAllLines(RoomLogFilePath).Where(code => !string.IsNullOrWhiteSpace(code)).ToList()
+                    : new List<string>();
+
+                roomCodes.Insert(0, roomCode.Trim());
+                File.WriteAllLines(RoomLogFilePath, roomCodes.Take(Mathf.Clamp(roomLogAmount, 0, 50)));
+            }
+            catch (Exception e)
+            {
+                LogManager.LogError($"Failed to save room log: {e.Message}");
+            }
+        }
+
+        public static void ApplyRoomLogAmount(int amount)
+        {
+            roomLogAmount = Mathf.Clamp(amount, 0, 50);
+
+            try
+            {
+                Directory.CreateDirectory(PluginInfo.BaseDirectory);
+                List<string> roomCodes = File.Exists(RoomLogFilePath)
+                    ? File.ReadAllLines(RoomLogFilePath).Where(code => !string.IsNullOrWhiteSpace(code)).ToList()
+                    : new List<string>();
+                File.WriteAllLines(RoomLogFilePath, roomCodes.Take(roomLogAmount));
+            }
+            catch (Exception e)
+            {
+                LogManager.LogError($"Failed to trim room log: {e.Message}");
+            }
         }
 
         public static void JoinRandom()

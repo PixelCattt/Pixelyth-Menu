@@ -1604,6 +1604,7 @@ namespace Pixelyth.Mods
                 }
             }
         }
+
         public static void LowGravity() =>
             GorillaTagger.Instance.rigidbody.AddForce(Vector3.up * 6.66f, ForceMode.Acceleration);
 
@@ -1623,7 +1624,6 @@ namespace Pixelyth.Mods
         {
             GTPlayer.Instance.UnsetGravityOverride(GTPlayer.Instance);
             GTPlayerTransform.ApplyRotationOverride(Quaternion.identity, Time.frameCount);
-
         }
 
         private static readonly List<object[]> playerPositions = new List<object[]>();

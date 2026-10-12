@@ -490,7 +490,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                             3 => GorillaPlayerLineButton.ButtonType.HateSpeech,
                             _ => GorillaPlayerLineButton.ButtonType.Cancel
                         },
-                        Reason = report["reason"]?.ToString() ?? "No reason found",
+                        Reason = report["reason"]?.ToString() ?? "NONE",
                     };
 
                     if (reportData.TryGetValue(userId, out var existing))

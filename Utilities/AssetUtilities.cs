@@ -38,7 +38,7 @@ namespace Pixelyth.Utilities
         private static AssetBundle assetBundle;
         private static void LoadAssetBundle()
         {
-            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{PluginInfo.ClientResourcePath}.seralythmenu");
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{PluginInfo.ClientResourcePath}.menuassets");
             if (stream != null)
                 assetBundle = AssetBundle.LoadFromStream(stream);
             else

@@ -85,27 +85,9 @@ namespace Pixelyth.Managers
                         catch { }
                     }
 
-                    var stumpChildren = GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom").transform.Children()
-                                   .Where(x => x.name.Contains("UnityTempFile"))
-                                   .ToList();
-
-                    if (StumpLeaderboardIndex >= 0 && StumpLeaderboardIndex < stumpChildren.Count)
-                    {
-                        var stumpBoard = stumpChildren[StumpLeaderboardIndex];
-                        if (stumpBoard != null && instance.stumpMaterial != null)
-                            stumpBoard.GetComponent<Renderer>().material = instance.stumpMaterial;
-                    }
-
-                    var forestChildren = GetObject("Environment Objects/LocalObjects_Prefab/Forest").transform.Children()
-                        .Where(x => x.name.Contains("UnityTempFile"))
-                        .ToList();
-
-                    if (ForestLeaderboardIndex >= 0 && ForestLeaderboardIndex < forestChildren.Count)
-                    {
-                        var forestBoard = forestChildren[ForestLeaderboardIndex];
-                        if (forestBoard != null && instance.forestMaterial != null)
-                            forestBoard.GetComponent<Renderer>().material = instance.forestMaterial;
-                    }
+                    GameObject forestBoard = FindBoard("Environment Objects/LocalObjects_Prefab/Forest", "ForestScoreboardAnchor");
+                    if (forestBoard != null && instance.forestMaterial != null)
+                        forestBoard.GetComponent<Renderer>().material = instance.forestMaterial;
 
                     foreach (GameObject board in instance.objectBoards.Values)
                         Destroy(board);
@@ -171,18 +153,35 @@ namespace Pixelyth.Managers
         private static Material _screenRed;
         private static Material _screenBlack;
 
-        private static Material _boardMaterial = new Material(Shader.Find("GorillaTag/UberShader"));
+        private static Shader BoardShader =>
+            Shader.Find("Universal Render Pipeline/Unlit")
+            ?? Shader.Find("Unlit/Color")
+            ?? Shader.Find("GorillaTag/UberShader")
+            ?? Shader.Find("Standard");
+
+        private static Material _boardMaterial;
         public static Material BoardMaterial
         {
-            get => _boardMaterial;
+            get
+            {
+                if (_boardMaterial == null) _boardMaterial = NewBoardMaterial();
+                return _boardMaterial;
+            }
             set
             {
-                if (value == null)
-                    value = new Material(Shader.Find("GorillaTag/UberShader"));
-
-                _boardMaterial = value;
-                instance.ReloadBoardColors();
+                _boardMaterial = value ?? NewBoardMaterial();
+                if (instance != null) instance.ReloadBoardColors();
             }
+        }
+
+        public static Material NewBoardMaterial(Material source = null)
+        {
+            Material material = source != null ? new Material(source) : new Material(BoardShader);
+            Color tint = CustomBoardColorsEnabled ? backgroundColor.GetCurrentColor() : (Color)new Color32(0, 59, 4, 255);
+            if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", tint);
+            if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
+            material.color = tint;
+            return material;
         }
 
         #region Game Boards
@@ -208,6 +207,33 @@ namespace Pixelyth.Managers
         public void ReloadBoardColors() =>
             hasSetAllBoardColors = false;
 
+        private static GameObject FindBoard(string rootPath, string anchorName)
+        {
+            GameObject root = GetObject(rootPath);
+            if (root == null) return null;
+
+            Transform anchor = null;
+            foreach (GameObject child in root.transform.Children())
+            {
+                if (!child.name.Contains(anchorName)) continue;
+                anchor = child.transform;
+                break;
+            }
+
+            if (anchor == null) return null;
+
+            Renderer[] renderers = anchor.GetComponentsInChildren<Renderer>(true);
+            Renderer result = renderers.FirstOrDefault(renderer =>
+            {
+                string name = renderer.gameObject.name;
+                return !name.Contains("Text") && !name.Contains("Offline") &&
+                    (name.Contains("GorillaScoreBoard") || name.Contains("ScoreBoard") || name.Contains("Scoreboard"));
+            });
+            result ??= renderers.FirstOrDefault(renderer =>
+                !renderer.gameObject.name.Contains("Text") && !renderer.gameObject.name.Contains("Offline"));
+            return result != null ? result.gameObject : null;
+        }
+
         public void ReloadBoardTexts() =>
             hasSetAllBoardTexts = false;
 
@@ -229,38 +255,14 @@ namespace Pixelyth.Managers
 
                     objectBoards.Clear();
 
-                    var stumpChildren = GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom").transform.Children()
-                       .Where(x => x.name.Contains("UnityTempFile"))
-                       .ToList();
-
-                    if (StumpLeaderboardIndex >= 0 && StumpLeaderboardIndex < stumpChildren.Count)
+                    GameObject forestBoard = FindBoard("Environment Objects/LocalObjects_Prefab/Forest", "ForestScoreboardAnchor");
+                    if (forestBoard != null)
                     {
-                        var stumpBoard = stumpChildren[StumpLeaderboardIndex];
-                        if (stumpBoard != null)
-                        {
-                            if (stumpMaterial == null)
-                                stumpMaterial = stumpBoard.GetComponent<Renderer>().material;
-
-                            stumpBoard.GetComponent<Renderer>().material = BoardMaterial;
-                        }
+                        Renderer renderer = forestBoard.GetComponent<Renderer>();
+                        if (forestMaterial == null)
+                            forestMaterial = renderer.sharedMaterial;
+                        renderer.material = NewBoardMaterial(forestMaterial);
                     }
-
-                    var forestChildren = GetObject("Environment Objects/LocalObjects_Prefab/Forest").transform.Children()
-                        .Where(x => x.name.Contains("UnityTempFile"))
-                        .ToList();
-
-                    if (ForestLeaderboardIndex >= 0 && ForestLeaderboardIndex < forestChildren.Count)
-                    {
-                        var forestBoard = forestChildren[ForestLeaderboardIndex];
-                        if (forestBoard != null)
-                        {
-                            if (forestMaterial == null)
-                                forestMaterial = forestBoard.GetComponent<Renderer>().material;
-
-                            forestBoard.GetComponent<Renderer>().material = BoardMaterial;
-                        }
-                    }
-
                     foreach (GorillaNetworkJoinTrigger joinTrigger in PhotonNetworkController.Instance.allJoinTriggers)
                     {
                         try
@@ -268,14 +270,14 @@ namespace Pixelyth.Managers
                             JoinTriggerUI ui = joinTrigger.ui;
                             JoinTriggerUITemplate temp = ui.template;
 
-                            temp.ScreenBG_AbandonPartyAndSoloJoin = BoardMaterial;
-                            temp.ScreenBG_AlreadyInRoom = BoardMaterial;
-                            temp.ScreenBG_ChangingGameModeSoloJoin = BoardMaterial;
-                            temp.ScreenBG_Error = BoardMaterial;
-                            temp.ScreenBG_InPrivateRoom = BoardMaterial;
-                            temp.ScreenBG_LeaveRoomAndGroupJoin = BoardMaterial;
-                            temp.ScreenBG_LeaveRoomAndSoloJoin = BoardMaterial;
-                            temp.ScreenBG_NotConnectedSoloJoin = BoardMaterial;
+                            temp.ScreenBG_AbandonPartyAndSoloJoin = NewBoardMaterial(temp.ScreenBG_AbandonPartyAndSoloJoin);
+                            temp.ScreenBG_AlreadyInRoom = NewBoardMaterial(temp.ScreenBG_AlreadyInRoom);
+                            temp.ScreenBG_ChangingGameModeSoloJoin = NewBoardMaterial(temp.ScreenBG_ChangingGameModeSoloJoin);
+                            temp.ScreenBG_Error = NewBoardMaterial(temp.ScreenBG_Error);
+                            temp.ScreenBG_InPrivateRoom = NewBoardMaterial(temp.ScreenBG_InPrivateRoom);
+                            temp.ScreenBG_LeaveRoomAndGroupJoin = NewBoardMaterial(temp.ScreenBG_LeaveRoomAndGroupJoin);
+                            temp.ScreenBG_LeaveRoomAndSoloJoin = NewBoardMaterial(temp.ScreenBG_LeaveRoomAndSoloJoin);
+                            temp.ScreenBG_NotConnectedSoloJoin = NewBoardMaterial(temp.ScreenBG_NotConnectedSoloJoin);
                         }
                         catch { }
                     }
@@ -348,7 +350,7 @@ namespace Pixelyth.Managers
                 computerMonitor = GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/TreeRoomInteractables/GorillaComputerObject/ComputerUI/monitor/monitorScreen");
 
             if (computerMonitor != null)
-                computerMonitor.GetComponent<Renderer>().material = BoardMaterial;
+                computerMonitor.GetComponent<Renderer>().material = NewBoardMaterial(computerMonitor.GetComponent<Renderer>().sharedMaterial);
 
             try
             {
@@ -466,7 +468,7 @@ namespace Pixelyth.Managers
                 board.transform.localScale = scale ?? new Vector3(21.6f, 2.4f, 22f);
 
                 Destroy(board.GetComponent<Collider>());
-                board.GetComponent<Renderer>().material = BoardMaterial;
+                board.GetComponent<Renderer>().material = NewBoardMaterial();
 
                 objectBoards.Add(scene, board);
             }

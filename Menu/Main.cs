@@ -92,15 +92,8 @@ namespace Pixelyth.Menu
             InitializeFonts();
             activeFont = AgencyFB;
 
-            //if (Plugin.FirstLaunch)
-            //    Prompt("It seems like this is your first time using the menu. Would you like to watch a quick tutorial to get to know how to use it?", Settings.ShowTutorial);
-            //else
-            //    acceptedDonations = File.Exists($"{PluginInfo.BaseDirectory}/Pixelyth_HideDonationButton.txt");
-
             if (Bootstrapper.FirstLaunch)
                 Settings.LoadDefaultPreferences();
-            else
-                acceptedDonations = File.Exists($"{PluginInfo.BaseDirectory}/Pixelyth_HideDonationButton.txt");
 
 
             NetworkSystem.Instance.OnJoinedRoomEvent += OnJoinRoom;
@@ -191,6 +184,17 @@ namespace Pixelyth.Menu
                 $"Error with Settings.LoadPreferences() at {exc.StackTrace}: {exc.Message}");
 
                 CoroutineManager.instance.StartCoroutine(DelayLoadPreferences());
+            }
+
+            try
+            {
+                ButtonInfo customTheme = Buttons.GetIndex("Custom Menu Theme");
+                if (customTheme == null || !customTheme.enabled)
+                    Settings.ApplyMenuTheme(themeType);
+            }
+            catch (Exception exc)
+            {
+                LogManager.LogError($"Error re-applying menu theme: {exc.Message}");
             }
 
             try
@@ -2080,54 +2084,6 @@ namespace Pixelyth.Menu
             imageTransform.rotation = Quaternion.Euler(new Vector3(180f, 90f, 90f));
 
             FollowMenuSettings(debugImage);
-        }
-
-        private static void AddDonateButton()
-        {
-            GameObject buttonObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            if (!UnityInput.GetKey(Key.Q) && !isKeyboardPc)
-                buttonObject.layer = 2;
-
-            buttonObject.GetComponent<BoxCollider>().isTrigger = true;
-            buttonObject.transform.parent = menu.transform;
-            buttonObject.transform.rotation = Quaternion.identity;
-
-            buttonObject.transform.localScale = new Vector3(0.09f, 0.102f, 0.08f);
-            buttonObject.transform.localPosition = thinMenu ? new Vector3(0.56f, 0.450f, -0.58f) : new Vector3(0.56f, 0.7f, -0.58f);
-
-            buttonObject.AddComponent<ButtonCollider>().relatedText = "Donate Button";
-
-            ColorChanger colorChanger = buttonObject.AddComponent<ColorChanger>();
-            colorChanger.colors = buttonColors[swapButtonColors ? 1 : 0];
-
-            FollowMenuSettings(buttonObject, !swapButtonColors);
-
-            Image donateImage = new GameObject
-            {
-                transform =
-                {
-                    parent = canvasObj.transform
-                }
-            }.AddComponent<Image>();
-            if (donateIcon == null)
-                donateIcon = LoadTextureFromResource($"{PluginInfo.ClientResourcePath}.donate.png");
-
-            if (donateMat == null)
-                donateMat = new Material(donateImage.material);
-
-            donateImage.material = donateMat;
-            donateImage.material.SetTexture("_MainTex", donateIcon);
-            donateImage.AddComponent<UIColorChanger>().colors = textColors[1];
-
-            RectTransform imageTransform = donateImage.GetComponent<RectTransform>();
-            imageTransform.localPosition = Vector3.zero;
-            imageTransform.sizeDelta = new Vector2(.03f, .03f);
-
-            imageTransform.localPosition = thinMenu ? new Vector3(.064f, 0.35f / 2.6f, -0.58f / 2.6f) : new Vector3(.064f, 0.54444444444f / 2.6f, -0.58f / 2.6f);
-
-            imageTransform.rotation = Quaternion.Euler(new Vector3(180f, 90f, 90f));
-
-            FollowMenuSettings(donateImage);
         }
 
         private static void AddUpdateButton()
@@ -4757,6 +4713,7 @@ namespace Pixelyth.Menu
                     case 20:
                     case 21:
                     case 22:
+                    case 30:
                         {
                             Dictionary<int, string> voiceCodenames = new Dictionary<int, string>
                             {
@@ -4773,7 +4730,8 @@ namespace Pixelyth.Menu
                                 { 19, "en_male_david_gingerman" },
                                 { 20, "en_male_chris" },
                                 { 21, "en_male_sing_funny_thanksgiving" },
-                                { 22, "en_male_santa_effect" }
+                                { 22, "en_male_santa_effect" },
+                                { 30, "en_female_erika" } // Mommy ASMR
                             };
 
                             if (text.Length > 300)
@@ -5608,6 +5566,7 @@ namespace Pixelyth.Menu
 
             inRoomStatus = true;
             lastRoom = PhotonNetwork.CurrentRoom.Name;
+            Important.RecordRoomLog(lastRoom);
 
             if (!disableRoomNotifications)
                 NotificationManager.SendNotification($"<color=grey>[</color><color=blue>JOIN ROOM</color><color=grey>]</color> Room Code: {lastRoom}");
@@ -6240,6 +6199,9 @@ namespace Pixelyth.Menu
         /// <param name="buttonText">The text label of the button to be toggled. This is used to identify the target button.</param>
         /// <param name="increment">true to apply the incremental action; false to apply the decremental action.</param>
         public static void ToggleIncremental(string buttonText, bool increment, bool reload = true)
+            => ToggleIncremental(buttonText, increment, reload, false);
+
+        public static void ToggleIncremental(string buttonText, bool increment, bool reload, bool ignoreBindings)
         {
             ButtonInfo target = Buttons.GetIndex(buttonText);
             if (target != null)
@@ -6257,7 +6219,7 @@ namespace Pixelyth.Menu
 
                 switch (true)
                 {
-                    case true when menuButtonIndex != 2 && ((leftGrab && !joystickMenu) || (joystickMenu && rightJoystick.y > 0.5f && leftTrigger > 0.5f)):
+                    case true when !ignoreBindings && menuButtonIndex != 2 && ((leftGrab && !joystickMenu) || (joystickMenu && rightJoystick.y > 0.5f && leftTrigger > 0.5f)):
                         {
                             if (IsBinding)
                             {
@@ -6328,7 +6290,7 @@ namespace Pixelyth.Menu
 
                             break;
                         }
-                    case true when menuButtonIndex != 3 && leftTrigger > 0.5f && !joystickMenu:
+                    case true when !ignoreBindings && menuButtonIndex != 3 && leftTrigger > 0.5f && !joystickMenu:
                         {
                             if (!quickActions.Contains(target.buttonText))
                             {
@@ -6357,7 +6319,7 @@ namespace Pixelyth.Menu
                             if (dynamicAnimations)
                                 lastClickedName = buttonText + (increment ? "+" : "-");
 
-                            bool boost = incrementalBoost && rightGrab;
+                            bool boost = !ignoreBindings && incrementalBoost && rightGrab;
                             if (increment)
                             {
                                 NotificationManager.SendNotification($"<color=grey>[</color><color=green>INCREMENT</color><color=grey>]</color> {target.toolTip}");
@@ -6998,7 +6960,6 @@ jgs \_   _/ |Oo\
         public static bool fpsCountTimed;
         public static bool fpsCountAverage;
         public static bool ftCount;
-        public static bool acceptedDonations;
         public static float lastDeltaTime = 1f;
         public static TextMeshPro keyboardInputObject;
         public static TextMeshPro title;
@@ -7013,7 +6974,6 @@ jgs \_   _/ |Oo\
         public static Material watermarkMat;
         public static Material returnMat;
         public static Material debugMat;
-        public static Material donateMat;
 
         public static GameObject lKeyReference;
         public static SphereCollider lKeyCollider;
@@ -7060,7 +7020,6 @@ jgs \_   _/ |Oo\
         public static Texture2D searchIcon;
         public static Texture2D returnIcon;
         public static Texture2D debugIcon;
-        public static Texture2D donateIcon;
         public static Texture2D updateIcon;
         public static Texture2D fixTexture;
         public static Texture2D customMenuBackgroundImage;

@@ -164,15 +164,16 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Particle Spawn Effect", enableMethod =() => particleSpawnEffect = true, disableMethod =() => particleSpawnEffect = false, toolTip = "Spawns particles when opening the menu."},
                 new ButtonInfo { buttonText = "Gradient Title", enableMethod =() => gradientTitle = true, disableMethod =() => gradientTitle = false, toolTip = "Gives a gradient to the title of the menu depending on your theme."},
                 new ButtonInfo { buttonText = "Animated Title", enableMethod =() => animatedTitle = true, disableMethod =() => animatedTitle = false, toolTip = "Animates the title of the menu."},
+                new ButtonInfo { buttonText = "AI Assistant", enableMethod =() => CoroutineManager.instance.StartCoroutine(Settings.DictationOn()), method = Settings.CheckFocus, disableMethod = Settings.DictationOff, toolTip = "A voice assistant with artificial intelligence capabilities."},
                 new ButtonInfo { buttonText = "Voice Commands", enableMethod = Settings.VoiceRecognitionOn, method = Settings.CheckFocus, disableMethod = Settings.VoiceRecognitionOff, toolTip = "Enable and disable mods using your voice. Activate it like how you would any other voice assistant, such as \"Jarvis, Platforms\"."},
                 new ButtonInfo { buttonText = "Chain Voice Commands", toolTip = "Makes voice commands chain together, so you don't have to repeatedly ask it to listen to you."},
-                new ButtonInfo { buttonText = "AI Assistant", enableMethod =() => CoroutineManager.instance.StartCoroutine(Settings.DictationOn()), method = Settings.CheckFocus, disableMethod = Settings.DictationOff, toolTip = "A voice assistant with artificial intelligence capabilities."},
                 //new ButtonInfo { buttonText = "Click GUI", enableMethod = Settings.EnableClickGUI, method = Settings.ClickGUI, disableMethod = Settings.DisableClickGUI, toolTip = "A modern version of the menu."},
 
                 new ButtonInfo { buttonText = "Narrate Assistant", toolTip = "Narrates what the voice assistant says locally."},
                 new ButtonInfo { buttonText = "Global Narrate Assistant", toolTip = "Narrates what the voice assistant says globally."},
                 new ButtonInfo { buttonText = "Global Dynamic Sounds", toolTip = "Plays the dynamic sounds through your microphone."},
 
+                new ButtonInfo { buttonText = "Test Speech Recognition", enableMethod = Experimental.StartDictationListening, disableMethod = Experimental.StopDictationListening, toolTip = "Test Speech Recognition Results."},
                 new ButtonInfo { buttonText = "Debug Dictation", enableMethod =() => Settings.debugDictation = true, disableMethod =() => Settings.debugDictation = false, toolTip = "Debug what you say to the AI Assistant in your Unity console."},
 
                 new ButtonInfo { buttonText = "Custom System Prompt", enableMethod =() => AIManager.customPrompt = true, disableMethod =() => AIManager.customPrompt = false, toolTip = "Never resets the system prompt, allowing you to edit the file."},
@@ -332,8 +333,10 @@ namespace Pixelyth.Menu
             new[] { // Room Settings [3]
                 new ButtonInfo { buttonText = "Exit Room Settings", method =() => CurrentCategoryName = "Settings", isTogglable = false, toolTip = "Returns you back to the settings menu."},
 
-                new ButtonInfo { buttonText = "20 Player Rooms", toolTip = "Changes Create Public and Create Private to support 20 players." },
+                new ButtonInfo { buttonText = "20 Player Rooms", enableMethod = () => Important.twentyPlayerRooms = true, disableMethod = () => Important.twentyPlayerRooms = false, toolTip = "Changes Create Public and Create Private to 20 Player Rooms." },
                 ButtonHelper.CreateNumeric("Change Reconnect Time", 1, 5, Important.reconnectDelay, Settings.ApplyReconnectTime, v => v.ToString(), "Changes the amount of time waited before attempting to reconnect again."),
+
+                ButtonHelper.CreateNumeric("Room-Log Amount", 0, 50, Important.roomLogAmount, Settings.ApplyRoomLogAmount, v => v.ToString(), "Changes how many past Room Codes are kept in the Room-Log."),
             },
 
             new[] { // Movement Settings [4]
@@ -443,11 +446,13 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Cancel Reconnect", method = Important.CancelReconnect, isTogglable = false, toolTip = "Cancels the reconnection loop."},
 
+                new ButtonInfo { buttonText = "Open Room Log", method = Important.OpenRoomLog, isTogglable = false, toolTip = "Opens the list of recently joined Room Codes."},
                 new ButtonInfo { buttonText = "Join Last Room", method =() => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom(lastRoom, JoinType.Solo), isTogglable = false, toolTip = "Joins the last room you left."},
+
                 new ButtonInfo { buttonText = "Join Random", method = Important.JoinRandom, isTogglable = false, toolTip = "Joins a random public room."},
 
-                new ButtonInfo { buttonText = "Create Public", method =() => Important.CreateRoom(Important.RandomRoomName(), true), isTogglable = false, toolTip = "Creates a public room."},
-                new ButtonInfo { buttonText = "Create Private", method =() => Important.CreateRoom(Important.RandomRoomName(), false), isTogglable = false, toolTip = "Creates a private room."},
+                new ButtonInfo { buttonText = "Create Public", method =() => Important.CreateRoom(Important.RandomRoomName(), true, Important.twentyPlayerRooms ? (byte)20 : (byte)0), isTogglable = false, toolTip = "Creates a public room."},
+                new ButtonInfo { buttonText = "Create Private", method =() => Important.CreateRoom(Important.RandomRoomName(), false, Important.twentyPlayerRooms ? (byte)20 : (byte)0), isTogglable = false, toolTip = "Creates a private room."},
 
                 new ButtonInfo { buttonText = "Fast Disconnect", method =() => SinglePlayerPatch.enabled = true, disableMethod =() =>  SinglePlayerPatch.enabled = false, toolTip = "Uses the fastest method of disconnecting possible."},
                 new ButtonInfo { buttonText = "Join Menu Room", method =() => PhotonNetworkController.Instance.AttemptToJoinSpecificRoom($"<$PIXELYTH$>", JoinType.Solo), isTogglable = false, toolTip = "Connects you to a room that is exclusive to <b>Pixelyth-Menu</b> users."},
@@ -896,9 +901,9 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Slingshot Helper", method = Fun.SlingshotHelper, toolTip = "Helps you grab the small paintball on your slingshot."},
                 new ButtonInfo { buttonText = "Slingshot Trigger Bot", method = Fun.SlingshotTriggerBot, toolTip = "Releases the small paintball on your slingshot when hovering over another player."},
 
-                new ButtonInfo { buttonText = "Paintbrawl Kill Self", method = Advantages.PaintbrawlKillSelf, toolTip = "Kills yourself in paintbrawl." },
-                new ButtonInfo { buttonText = "Paintbrawl Kill Gun", method = Advantages.PaintbrawlKillGun, toolTip = "Kills whoever your hand desires in paintbrawl." },
-                new ButtonInfo { buttonText = "Paintbrawl Kill All", method = Advantages.PaintbrawlKillAll, toolTip = "Kills everyone in the room in paintbrawl." }
+                // new ButtonInfo { buttonText = "Paintbrawl Kill Self", method = Advantages.PaintbrawlKillSelf, toolTip = "Kills yourself in paintbrawl." },
+                // new ButtonInfo { buttonText = "Paintbrawl Kill Gun", method = Advantages.PaintbrawlKillGun, toolTip = "Kills whoever your hand desires in paintbrawl." },
+                // new ButtonInfo { buttonText = "Paintbrawl Kill All", method = Advantages.PaintbrawlKillAll, toolTip = "Kills everyone in the room in paintbrawl." }
 
             },
 
@@ -918,6 +923,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Creature ESP", method = Visuals.CreatureESP, toolTip = "Puts dots on your screen at where all of the creatures are in forest and caves."},
                 new ButtonInfo { buttonText = "Enemy ESP", method = Visuals.EnemyESP, toolTip = "Puts dots on your screen at where all of the cores in the ghost reactor map are."},
                 new ButtonInfo { buttonText = "Resource ESP", method = Visuals.ResourceESP, toolTip = "Puts dots on your screen at where all of the resources are in the Super Infection gamemode."},
+                new ButtonInfo { buttonText = "Lucy ESP", method = Visuals.LucyESP, toolTip = "Puts a dot on your screen at where Lucy is, even when she's hiding underground."},
 
                 new ButtonInfo { buttonText = "Enable Snow", aliases = new[] { "Winter" }, enableMethod =() => Visuals.ToggleSnow(true), disableMethod =() => Visuals.ToggleSnow(false), toolTip = "Forcibly enables the snow."},
                 new ButtonInfo { buttonText = "Rainy Weather", aliases = new[] { "Enable Rain" }, method =() => Visuals.WeatherChange(true), toolTip = "Forces the weather to rain."},
@@ -946,6 +952,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Clipboard Overlay", method =() => NotificationManager.information["Clip"] = GUIUtility.systemCopyBuffer.Length > 20 ? GUIUtility.systemCopyBuffer[..20] : GUIUtility.systemCopyBuffer, disableMethod =() => NotificationManager.information.Remove("Clip"), toolTip = "Displays your current clipboard on your screen."},
                 new ButtonInfo { buttonText = "Velocity Overlay", method =() => NotificationManager.information["Velocity"] = $"{GorillaTagger.Instance.rigidbody.linearVelocity.magnitude:F1}m/s", disableMethod =() => NotificationManager.information.Remove("Velocity"), toolTip = "Displays your velocity on your screen."},
                 new ButtonInfo { buttonText = "Nearby Overlay", method = Visuals.NearbyTaggerOverlay, disableMethod =() => NotificationManager.information.Remove("Nearby"), toolTip = "Displays the distance to the nearest tagger/target on your screen."},
+                new ButtonInfo { buttonText = "Lucy Overlay", method = Visuals.LucyOverlay, disableMethod =() => NotificationManager.information.Remove("Lucy"), toolTip = "Displays Lucy's current state, speed, and target on your screen."},
                 new ButtonInfo { buttonText = "Info Overlay Gun", method = Visuals.InfoOverlayGun, toolTip = "Displays an overlay, showing the information of whoever your hand desires."},
 
                 new ButtonInfo { buttonText = "Debug HUD", aliases = new[] { "Developer HUD", "Debug UI", "Developer UI" }, enableMethod = Visuals.EnableDebugHUD, disableMethod = Visuals.DisableDebugHUD, toolTip = "Displays the developer debug HUD."},
@@ -1181,6 +1188,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Disable Mouth Movement", method = Important.DisableMouthMovement, disableMethod = Important.EnableMouthMovement, toolTip = "Disables your mouth from moving."},
 
                 new ButtonInfo { buttonText = "Activate All Doors <color=grey>[</color><color=green>G</color><color=grey>]</color>", method = Fun.ActivateAllDoors, toolTip = "Activates all doors when holding <color=green>grip</color>."},
+                new ButtonInfo { buttonText = "Instant Lab Doors", enableMethod = Fun.InstantLabDoors, method = Fun.InstantLabDoors, disableMethod = Fun.SlowLabDoors, toolTip = "Makes the stump lab doors open at warp speed."},
                 new ButtonInfo { buttonText = "Tap All Crystals <color=grey>[</color><color=green>G</color><color=grey>]</color>", method = Fun.TapAllClass<GorillaCaveCrystal>, toolTip = "Taps all crystals when holding <color=green>grip</color>."},
                 new ButtonInfo { buttonText = "Tap All Bells <color=grey>[</color><color=green>G</color><color=grey>]</color>", method = Fun.TapAllClass<TappableBell>, toolTip = "Taps all bells when holding <color=green>grip</color>."},
                 new ButtonInfo { buttonText = "Trigger Leaf Pile Gun", method = Fun.TriggerLeafPileGun, toolTip = "Shows the effects on whatever leaf pile you desire."},
@@ -1935,9 +1943,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "End Shift", method = Fun.EndShift, isTogglable = false, toolTip = "Ends the current ghost reactor shift."},
                 new ButtonInfo { buttonText = "Set Quota", method = Fun.SetQuota, toolTip = "Meets the quota for you."},
 
-                new ButtonInfo { buttonText = "Virtual Stump Kick Gun", method = Overpowered.VirtualStumpKickGun, toolTip = "Kicks whoever your hand desires in the virtual stump."},
-                new ButtonInfo { buttonText = "Virtual Stump Kick All", method = Overpowered.VirtualStumpKickAll, toolTip = "Kicks everyone in the virtual stump."},
-
                 new ButtonInfo { buttonText = "Virtual Stump Crash Gun", method = Overpowered.MasterVirtualStumpCrashGun, toolTip = "Crashes whoever your hand desires in the virtual stump."},
                 new ButtonInfo { buttonText = "Virtual Stump Crash All", method = Overpowered.MasterVirtualStumpCrashAll, toolTip = "Crashes everyone in the virtual stump."},
 
@@ -2029,13 +2034,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Tag Lag Gun", method = Advantages.TagLagGun, toolTip = "Forces tag lag on whoever your hand desires, letting them not be able to tag anyone."},
                 new ButtonInfo { buttonText = "Tag Lag", overlapText = "Tag Lag All", method =() => Advantages.SetTagCooldown(float.MaxValue), disableMethod =() => Advantages.SetTagCooldown(5f), toolTip = "Forces tag lag in the everyone in the room, letting no one get tagged."},
 
-                new ButtonInfo { buttonText = "Unlock Driver", method =() => Overpowered.DriverStatus(false), isTogglable = false, toolTip = "Unlocks the driver in the virtual stump."},
-                new ButtonInfo { buttonText = "Become Driver", method =() => Overpowered.DriverStatus(true), isTogglable = false, toolTip = "Makes you the driver in the virtual stump."},
-                new ButtonInfo { buttonText = "Spaz Driver", method = Overpowered.SpazDriver, isTogglable = true, toolTip = "Spaz makes and unmakes you the driver in the virtual stump."},
-
-                new ButtonInfo { buttonText = "Become Driver Gun", method =() => Overpowered.DriverStatusGun(true), isTogglable = true, toolTip = "Makes whoever your hand desires the driver in the virtual stump."},
-                new ButtonInfo { buttonText = "Unlock Driver Gun", method =() => Overpowered.DriverStatusGun(false), isTogglable = true, toolTip = "Unlocks the driver for whoever your hand desires in the virtual stump."},
-                new ButtonInfo { buttonText = "Spaz Driver Gun", method = Overpowered.SpazDriverStatusGun, isTogglable = true, toolTip = "Spaz makes and unmakes whoever your hand desires the driver in the virtual stump."},
 
                 new ButtonInfo { buttonText = "Bonk Sound Spam <color=grey>[</color><color=green>G</color><color=grey>]</color>", method =() => Sound.BetaSoundSpam(4), toolTip = "Plays the bonk sound when holding <color=green>grip</color>." },
                 new ButtonInfo { buttonText = "Count Sound Spam <color=grey>[</color><color=green>G</color><color=grey>]</color>", method =() => Sound.BetaSoundSpam(1), toolTip = "Plays the count sound when holding <color=green>grip</color>." },
@@ -2076,6 +2074,47 @@ namespace Pixelyth.Menu
 
             new[] { // Overpowered Mods [17]
                 new ButtonInfo { buttonText = "Exit Overpowered Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
+
+                new ButtonInfo { buttonText = "Spawn Red Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpawnRedLucy, isTogglable = false, toolTip = "Summons the red Lucy in forest. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Spawn Blue Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpawnBlueLucy, isTogglable = false, toolTip = "Summons the blue Lucy in forest. Requires master client."},
+                new ButtonInfo { buttonText = "Despawn Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.DespawnLucy, isTogglable = false, toolTip = "Sends Lucy back into the ground in forest. Requires master client."},
+
+                new ButtonInfo { buttonText = "Lucy Chase Self <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.LucyChase(NetworkSystem.Instance.LocalPlayer), isTogglable = false, toolTip = "Makes Lucy chase you. Requires master client."},
+                new ButtonInfo { buttonText = "Lucy Chase Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyChaseGun, toolTip = "Makes Lucy chase whoever your hand desires. Requires master client."},
+
+                new ButtonInfo { buttonText = "Lucy Attack Self <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.LucyAttack(NetworkSystem.Instance.LocalPlayer), isTogglable = false, toolTip = "Makes Lucy grab you. Requires master client."},
+                new ButtonInfo { buttonText = "Lucy Attack Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyAttackGun, toolTip = "Makes Lucy grab whoever your hand desires. Requires master client."},
+                new ButtonInfo { buttonText = "Lucy Attack All <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyAttackAll, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Makes Lucy grab everyone in the room. Requires master client."},
+
+                new ButtonInfo { buttonText = "Lucy Harass Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyHarassGun, toolTip = "Makes Lucy relentlessly harass whoever your hand desires. Requires master client."},
+                new ButtonInfo { buttonText = "Move Lucy Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.MoveLucyGun, toolTip = "Moves Lucy to wherever your hand desires. Requires master client."},
+
+                new ButtonInfo { buttonText = "Spaz Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpazLucy, toolTip = "Gives Lucy a seizure. Requires master client."},
+                new ButtonInfo { buttonText = "Annoying Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.AnnoyingLucy, toolTip = "Makes Lucy really annoying, by attacking everyone and playing the sounds of the bells. Requires master client."},
+
+                new ButtonInfo { buttonText = "Become Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.BecomeLucy, disableMethod = Movement.EnableRig, toolTip = "Turns you into Lucy. Requires master client."},
+
+                new ButtonInfo { buttonText = "Fast Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.FastLucy, toolTip = "Makes Lucy become really fast. Requires master client."},
+                new ButtonInfo { buttonText = "Slow Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SlowLucy, toolTip = "Makes Lucy become really slow. Requires master client."},
+                ButtonHelper.CreateNumeric("Lucy Speed <color=grey>[</color><color=red>M</color><color=grey>]</color>", 1, 30, Overpowered.lucySpeedIndex, Overpowered.ApplyLucySpeed, v => $"{v}m/s", "Sets Lucy's speed to whatever you want. Requires master client."),
+
+                new ButtonInfo { buttonText = "Restless Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.RestlessLucy, disableMethod = Overpowered.CalmLucy, toolTip = "Makes Lucy rise way more often, never giving anyone a break. Requires master client, or the Lucy Ownership mod."},
+
+                // new ButtonInfo { buttonText = "Lucy Pet <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod =() => { Overpowered.lucyOwnershipActive = true; Overpowered.PetLucyEnable(); }, method = Overpowered.TakeLucyOwnership, disableMethod = Overpowered.PetLucyDisable, toolTip = "Makes Lucy follow you around like a pet, and she can never grab you. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Steer Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SteerLucyGun, toolTip = "Remote control Lucy, sending her wherever your hand desires. Hold trigger to steer. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Rain <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyRain, toolTip = "Makes Lucy gong teleport between her spawn points over and over. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Banish Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.BanishLucy, isTogglable = false, toolTip = "Sends Lucy 50 meters into the ground. Requires master client, or the Lucy Ownership mod."},
+                // new ButtonInfo { buttonText = "Hyper Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod =() => { Overpowered.lucyOwnershipActive = true; Overpowered.HyperLucyEnable(); }, method = Overpowered.TakeLucyOwnership, disableMethod = Overpowered.HyperLucyDisable, toolTip = "Makes Lucy permanently accelerate, until she's breaking the sound barrier. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Grab Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyGrabGun, toolTip = "Teleports Lucy straight at whoever your hand desires and makes her grab them. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Bodyguard <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.LucyBodyguard, method = Overpowered.LucyBodyguard, disableMethod =() => Overpowered.DespawnLucy(), toolTip = "Makes Lucy hunt down anyone who gets within 25 meters of you. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Siege <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.LucySiege, method = Overpowered.LucySiege, disableMethod =() => Overpowered.DespawnLucy(), toolTip = "Makes Lucy grab a random player every 2 seconds, non stop. Requires master client, or the Lucy Ownership mod."},
+
+                new ButtonInfo { buttonText = "Carry Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.CarryLucyEnable, method = Overpowered.CarryLucyMethod, disableMethod = Overpowered.CarryLucyDisable, toolTip = "Picks Lucy up and lets everyone watch you carry the ghost around in your hand. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Flight", enableMethod = Overpowered.LucyFlightEnable, method = Overpowered.LucyFlightMethod, disableMethod = Overpowered.LucyFlightDisable, toolTip = "Makes Lucy carry you up into the sky. Everyone sees you levitating, and she grabs you on your screen."},
+                new ButtonInfo { buttonText = "Rainbow Lucy", method = Overpowered.RainbowLucy, disableMethod = Overpowered.ResetLucyColor, toolTip = "Makes Lucy cycle through the colors of the rainbow."},
+
+                new ButtonInfo { buttonText = "Anti Lucy", enableMethod =() => RisePatch.enabled = true, disableMethod =() => RisePatch.enabled = false, toolTip = "Prevents Lucy from lifting you up when she grabs you."},
+                new ButtonInfo { buttonText = "Disable Lucy", enableMethod =() => LucyPatch.enabled = true, disableMethod =() => LucyPatch.enabled = false, toolTip = "Freezes Lucy completely on your client, and stops her AI if you're master client."},
 
                 new ButtonInfo { buttonText = "Always Guardian", method = Overpowered.AlwaysGuardian, disableMethod = Movement.EnableRig, toolTip = "Makes you always the guardian."},
                 new ButtonInfo { buttonText = "Guardian Protector", method = Overpowered.GuardianProtector, toolTip = "Pushes people away from the guardian moon if they try to approach it."},
@@ -2458,7 +2497,8 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "VideoLabel", overlapText = "No Video Selected", label = true},
                 new ButtonInfo { buttonText = "Admin Video Selector", method =() => AdminMods.OpenVideoSelector(false), isTogglable = false, toolTip = "Opens the Admin Video Selector."},
                 new ButtonInfo { buttonText = "Admin Play Video Hand", enableMethod =() => AdminMods.PlayVideoHand(), disableMethod =() => AdminMods.StopVideoHand(), toolTip = "Plays the selected Video on your Hand."},
-                new ButtonInfo { buttonText = "Admin Play Video Phone", enableMethod =() => AdminMods.PlayVideoPhone(), disableMethod =() => AdminMods.StopVideoPhone(), toolTip = "Plays the selected Video on a Phone."},
+                new ButtonInfo { buttonText = "Admin Play Video Samsung", enableMethod =() => AdminMods.PlayVideoSamsungPhone(), disableMethod =() => AdminMods.StopVideoSamsungPhone(), toolTip = "Plays the selected Video on the Samsung Phone."},
+                new ButtonInfo { buttonText = "Admin Play Video iPhone", enableMethod =() => AdminMods.PlayVideoIPhone(), disableMethod =() => AdminMods.StopVideoIPhone(), toolTip = "Plays the selected Video on the iPhone."},
                 new ButtonInfo { buttonText = "Admin Play Video TV", enableMethod =() => AdminMods.PlayVideoTV(), disableMethod =() => AdminMods.StopVideoTV(), toolTip = "Plays the selected Video on a TV in Forest."},
 
                 new ButtonInfo { buttonText = "Admin Concert Selector", overlapText = "Concert: BACKD00R", incremental = true, enableMethod =() => AdminMods.ChangeConcert(), method =() => AdminMods.ChangeConcert(), disableMethod =() => AdminMods.ChangeConcert(false), toolTip = "Changes the Concert Song."},
@@ -2474,12 +2514,14 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Admin Pigeon", method = () => AdminMods.Pigeon(), disableMethod = () => AdminMods.RemovePigeon(), toolTip = "Spawns a Pigeon in your Hand." },
 
+                new ButtonInfo { buttonText = "Admin Stop Skidding Sign", method = () => AdminMods.SkiddingSign(), disableMethod = () => AdminMods.RemoveSkiddingSign(), toolTip = "Spawns a Sign with \"Stop Skidding\" in your Hand." },
+
+                new ButtonInfo { buttonText = "Admin Bag", method = () => AdminMods.Bag(), disableMethod = () => AdminMods.RemoveBag(), toolTip = "Spawns a Bag in your Hand." },
+
+                new ButtonInfo { buttonText = "Admin Boombox", enableMethod = () => AdminMods.SpawnBoombox(), disableMethod = () => AdminMods.RemoveBoombox(), toolTip = "Spawns a Boombox." },
+
                 /*
                 new ButtonInfo { buttonText = "Physics Gun", method = () => AdminMods.PhysicsGun(), toolTip = "Gives you a Physics Gun." },
-                
-                new ButtonInfo { buttonText = "Boombox", method = () => AdminMods.Boombox(), toolTip = "Spawns a Boombox." },
-                
-                new ButtonInfo { buttonText = "Wii Remote", method = () => AdminMods.WiiRemote(), toolTip = "Gives you a Wii Remote to throw other People around." },
                 
                 new ButtonInfo { buttonText = "Ban Hammer", method = () => AdminMods.BanHammer(), toolTip = "Gives you a Ban-Hammer to Block People from joining Rooms for a specified Amount of Time." },
                 
@@ -2490,8 +2532,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "NoliStar", method = () => AdminMods.NoliStar(), toolTip = "Spawns a NoliStar." },
                 
                 new ButtonInfo { buttonText = "Ravenger", method = () => AdminMods.Ravenger(), toolTip = "Spawns a Ravenger." },
-
-                new ButtonInfo { buttonText = "Bag", method = () => AdminMods.Bag(), toolTip = "Gives you a Bag." },
                 */
 
                 ButtonHelper.CreateNumeric("Admin Asset Volume", 0, 10, 10, AdminMods.ChangeAssetVolume, v => (v / 10f).ToString(), "Changes the Volume for the Asset Volume Mods."),
@@ -2512,7 +2552,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Search", method = Settings.Search, isTogglable = false, toolTip = "Lets you search for specific mods."},
                 new ButtonInfo { buttonText = "Global Return", method = Settings.GlobalReturn, isTogglable = false, toolTip = "Returns you to the previous category."},
                 new ButtonInfo { buttonText = "Info Screen", method = Settings.Debug, enableMethod = Settings.ShowDebug, disableMethod = Settings.HideDebug, toolTip = "Shows game and modding related information."},
-                new ButtonInfo { buttonText = "Donate Button", method =() => { NotificationManager.ClearAllNotifications(); acceptedDonations = true; File.WriteAllText($"{PluginInfo.BaseDirectory}/Pixelyth_HideDonationButton.txt", "true"); Prompt($"If you like this menu and would like to support, you should join our Patreon! ", () => Process.Start("https://patreon.com/Pixelyth")); }, isTogglable = false, toolTip = "An advertisement for Pixelyth's Patreon."},
                 new ButtonInfo { buttonText = "Update Button", method =() => UpdatePrompt(), isTogglable = false, toolTip = "Prompts you to update the menu." },
 
                 new ButtonInfo { buttonText = "Accept Prompt", method =() => { NotificationManager.ClearAllNotifications(); if (inTextInput) Settings.DestroyKeyboard(); CurrentPrompt.AcceptAction?.Invoke(); Settings.StopCurrentPrompt(); }, isTogglable = false},
@@ -2838,12 +2877,12 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Exit Mod List", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."}
             },
 
-            new[] { // Patreon Mods [47]
-                new ButtonInfo { buttonText = "Exit Patreon Mods", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
+            new[] { // Room Log [47]
+                new ButtonInfo { buttonText = "Exit Room Log", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the Main Page."},
             },
 
-            new[] { // Patreon Settings [48]
-                new ButtonInfo { buttonText = "Exit Patreon Settings", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
+            new[] { // Unused [48]
+                new ButtonInfo { buttonText = "Return to Main Menu", method = () => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the Main Page."},
             },
 
             new[] { // Voice Changers [49]
@@ -2980,8 +3019,8 @@ namespace Pixelyth.Menu
             "Detected Settings",
             "Achievements",
             "Mod List",
-            "Patreon Mods",
-            "Patreon Settings",
+            "Room Log",
+            "Unused",
             "Voice Changers",
             "Sound Properties",
             "Select GR Object",

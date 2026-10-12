@@ -57,6 +57,14 @@ namespace Pixelyth.Mods
 {
     public static class Settings
     {
+        public static void LogGamemode()
+        {
+            if (PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("gameMode"))
+                UnityEngine.Debug.Log("gameMode: " + PhotonNetwork.CurrentRoom.CustomProperties["gameMode"]);
+            else
+                UnityEngine.Debug.Log("Not in room or no gameMode property");
+        }
+
         public static void Search() // This took me like 4 hours
         {
             isSearching = !isSearching;
@@ -3613,22 +3621,49 @@ namespace Pixelyth.Mods
         }
 
         private static TMP_FontAsset chosenFont;
+        private static Font customFontSource;
         public static void CustomFontType()
         {
             string filePath = $"{PluginInfo.BaseDirectory}/CustomFont.ttf";
             if (!File.Exists(filePath))
             {
                 LogManager.Log("Downloading CustomFont.ttf");
+                try
+                {
                 WebClient stream = new WebClient();
                 stream.DownloadFile($"{PluginInfo.ServerResourcePath}/Fonts/LiberationSans.ttf", filePath);
             }
+                catch (Exception error)
+                {
+                    LogManager.Log("Failed to download CustomFont.ttf: " + error.Message);
+                    return;
+                }
+            }
 
-            chosenFont = TMP_FontAsset.CreateFontAsset(new Font($"{FileUtilities.GetGamePath()}/{filePath}"));
+            try
+            {
+                if (customFontSource == null)
+                    customFontSource = new Font($"{FileUtilities.GetGamePath()}/{filePath}");
+                TMP_FontAsset font = TMP_FontAsset.CreateFontAsset(customFontSource);
+                if (font == null)
+                {
+                    LogManager.Log("Failed to create a font asset from CustomFont.ttf");
+                    return;
+                }
+                chosenFont = font;
+            }
+            catch (Exception error)
+            {
+                LogManager.Log("Failed to load CustomFont.ttf: " + error.Message);
+                return;
+            }
             PersistCustomFont();
         }
 
         public static void PersistCustomFont()
         {
+            if (chosenFont == null)
+                return;
             if (activeFont != chosenFont)
                 activeFont = chosenFont;
         }
@@ -3781,8 +3816,9 @@ namespace Pixelyth.Mods
             "Giorgio", "Ewa", "TikTok", "Grandma", "Trickster", "Elf", "Ghostface",
             "Zombie", "Narrator", "Pirate", "Song", "TikTok Joey", "Gingerbread Man",
             "Chris", "Thanksgiving", "Santa", "Google US", "Google UK", "Dog",
-            "Jerkface", "Robot", "Vlad", "Obama"/*, "Mommy ASMR"*/
+            "Jerkface", "Robot", "Vlad", "Obama", "Mommy ASMR"
         };
+
         public static void ApplyNarrationVoice(int index)
         {
             narratorIndex = index;
@@ -5160,6 +5196,7 @@ namespace Pixelyth.Mods
                 Fun.soundboardSpeedIndex.ToString(),
                 SoundManager.DefaultSoundpack,
                 Sound.disableLocalSoundboard.ToString(),
+                Important.roomLogAmount.ToString(),
             };
 
             string settingstext = string.Join(seperator, settings);
@@ -5468,6 +5505,12 @@ namespace Pixelyth.Mods
                 RestoreNamedCycle("Change Menu Soundpack", data[71]);
 
                 Sound.disableLocalSoundboard = bool.Parse(data[72]);
+
+                if (data.Length > 73)
+                {
+                    Important.roomLogAmount = Mathf.Clamp(int.Parse(data[73]), 0, 50);
+                    RestoreCycle("Room Log Amount", Important.roomLogAmount);
+                }
             }
             catch (Exception e) { LogManager.Log("Save file out of date: " + e); }
 
@@ -5622,6 +5665,7 @@ namespace Pixelyth.Mods
         }
 
         public static void ApplyReconnectTime(int index) => Important.reconnectDelay = index;
+        public static void ApplyRoomLogAmount(int amount) => Important.ApplyRoomLogAmount(amount);
 
         public static void ApplyButtonSound(string soundName)
         {

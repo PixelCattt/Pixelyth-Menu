@@ -45,7 +45,7 @@ namespace Pixelyth.Mods
             if (!allowDetected)
             {
                 LoadSoundFromURL($"{PluginInfo.ServerResourcePath}/Audio/Menu/danger.ogg", "Audio/Menu/danger.ogg", clip => Play2DAudio(clip, buttonClickVolume / 10f));
-                Prompt("The mods in this category are detected. <b>Unless you know what you're doing, you will get banned.</b> Are you sure you would like to continue?",
+                Prompt("The mods in this category are DETECTED. <b>Unless you know what you're doing, you will get banned, even in Private Codes. </b> Are you sure you want to Continue?",
                     () =>
                     {
                         allowDetected = true; Buttons.CurrentCategoryName = "Detected Mods";

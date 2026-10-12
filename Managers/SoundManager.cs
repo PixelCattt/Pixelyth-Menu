@@ -80,8 +80,7 @@ namespace Pixelyth.Managers
                 { "Close", "Audio/Menu/close.ogg" },
                 { "Select", "Audio/Menu/select.ogg" },
                 { "Achievement", "Audio/Menu/achievement.ogg" },
-                { "Admin", "Audio/Menu/admin.ogg" },
-                { "Patreon", "Audio/Menu/patreon.ogg" }
+                { "Admin", "Audio/Menu/admin.ogg" }
             },
 
             ["Notifications"] = new Dictionary<string, object>
@@ -144,8 +143,7 @@ namespace Pixelyth.Managers
                     { "Open", "Audio/Menu/Preset/SteamVR/open.ogg" },
                     { "Close", "Audio/Menu/Preset/SteamVR/close.ogg" },
                     { "Achievement", "Audio/Menu/Preset/SteamVR/achievement.ogg" },
-                    { "Admin", "Audio/Menu/Preset/SteamVR/patreon.ogg" },
-                    { "Patreon", "Audio/Menu/Preset/SteamVR/patreon.ogg" }
+                    { "Admin", "Audio/Menu/admin.ogg" }
                 },
 
                 ["Notifications"] = new Dictionary<string, object>
@@ -162,8 +160,7 @@ namespace Pixelyth.Managers
 
                 ["Menu"] = new Dictionary<string, object>
                 {
-                    { "Admin", "Audio/Menu/Preset/MinecraftLegacyEdition/patreon.ogg" },
-                    { "Patreon", "Audio/Menu/Preset/MinecraftLegacyEdition/patreon.ogg" },
+                    { "Admin", "Audio/Menu/admin.ogg" },
                     { "Return",  "Audio/Menu/Preset/MinecraftLegacyEdition/back.ogg" }
                 },
                 ["Notifications"] = new Dictionary<string, object>

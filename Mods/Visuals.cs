@@ -294,6 +294,47 @@ namespace Pixelyth.Mods
             }
         }
 
+        public static void LucyESP()
+        {
+            if (!NetworkSystem.Instance.InRoom)
+                return;
+
+            HalloweenGhostChaser hgc = Overpowered.Lucy;
+            if (hgc == null)
+                return;
+
+            bool fmt = Buttons.GetIndex("Follow Menu Theme").enabled;
+            bool tt = Buttons.GetIndex("Transparent Theme").enabled;
+
+            Color lucyColor = fmt ? backgroundColor.GetCurrentColor() : hgc.isSummoned ? new Color(0.75f, 0.1f, 0.1f) : new Color(0.6f, 0.8f, 1f);
+            if (tt)
+                lucyColor.a = 0.5f;
+
+            Visualize(PrimitiveType.Sphere, hgc.transform.position, hgc.transform.rotation, Vector3.one * 0.75f, lucyColor, 778293, lucyColor.a);
+        }
+
+        public static void LucyOverlay()
+        {
+            HalloweenGhostChaser hgc = Overpowered.Lucy;
+            if (hgc == null)
+            {
+                NotificationManager.information.Remove("Lucy");
+                return;
+            }
+
+            string stateName = hgc.currentState switch
+            {
+                HalloweenGhostChaser.ChaseState.Dormant => "Dormant",
+                HalloweenGhostChaser.ChaseState.InitialRise => "Rising",
+                HalloweenGhostChaser.ChaseState.Gong => "Gong",
+                HalloweenGhostChaser.ChaseState.Chasing => "Chasing",
+                HalloweenGhostChaser.ChaseState.Grabbing => "Grabbing",
+                _ => "Unknown"
+            };
+
+            NotificationManager.information["Lucy"] = $"{stateName} | {hgc.currentSpeed:F1}m/s | {hgc.targetPlayer?.NickName ?? "Nobody"}";
+        }
+
         public static void ResourceESP()
         {
             if (!NetworkSystem.Instance.InRoom)

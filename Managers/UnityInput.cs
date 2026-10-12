@@ -42,24 +42,24 @@ namespace Pixelyth.Managers
         }
 
         // Keyboard (KeyCode)
-        internal static bool GetKey(Key key) => Keyboard.current[key].isPressed;
-        internal static bool GetKeyDown(Key key) => Keyboard.current[key].wasPressedThisFrame;
-        internal static bool GetKeyUp(Key key) => Keyboard.current[key].wasReleasedThisFrame;
+        internal static bool GetKey(Key key) => !IsTyping() && Keyboard.current?[key].isPressed == true;
+        internal static bool GetKeyDown(Key key) => !IsTyping() && Keyboard.current?[key].wasPressedThisFrame == true;
+        internal static bool GetKeyUp(Key key) => !IsTyping() && Keyboard.current?[key].wasReleasedThisFrame == true;
 
         // Keyboard (string key names)
-        internal static bool GetKey(string keyName) => Input.GetKey(keyName);
-        internal static bool GetKeyDown(string keyName) => Input.GetKeyDown(keyName);
-        internal static bool GetKeyUp(string keyName) => Input.GetKeyUp(keyName);
+        internal static bool GetKey(string keyName) => !IsTyping() && Input.GetKey(keyName);
+        internal static bool GetKeyDown(string keyName) => !IsTyping() && Input.GetKeyDown(keyName);
+        internal static bool GetKeyUp(string keyName) => !IsTyping() && Input.GetKeyUp(keyName);
 
         // Mouse
         internal static Vector3 mousePosition => Input.mousePosition;
 
-        internal static bool GetMouseButton(int button) => Input.GetMouseButton(button);
+        internal static bool GetMouseButton(int button) => !IsTyping() && Input.GetMouseButton(button);
 
-        internal static bool GetMouseButtonDown(int button) => Input.GetMouseButtonDown(button);
+        internal static bool GetMouseButtonDown(int button) => !IsTyping() && Input.GetMouseButtonDown(button);
 
-        internal static bool GetMouseButtonUp(int button) => Input.GetMouseButtonUp(button);
+        internal static bool GetMouseButtonUp(int button) => !IsTyping() && Input.GetMouseButtonUp(button);
 
-        internal static Vector2 MouseScrollDelta => Input.mouseScrollDelta;
+        internal static Vector2 MouseScrollDelta => IsTyping() ? Vector2.zero : Input.mouseScrollDelta;
     }
 }

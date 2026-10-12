@@ -1,1 +1,5 @@
 All assemblies in this Folder are property of [Another Axiom LLC](https://github.com/Another-Axiom) and the [BepInEx Project](https://github.com/BepInEx) and are only read for usage by GitHub Actions. Gorilla Tag is a free and publically available game for anyone to download, and by publishing the prepackaged assemblies for Gorilla Tag, I am ensuring that no content given here is in any violation of any terms of service or rules of Gorilla Tag, as previous [Another Axiom employees have publically published copies of these assemblies.](https://github.com/The-Graze/Grate) I will fully oblidge and consent to any takedowns of any or all of these DLLs that wish to be removed upon human request prior to any DMCA or violating takedowns.
+
+<p align="center">
+  <img src="../Resources/GitHub/fire.gif" width=500px>
+</p>

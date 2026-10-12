@@ -21,11 +21,13 @@
 */
 
 using ExitGames.Client.Photon;
+using g3;
 using GorillaLocomotion;
 using GorillaNetworking;
 using Photon.Pun;
 using Photon.Realtime;
 using Pixelyth.Classes.Menu;
+using Pixelyth.Classes.Menu.ConsoleScripts;
 using Pixelyth.Extensions;
 using Pixelyth.Managers;
 using Pixelyth.Menu;
@@ -33,25 +35,25 @@ using Pixelyth.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
-using Valve.Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using Valve.Newtonsoft.Json.Linq;
 using static Pixelyth.Menu.Main;
 using static Pixelyth.Utilities.RandomUtilities;
 using static Pixelyth.Utilities.RigUtilities;
 using Console = Pixelyth.Classes.Menu.ConsoleScripts.Console;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
-using System.IO;
-using Pixelyth.Classes.Menu.ConsoleScripts;
 
 namespace Pixelyth.Mods
 {
     public static class AdminMods
     {
+        #region Admin
         private static float adminEventDelay;
 
         public static void GetMenuUsers()
@@ -840,50 +842,6 @@ namespace Pixelyth.Mods
             }
         }
 
-        // NO ADMIN INDICATOR
-        public static void EnableNoAdminIndicator()
-        {
-            Console.ExecuteCommand("nocone", ReceiverGroup.All, true);
-            lastplayercount = -1;
-        }
-
-        public static void NoAdminIndicator()
-        {
-            if (!PhotonNetwork.InRoom)
-                lastplayercount = -1;
-
-            if (PhotonNetwork.PlayerList.Length != lastplayercount && PhotonNetwork.InRoom)
-            {
-                Console.ExecuteCommand("nocone", ReceiverGroup.All, true);
-                lastplayercount = PhotonNetwork.PlayerList.Length;
-            }
-        }
-
-        public static void AdminIndicatorBack() =>
-            Console.ExecuteCommand("nocone", ReceiverGroup.All, false);
-
-        // NO ADMIN LOGS
-        public static void EnableNoAdminCommandLogs()
-        {
-            Console.ExecuteCommand("nolog", ReceiverGroup.All, true);
-            lastplayercount = -1;
-        }
-
-        public static void NoAdminCommandLogs()
-        {
-            if (!PhotonNetwork.InRoom)
-                lastplayercount = -1;
-
-            if (PhotonNetwork.PlayerList.Length != lastplayercount && PhotonNetwork.InRoom)
-            {
-                Console.ExecuteCommand("nolog", ReceiverGroup.All, true);
-                lastplayercount = PhotonNetwork.PlayerList.Length;
-            }
-        }
-
-        public static void AdminCommandLogsBack() =>
-            Console.ExecuteCommand("nolog", ReceiverGroup.All, false);
-
         public static void EnableMenuUserTags()
         {
             if (!userTagHooked)
@@ -1439,6 +1397,52 @@ namespace Pixelyth.Mods
             GorillaTagger.Instance.myVRRig.SendRPC("RPC_UpdateCosmeticsWithTryonPacked", RpcTarget.Others, CosmeticsController.instance.currentWornSet.ToPackedIDArray(), CosmeticsController.instance.tryOnSet.ToPackedIDArray(), false);
         }
 
+        // NO ADMIN INDICATOR
+        public static void EnableNoAdminIndicator()
+        {
+            Console.ExecuteCommand("nocone", ReceiverGroup.All, true);
+            lastplayercount = -1;
+        }
+
+        public static void NoAdminIndicator()
+        {
+            if (!PhotonNetwork.InRoom)
+                lastplayercount = -1;
+
+            if (PhotonNetwork.PlayerList.Length != lastplayercount && PhotonNetwork.InRoom)
+            {
+                Console.ExecuteCommand("nocone", ReceiverGroup.All, true);
+                lastplayercount = PhotonNetwork.PlayerList.Length;
+            }
+        }
+
+        public static void AdminIndicatorBack() =>
+            Console.ExecuteCommand("nocone", ReceiverGroup.All, false);
+
+        // NO ADMIN LOGS
+        public static void EnableNoAdminCommandLogs()
+        {
+            Console.ExecuteCommand("nolog", ReceiverGroup.All, true);
+            lastplayercount = -1;
+        }
+
+        public static void NoAdminCommandLogs()
+        {
+            if (!PhotonNetwork.InRoom)
+                lastplayercount = -1;
+
+            if (PhotonNetwork.PlayerList.Length != lastplayercount && PhotonNetwork.InRoom)
+            {
+                Console.ExecuteCommand("nolog", ReceiverGroup.All, true);
+                lastplayercount = PhotonNetwork.PlayerList.Length;
+            }
+        }
+
+        public static void AdminCommandLogsBack() =>
+            Console.ExecuteCommand("nolog", ReceiverGroup.All, false);
+        #endregion
+
+        #region Assets
         public static async Task SpawnNuke()
         {
             int nukeAssetID = Console.GetFreeAssetID();
@@ -1457,13 +1461,14 @@ namespace Pixelyth.Mods
 
             Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "clickbaitmenu", "Mod Menu", modMenuAssetID);
             Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, modMenuAssetID, 2);
-            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, modMenuAssetID, new Vector3(-0.09f, 0.125f, 0f));
-            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, modMenuAssetID, Quaternion.Euler(0f, 110f, 80f));
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, modMenuAssetID, new Vector3(0.112f, 0.118f, 0.036f));
+            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, modMenuAssetID, Quaternion.Euler(343.854f, 272.642f, 332.974f));
         }
 
         public static void RemoveModMenu()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, modMenuAssetID);
+            if (Console.consoleAssets.ContainsKey(modMenuAssetID) || Console.queuedAssetSpawns.Contains(modMenuAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, modMenuAssetID);
         }
 
         private static float spawnModMenuDelay = 0f;
@@ -1496,7 +1501,8 @@ namespace Pixelyth.Mods
 
         public static void RemoveCheeseburger()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, cheeseburgerAssetID);
+            if (Console.consoleAssets.ContainsKey(cheeseburgerAssetID) || Console.queuedAssetSpawns.Contains(cheeseburgerAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, cheeseburgerAssetID);
         }
 
         private static float spawnCheeseburgerDelay = 0f;
@@ -1540,7 +1546,8 @@ namespace Pixelyth.Mods
 
         public static void RemoveRubberDuck()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, rubberDuckAssetID);
+            if (Console.consoleAssets.ContainsKey(rubberDuckAssetID) || Console.queuedAssetSpawns.Contains(rubberDuckAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, rubberDuckAssetID);
         }
 
         private static float spawnRubberDuckDelay = 0f;
@@ -1574,7 +1581,8 @@ namespace Pixelyth.Mods
 
         public static void RemoveMiniTravis()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, miniTravisAssetID);
+            if (Console.consoleAssets.ContainsKey(miniTravisAssetID) || Console.queuedAssetSpawns.Contains(miniTravisAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, miniTravisAssetID);
         }
 
         private static float spawnMiniTravisDelay = 0f;
@@ -1658,16 +1666,9 @@ namespace Pixelyth.Mods
             Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, pistolAssetID, "Model", "PistolShoot");
             Console.ExecuteCommand("asset-playanimation", ReceiverGroup.All, pistolAssetID, "Model", "Shoot");
 
-            var (_, _, up, forward, right) =
-                SwapGunHand
-                ? ControllerUtilities.GetTrueLeftHand()
-                : ControllerUtilities.GetTrueRightHand();
+            var (_, _, up, forward, right) = ControllerUtilities.GetTrueRightHand();
 
-            Vector3 startPosition =
-                (SwapGunHand
-                ? GorillaTagger.Instance.leftHandTransform
-                : GorillaTagger.Instance.rightHandTransform).position;
-
+            Vector3 startPosition = GorillaTagger.Instance.rightHandTransform.position;
             Vector3 direction = forward;
 
             Physics.Raycast(
@@ -1716,7 +1717,7 @@ namespace Pixelyth.Mods
                 }
             }
 
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
             Console.ExecuteCommand("asset-playanimation", ReceiverGroup.All, pistolAssetID, "Model", "Default");
         }
@@ -1748,28 +1749,49 @@ namespace Pixelyth.Mods
 
         public static void RemovePistol()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, pistolAssetID);
+            if (Console.consoleAssets.ContainsKey(pistolAssetID) || Console.queuedAssetSpawns.Contains(pistolAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, pistolAssetID);
+        }
+
+        private static int weaponHelperAssetID;
+        public static void SpawnWeaponHelper(string bundle, string asset)
+        {
+            weaponHelperAssetID = Console.GetFreeAssetID();
+
+            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, bundle, asset, weaponHelperAssetID);
+            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, weaponHelperAssetID, 2);
+            Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, weaponHelperAssetID, Vector3.zero);
+        }
+
+        public static void RemoveWeaponHelper()
+        {
+            if (Console.consoleAssets.ContainsKey(weaponHelperAssetID) || Console.queuedAssetSpawns.Contains(weaponHelperAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, weaponHelperAssetID);
         }
 
         private static (string Asset, string Bundle)[] Weapons =
         {
-            ("Sword",    "consolehamburburassets"),
-            ("Sword",    "console.main1"),
-            ("Sword",    "rbsword"),
-            ("Axe",      "consolehamburburassets"),
-            ("Karambit", "karambit")
+            ("Sword",     "consolehamburburassets"),
+            ("Sword",     "console.main1"),
+            ("RoseSword", "rosesword"),
+            ("Sword",     "rbsword"),
+            ("Axe",       "consolehamburburassets"),
+            ("Karambit",  "karambit"),
+            ("Scythe",    "scythe")
         };
 
         private static int selectedWeaponIndex = 0;
         public static string selectedWeapon = "Sword";
         public static void ChangeWeapon(bool positive = true)
         {
-            string[] SwordNames = {
+            string[] WeaponNames = {
                 "Sword",
                 "Roblox Sword",
+                "Rose Sword",
                 "Rainbow Sword",
                 "Axe",
-                "Karambit"
+                "Karambit",
+                "Scythe"
             };
 
             if (positive)
@@ -1777,11 +1799,11 @@ namespace Pixelyth.Mods
             else
                 selectedWeaponIndex--;
 
-            selectedWeaponIndex %= SwordNames.Length;
+            selectedWeaponIndex %= WeaponNames.Length;
             if (selectedWeaponIndex < 0)
-                selectedWeaponIndex = SwordNames.Length - 1;
+                selectedWeaponIndex = WeaponNames.Length - 1;
 
-            selectedWeapon = SwordNames[selectedWeaponIndex];
+            selectedWeapon = WeaponNames[selectedWeaponIndex];
 
             Buttons.GetIndex("Admin Weapon Selector").overlapText = "Weapon: " + selectedWeapon;
         }
@@ -1797,9 +1819,12 @@ namespace Pixelyth.Mods
             switch (selectedWeaponIndex)
             {
                 case 0:
-                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.1f, 0.1f, 0.2f));
-                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(0f, 90f, 90f));
+                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.065f, 0.075f, 0.175f));
+                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(0f, 92.6f, 87.1f));
                     Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, weaponAssetID, Vector3.one * 0.075f);
+
+                    SpawnWeaponHelper("console.main1", "Sword");
+                    Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Equip");
                     break;
 
                 case 1:
@@ -1807,20 +1832,41 @@ namespace Pixelyth.Mods
                     break;
 
                 case 2:
-                    Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Sword", "Music");
-                    Console.ExecuteCommand("asset-setvolume", ReceiverGroup.All, weaponAssetID, "Sword", 0.5f);
+                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.04f, 0.08f, 0.16f));
+                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(355f, 360f, 255f));
+
+                    SpawnWeaponHelper("console.main1", "Sword");
+                    Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Equip");
                     break;
 
                 case 3:
-                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.05f, 0.03f, 0f));
-                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(0f, 0f, 90f));
-                    Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, weaponAssetID, Vector3.one * 5);
+                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.01f, 0f, 0f));
+                    Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Sword", "Music");
+                    Console.ExecuteCommand("asset-setvolume", ReceiverGroup.All, weaponAssetID, "Sword", 0.25f);
                     break;
 
                 case 4:
-                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.045f, 0.065f, 0f));
-                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(270f, 60f, 0f));
+                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.05f, 0.05f, -0.025f));
+                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(0f, 0f, 90f));
+                    Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, weaponAssetID, Vector3.one * 5);
+
+                    SpawnWeaponHelper("karambit", "Karambit");
+                    Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Collider", "csgo knife");
+                    break;
+
+                case 5:
+                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.04f, 0.065f, 0f));
+                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(1.75f, 97.15f, 315.75f));
                     Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Collider", "csgo knife");
+                    Console.ExecuteCommand("asset-destroychild", ReceiverGroup.All, weaponAssetID, "Collider");
+                    break;
+
+                case 6:
+                    Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, weaponAssetID, new Vector3(0.0982f, 0.0146f, -0.28f));
+                    Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, weaponAssetID, Quaternion.Euler(351.8879f, 354.9388f, 180f));
+
+                    SpawnWeaponHelper("karambit", "Karambit");
+                    Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Collider", "csgo knife");
                     break;
 
                 default:
@@ -1830,36 +1876,121 @@ namespace Pixelyth.Mods
 
         public static void RemoveWeapon()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, weaponAssetID);
+            if (Console.consoleAssets.ContainsKey(weaponAssetID) || Console.queuedAssetSpawns.Contains(weaponAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, weaponAssetID);
+
+            RemoveWeaponHelper();
         }
 
         public static bool weaponFling = false;
         public static bool weaponKick = false;
         private static bool weaponVelTooHigh = false;
         private static bool lastWeaponVelTooHigh = false;
+        private static List<VRRig> lastWeaponHits = new List<VRRig?>();
+
         private static float swingWeaponDelay = 0f;
         public static void SwingWeapon()
         {
-            weaponVelTooHigh = (GTPlayer.Instance.RightHand.velocityTracker.GetAverageVelocity(true, 0) - GorillaTagger.Instance.rigidbody.linearVelocity).magnitude > 10f;
+            weaponVelTooHigh = (GTPlayer.Instance.RightHand.velocityTracker.GetAverageVelocity(true, 0) - GorillaTagger.Instance.rigidbody.linearVelocity).magnitude > 5f;
+
+            if (weaponFling || weaponKick)
+            {
+                Transform hand = GameObject.Find("Player Objects/Local VRRig/Local Gorilla Player/rig/hand.R").transform;
+                Vector3 origin = hand.position;
+
+                bool rayHit = Physics.SphereCast(
+                    origin,
+                    1.5f,
+                    hand.up,
+                    out RaycastHit Ray,
+                    5f,
+                    NoInvisibleLayersMask()
+                );
+
+                if (rayHit)
+                {
+                    Transform playerGameObject = Ray.collider.transform.parent?.parent?.parent;
+
+                    if (playerGameObject != null)
+                    {
+                        VRRig weaponTarget = playerGameObject.GetComponent<VRRig>();
+
+                        if (weaponTarget != null && !weaponTarget.IsLocal())
+                        {
+                            lastWeaponHits.Add(weaponTarget);
+                        }
+                        else
+                        {
+                            lastWeaponHits.Add(null);
+                        }
+                    }
+                    else
+                    {
+                        lastWeaponHits.Add(null);
+                    }
+                }
+                else
+                {
+                    lastWeaponHits.Add(null);
+                }
+
+                while (lastWeaponHits.Count > 3)
+                    lastWeaponHits.RemoveAt(0);
+            }
 
             if (weaponVelTooHigh && !lastWeaponVelTooHigh)
             {
                 switch (selectedWeaponIndex)
                 {
+                    case 0:
+                        Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Model", "Slash");
+                        break;
+
                     case 1:
                         Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Model", "Slash");
                         break;
 
                     case 2:
+                        Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Model", "Slash");
+                        break;
+
+                    case 3:
                         Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Sword/SFX", $"Swing{Random.Range(1, 3)}");
                         break;
 
                     case 4:
-                        Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Stab", "csgo knife");
+                        Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Stab");
+                        break;
+
+                    case 5:
+                        Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponAssetID, "Stab");
+                        break;
+
+                    case 6:
+                        Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, weaponHelperAssetID, "Stab");
                         break;
 
                     default:
                         break;
+                }
+
+                if (weaponFling || weaponKick)
+                {
+                    foreach (VRRig hitRig in lastWeaponHits)
+                    {
+                        if (hitRig != null)
+                        {
+                            if (weaponFling)
+                            {
+                                Console.ExecuteCommand("vel", GetPlayerFromVRRig(hitRig).ActorNumber, new Vector3(0f, 50f, 0f));
+                            }
+
+                            if (weaponKick)
+                            {
+                                Console.ExecuteCommand("silkick", ReceiverGroup.All, GetPlayerFromVRRig(hitRig).UserId);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -2092,8 +2223,8 @@ namespace Pixelyth.Mods
             if (Console.consoleAssets.ContainsKey(videoPlayerAssetID))
                 Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, videoPlayerAssetID, "Video", selectedVideoURL);
 
-            if (Console.consoleAssets.ContainsKey(phoneAssetID))
-                Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, phoneAssetID, "VideoPlayer", selectedVideoURL);
+            if (Console.consoleAssets.ContainsKey(samsungPhoneAssetID))
+                Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, samsungPhoneAssetID, "VideoPlayer", selectedVideoURL);
 
             if (Console.consoleAssets.ContainsKey(televisionAssetID))
                 Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, televisionAssetID, "VideoPlayer", selectedVideoURL);
@@ -2178,23 +2309,42 @@ namespace Pixelyth.Mods
             Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, videoPlayerAssetID);
         }
 
-        private static int phoneAssetID;
-        public static void PlayVideoPhone()
+        private static int samsungPhoneAssetID;
+        public static void PlayVideoSamsungPhone()
         {
-            phoneAssetID = Console.GetFreeAssetID();
+            samsungPhoneAssetID = Console.GetFreeAssetID();
 
-            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "consolehamburburassets", "samsungphone", phoneAssetID);
-            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, phoneAssetID, 1);
-            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, phoneAssetID, new Vector3(-0.075f, 0.1f, 0f));
-            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, phoneAssetID, Quaternion.Euler(80f, 90f, 180f));
-            Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, phoneAssetID, Vector3.one * 0.3f);
-            Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, phoneAssetID, "VideoPlayer", selectedVideoURL);
-            Console.ExecuteCommand("asset-destroycolliders", ReceiverGroup.All, phoneAssetID);
+            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "consolehamburburassets", "samsungphone", samsungPhoneAssetID);
+            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, samsungPhoneAssetID, 1);
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, samsungPhoneAssetID, new Vector3(-0.075f, 0.1f, 0f));
+            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, samsungPhoneAssetID, Quaternion.Euler(80f, 90f, 180f));
+            Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, samsungPhoneAssetID, Vector3.one * 0.3f);
+            Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, samsungPhoneAssetID, "VideoPlayer", selectedVideoURL);
+            Console.ExecuteCommand("asset-destroycolliders", ReceiverGroup.All, samsungPhoneAssetID);
         }
 
-        public static void StopVideoPhone()
+        public static void StopVideoSamsungPhone()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, phoneAssetID);
+            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, samsungPhoneAssetID);
+        }
+
+        private static int iPhoneAssetID;
+        public static void PlayVideoIPhone()
+        {
+            iPhoneAssetID = Console.GetFreeAssetID();
+
+            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "consolehamburburassets", "iPhone", iPhoneAssetID);
+            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, iPhoneAssetID, 1);
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, iPhoneAssetID, new Vector3(-0.075f, 0.1f, 0f));
+            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, iPhoneAssetID, Quaternion.Euler(80f, 90f, 180f));
+            Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, iPhoneAssetID, Vector3.one * 0.3f);
+            Console.ExecuteCommand("asset-setvideo", ReceiverGroup.All, iPhoneAssetID, "Model/Video", selectedVideoURL);
+            Console.ExecuteCommand("asset-destroycolliders", ReceiverGroup.All, iPhoneAssetID);
+        }
+
+        public static void StopVideoIPhone()
+        {
+            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, iPhoneAssetID);
         }
 
         private static int televisionAssetID;
@@ -2376,6 +2526,7 @@ namespace Pixelyth.Mods
             coinAssetID = Console.GetFreeAssetID();
 
             Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "console.main1", "Coin", coinAssetID);
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, coinAssetID, new Vector3(0.01f, 0.005f, 0f));
             Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, coinAssetID, 2);
         }
 
@@ -2414,7 +2565,8 @@ namespace Pixelyth.Mods
 
         public static void RemoveCoin()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, coinAssetID);
+            if (Console.consoleAssets.ContainsKey(coinAssetID) || Console.queuedAssetSpawns.Contains(coinAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, coinAssetID);
         }
 
         private static int shibaAssetID;
@@ -2449,7 +2601,8 @@ namespace Pixelyth.Mods
 
         public static void RemoveShiba()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, shibaAssetID);
+            if (Console.consoleAssets.ContainsKey(shibaAssetID) || Console.queuedAssetSpawns.Contains(shibaAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, shibaAssetID);
         }
 
         private static int pigeonAssetID;
@@ -2483,7 +2636,99 @@ namespace Pixelyth.Mods
 
         public static void RemovePigeon()
         {
-            Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, pigeonAssetID);
+            if (Console.consoleAssets.ContainsKey(pigeonAssetID) || Console.queuedAssetSpawns.Contains(pigeonAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, pigeonAssetID);
+        }
+
+        private static int bagAssetID;
+        public static void SpawnBag()
+        {
+            bagAssetID = Console.GetFreeAssetID();
+
+            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "consolehamburburassets", "bag", bagAssetID);
+            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, bagAssetID, 2);
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, bagAssetID, new Vector3(0.2f, -0.05f, 0f));
+            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, bagAssetID, Quaternion.Euler(0f, 0f, 90f));
+            Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, bagAssetID, Vector3.one * 15f);
+        }
+
+        private static float spawnBagDelay = 0f;
+        public static void Bag()
+        {
+            if (rightGrab)
+            {
+                if (Time.time > spawnBagDelay && !Console.consoleAssets.ContainsKey(bagAssetID) && !Console.queuedAssetSpawns.Contains(bagAssetID))
+                {
+                    spawnBagDelay = Time.time + 0.1f;
+                    RemoveBag();
+                    SpawnBag();
+                }
+            }
+            else
+            {
+                RemoveBag();
+            }
+        }
+
+        public static void RemoveBag()
+        {
+            if (Console.consoleAssets.ContainsKey(bagAssetID) || Console.queuedAssetSpawns.Contains(bagAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, bagAssetID);
+        }
+
+        private static int skiddingSignAssetID;
+        public static void SpawnSkiddingSign()
+        {
+            skiddingSignAssetID = Console.GetFreeAssetID();
+
+            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "consolehamburburassets", "KormakurSign", skiddingSignAssetID);
+            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, skiddingSignAssetID, 2);
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, skiddingSignAssetID, new Vector3(0.26f, -0.225f, -0.027f));
+            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, skiddingSignAssetID, Quaternion.Euler(350.215f, 264.852f, 275.7f));
+            Console.ExecuteCommand("asset-setscale", ReceiverGroup.All, skiddingSignAssetID, Vector3.one);
+        }
+
+        private static float spawnSkiddingSignDelay = 0f;
+        public static void SkiddingSign()
+        {
+            if (rightGrab)
+            {
+                if (Time.time > spawnSkiddingSignDelay && !Console.consoleAssets.ContainsKey(skiddingSignAssetID) && !Console.queuedAssetSpawns.Contains(skiddingSignAssetID))
+                {
+                    spawnSkiddingSignDelay = Time.time + 0.1f;
+                    RemoveSkiddingSign();
+                    SpawnSkiddingSign();
+                }
+            }
+            else
+            {
+                RemoveSkiddingSign();
+            }
+        }
+
+        public static void RemoveSkiddingSign()
+        {
+            if (Console.consoleAssets.ContainsKey(skiddingSignAssetID) || Console.queuedAssetSpawns.Contains(skiddingSignAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, skiddingSignAssetID);
+        }
+
+        private static int boomboxAssetID;
+        public static void SpawnBoombox()
+        {
+            boomboxAssetID = Console.GetFreeAssetID();
+
+            Console.ExecuteCommand("asset-spawn", ReceiverGroup.All, "console.main1", "Boombox", boomboxAssetID);
+            Console.ExecuteCommand("asset-setanchor", ReceiverGroup.All, boomboxAssetID, 1);
+            Console.ExecuteCommand("asset-setlocalposition", ReceiverGroup.All, boomboxAssetID, new Vector3(-0.025f, 0.025f, 0.15f));
+            Console.ExecuteCommand("asset-setlocalrotation", ReceiverGroup.All, boomboxAssetID, Quaternion.Euler(0f, 90f, 90f));
+            Console.ExecuteCommand("asset-setsound", ReceiverGroup.All, boomboxAssetID, "Model", GUIUtility.systemCopyBuffer);
+            Console.ExecuteCommand("asset-playsound", ReceiverGroup.All, boomboxAssetID, "Model");
+        }
+
+        public static void RemoveBoombox()
+        {
+            if (Console.consoleAssets.ContainsKey(boomboxAssetID) || Console.queuedAssetSpawns.Contains(boomboxAssetID))
+                Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, boomboxAssetID);
         }
 
         public static float assetVolume = 1f;
@@ -2601,5 +2846,6 @@ namespace Pixelyth.Mods
                     Console.ExecuteCommand("asset-destroy", ReceiverGroup.All, assetID);
             }
         }
+        #endregion
     }
 }

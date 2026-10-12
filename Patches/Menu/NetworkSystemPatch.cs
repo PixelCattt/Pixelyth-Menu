@@ -22,6 +22,7 @@
 
 using HarmonyLib;
 using Pixelyth.Menu;
+using Pixelyth.Mods;
 
 namespace Pixelyth.Patches.Menu
 {
@@ -34,7 +35,7 @@ namespace Pixelyth.Patches.Menu
             {
                 if (Buttons.GetIndex("Unlock Fan Club Subscription").enabled)
                 {
-                    if (opts.MaxPlayers == 20)
+                    if (opts.MaxPlayers == 20 && !Important.twentyPlayerRooms)
                         opts.MaxPlayers = 10;
                     if ((string)opts.CustomProps["fan_club"] == "true")
                         opts.CustomProps["fan_club"] = "false";

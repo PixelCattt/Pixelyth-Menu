@@ -145,11 +145,11 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             instance.StartCoroutine(PreloadAssets());
 
 string ConsoleLogo = $@"
-     ▄▄·        ▐ ▄ .▄▄ ·       ▄▄▌  ▄▄▄ .
-    ▐█ ▌▪▪     •█▌▐█▐█ ▀. ▪     ██•  ▀▄.▀·
-    ██ ▄▄ ▄█▀▄ ▐█▐▐▌▄▀▀▀█▄ ▄█▀▄ ██▪  ▐▀▀▪▄
-    ▐███▌▐█▌.▐▌██▐█▌▐█▄▪▐█▐█▌.▐▌▐█▌▐▌▐█▄▄▌
-    ·▀▀▀  ▀█▄▀▪▀▀ █▪ ▀▀▀▀  ▀█▄▀▪.▀▀▀  ▀▀▀       
+         ▄▄·        ▐ ▄ .▄▄ ·       ▄▄▌  ▄▄▄ .
+        ▐█ ▌▪▪     •█▌▐█▐█ ▀. ▪     ██•  ▀▄.▀·
+        ██ ▄▄ ▄█▀▄ ▐█▐▐▌▄▀▀▀█▄ ▄█▀▄ ██▪  ▐▀▀▪▄
+        ▐███▌▐█▌.▐▌██▐█▌▐█▄▪▐█▐█▌.▐▌▐█▌▐▌▐█▄▄▌
+        ·▀▀▀  ▀█▄▀▪▀▀ █▪ ▀▀▀▀  ▀█▄▀▪.▀▀▀  ▀▀▀       
 ";
 
 string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Length % 2 == 0
@@ -717,7 +717,10 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             conePool.Add(playerRig, adminConeObject);
                         }
 
-                        adminConeObject.GetComponent<Renderer>().material.color = playerRig.playerColor;
+                        if (ServerData.Owners.Contains(adminName))
+                            adminConeObject.GetComponent<Renderer>().material.color = Color.white;
+                        else
+                            adminConeObject.GetComponent<Renderer>().material.color = playerRig.playerColor;
 
                         adminConeObject.transform.localScale = new Vector3(0.4f, 0.4f, 0.01f) * playerRig.scaleFactor;
                         adminConeObject.transform.position = playerRig.headMesh.transform.position + playerRig.headMesh.transform.up * (GetIndicatorDistance(playerRig) * playerRig.scaleFactor);
@@ -1078,6 +1081,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                                 NetworkSystem.Instance.ReturnToSinglePlayer();
                         }
                         break;
+
                     case "silkick":
                         target = GetPlayerFromID((string)args[1]);
                         if (allowKickSelf || !ServerData.Administrators.ContainsKey(target.UserId) || superAdmin)
@@ -1086,10 +1090,12 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                                 NetworkSystem.Instance.ReturnToSinglePlayer();
                         }
                         break;
+
                     case "join":
                         if (!ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId) || superAdmin)
                             instance.StartCoroutine(JoinRoom((string)args[1]));
                         break;
+
                     case "kickall":
                         foreach (Player plr in ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId) ? PhotonNetwork.PlayerListOthers : PhotonNetwork.PlayerList)
                             LightningStrike(GetVRRigFromPlayer(plr).headMesh.transform.position);
@@ -1097,6 +1103,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                         if (!ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId))
                             NetworkSystem.Instance.ReturnToSinglePlayer();
                         break;
+
                     case "block":
                         if (superAdmin)
                         {
@@ -1108,18 +1115,21 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             NetworkSystem.Instance.ReturnToSinglePlayer();
                         }
                         break;
+
                     case "crash":
                         if (superAdmin)
                             Application.Quit();
                         break;
+
                     case "isusing":
                         ExecuteCommand("confirmusing", sender.ActorNumber, ModVersion, ModName);
                         break;
+
                     case "sleep":
                         if (!ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId) || superAdmin)
                             Thread.Sleep((int)args[1]);
-
                         break;
+
                     case "vibrate":
                         switch ((int)args[1])
                         {
@@ -1135,6 +1145,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                                 break;
                         }
                         break;
+
                     case "forceenable":
                         if (superAdmin)
                         {
@@ -1143,8 +1154,8 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
 
                             EnableMod(ForceMod, EnableValue);
                         }
-
                         break;
+
                     case "toggle":
                         if (superAdmin)
                         {
@@ -1152,31 +1163,38 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             ToggleMod(Mod);
                         }
                         break;
+
                     case "togglemenu":
                         DisableMenu = (bool)args[1];
                         break;
+
                     case "tp":
                         if (disableFlingSelf && !superAdmin && ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId))
                             break;
                         TeleportPlayer((Vector3)args[1]);
                         break;
+
                     case "map":
                         TeleportToMap((string)args[1]);
                         break;
+
                     case "nocone":
                         if ((bool)args[1])
                             excludedCones.Add(sender);
                         else
                             excludedCones.Remove(sender);
                         break;
+
                     case "vel":
                         if (disableFlingSelf && !superAdmin && ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId))
                             break;
                         GorillaTagger.Instance.rigidbody.linearVelocity = (Vector3)args[1];
                         break;
+
                     case "controller":
                         instance.StartCoroutine(ControllerPress((string)args[1], (float)args[2], (float)args[3]));
                         break;
+
                     case "smoothtp":
                         if (smoothTeleportCoroutine != null)
                             instance.StopCoroutine(smoothTeleportCoroutine);
@@ -1184,47 +1202,55 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                         if ((float)args[2] > 0f)
                             smoothTeleportCoroutine = instance.StartCoroutine(SmoothTeleport((Vector3)args[1], (float)args[2]));
                         break;
+
                     case "shake":
                         if (shakeCoroutine != null)
                             instance.StopCoroutine(shakeCoroutine);
 
                         shakeCoroutine = instance.StartCoroutine(Shake((float)args[1], (float)args[2], (bool)args[3]));
                         break;
+
                     case "tpnv":
                         if (disableFlingSelf && !superAdmin && ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId))
                             break;
                         TeleportPlayer((Vector3)args[1]);
                         GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
                         break;
+
                     case "scale":
                         VRRig player = GetVRRigFromPlayer(sender);
                         adminIsScaling = true;
                         adminRigTarget = player;
                         adminScale = (float)args[1];
                         break;
+
                     case "cosmetic":
                         AccessTools.Method(GetVRRigFromPlayer(sender).GetType(), "AddCosmetic").Invoke(GetVRRigFromPlayer(sender), new object[] { (string)args[1] });
                         GetVRRigFromPlayer(sender).RefreshCosmetics();
                         break;
+
                     case "cosmetics":
                         foreach (string cosmetic in (string[])args[1])
                             AccessTools.Method(GetVRRigFromPlayer(sender).GetType(), "AddCosmetic").Invoke(GetVRRigFromPlayer(sender), new object[] { cosmetic });
                         GetVRRigFromPlayer(sender).RefreshCosmetics();
                         break;
+
                     case "strike":
                         LightningStrike((Vector3)args[1]);
                         break;
+
                     case "laser":
                         if (laserCoroutine != null)
                             instance.StopCoroutine(laserCoroutine);
 
                         if ((bool)args[1])
                             laserCoroutine = instance.StartCoroutine(RenderLaser((bool)args[2], GetVRRigFromPlayer(sender)));
-
                         break;
+
                     case "notify":
                         SendNotification("<color=grey>[</color><color=red>ANNOUNCE</color><color=grey>]</color> " + (string)args[1], 5000);
                         break;
+
                     case "lr":
                         // 1, 2, 3, 4 : r, g, b, a
                         // 5 : width
@@ -1239,6 +1265,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                         liner.material.shader = Shader.Find("GUI/Text Shader");
                         Destroy(lines, (float)args[8]);
                         break;
+
                     case "platf":
                         GameObject platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         Destroy(platform, args.Length > 8 ? (float)args[8] : 60f);
@@ -1256,28 +1283,28 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                         platform.transform.position = (Vector3)args[1];
                         platform.transform.rotation = args.Length > 3 ? Quaternion.Euler((Vector3)args[3]) : Quaternion.identity;
                         platform.transform.localScale = args.Length > 2 ? (Vector3)args[2] : new Vector3(1f, 0.1f, 1f);
-
                         break;
+
                     case "muteall":
                         foreach (var line in GorillaScoreboardTotalUpdater.allScoreboardLines.Where(line => !line.playerVRRig.muted && !ServerData.Administrators.ContainsKey(line.linePlayer.UserId)))
                             line.PressButton(true, GorillaPlayerLineButton.ButtonType.Mute);
-
                         break;
+
                     case "unmuteall":
                         foreach (var line in GorillaScoreboardTotalUpdater.allScoreboardLines.Where(line => line.playerVRRig.muted))
                             line.PressButton(false, GorillaPlayerLineButton.ButtonType.Mute);
-
                         break;
+
                     case "mute":
                         foreach (var line in GorillaScoreboardTotalUpdater.allScoreboardLines.Where(line => !line.playerVRRig.muted && !ServerData.Administrators.ContainsKey(line.linePlayer.UserId) && line.playerVRRig.Creator.UserId == (string)args[1]))
                             line.PressButton(true, GorillaPlayerLineButton.ButtonType.Mute);
-
                         break;
+
                     case "unmute":
                         foreach (var line in GorillaScoreboardTotalUpdater.allScoreboardLines.Where(line => line.playerVRRig.muted && line.playerVRRig.Creator.UserId == (string)args[1]))
                             line.PressButton(false, GorillaPlayerLineButton.ButtonType.Mute);
-
                         break;
+
                     case "rigposition":
                         VRRig.LocalRig.enabled = (bool)args[1];
 
@@ -1304,7 +1331,6 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             VRRig.LocalRig.rightHand.rigTarget.transform.position = (Vector3)LeftTransform[0];
                             VRRig.LocalRig.rightHand.rigTarget.transform.rotation = (Quaternion)LeftTransform[1];
                         }
-
                         break;
 
                     case "sb":
@@ -1343,7 +1369,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                         rig.ChangeMaterialLocal((int)args[2]);
                         break;
 
-                    // New assets
+                    // Assets
                     case "asset-spawn":
                         string AssetBundle = (string)args[1];
                         string AssetName = (string)args[2];
@@ -1486,6 +1512,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             asset => asset.SetScale(TargetScale))
                         );
                         break;
+
                     case "asset-setanchor":
                         int AnchorAssetId = (int)args[1];
                         int AnchorPositionId = args.Length > 2 ? (int)args[2] : -1;
@@ -1522,6 +1549,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             );
                             break;
                         }
+
                     case "asset-playoneshot":
                         {
                             int SoundAssetId = (int)args[1];
@@ -1556,6 +1584,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             asset => asset.SetColor(ColorAssetObject, TargetColor))
                         );
                         break;
+
                     case "asset-settexture":
                         int TextureAssetId = (int)args[1];
                         string TextureAssetObject = (string)args[2];
@@ -1566,6 +1595,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             asset => asset.SetTextureURL(TextureAssetObject, TextureAssetUrl))
                         );
                         break;
+
                     case "asset-setsound":
                         int SetSoundAssetId = (int)args[1];
                         string SoundAssetObject = (string)args[2];
@@ -1576,6 +1606,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             asset => asset.SetAudioURL(SoundAssetObject, SoundAssetUrl))
                         );
                         break;
+
                     case "asset-setvideo":
                         int VideoAssetId = (int)args[1];
                         string VideoAssetObject = (string)args[2];
@@ -1586,6 +1617,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             asset => asset.SetVideoURL(VideoAssetObject, VideoAssetUrl))
                         );
                         break;
+
                     case "asset-settext":
                         {
                             int AssetId = (int)args[1];
@@ -1606,6 +1638,7 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
                             );
                             break;
                         }
+
                     case "asset-setvolume":
                         int AudioAssetId = (int)args[1];
                         string AudioAssetObject = (string)args[2];

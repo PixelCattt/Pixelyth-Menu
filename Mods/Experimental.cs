@@ -36,6 +36,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Windows.Speech;
 using static Pixelyth.Menu.Main;
 
 namespace Pixelyth.Mods
@@ -95,7 +96,6 @@ namespace Pixelyth.Mods
             SerializePatch.OverrideSerialization = () =>
             {
                 SendSerialize(VRRig.LocalRig.GetPhotonView());
-                //SendSerialize(GorillaTagger.Instance.myVRRig.reliableView);
                 return false;
             };
         }
@@ -268,6 +268,62 @@ namespace Pixelyth.Mods
                     }
                     break;
             }
+        }
+
+        private static DictationRecognizer dictationRecognizer;
+        private static bool dictationShouldRun = false;
+
+        public static void StartDictationListening()
+        {
+            if (dictationRecognizer != null)
+                return;
+
+            dictationShouldRun = true;
+            Dictation();
+
+            NotificationManager.SendNotification("Dictation listening started.");
+        }
+
+        public static void StopDictationListening()
+        {
+            dictationShouldRun = false;
+
+            if (dictationRecognizer != null)
+            {
+                if (dictationRecognizer.Status == SpeechSystemStatus.Running)
+                    dictationRecognizer.Stop();
+
+                dictationRecognizer.Dispose();
+                dictationRecognizer = null;
+            }
+
+            NotificationManager.SendNotification("Dictation listening stopped.");
+        }
+
+        private static void Dictation()
+        {
+            dictationRecognizer = new DictationRecognizer();
+
+            dictationRecognizer.DictationResult += (text, confidence) =>
+            {
+                NotificationManager.SendNotification($"Heard: \"{text}\" ({confidence})");
+            };
+
+            dictationRecognizer.DictationError += (error, hresult) =>
+            {
+                NotificationManager.SendNotification($"Dictation error: {error}");
+            };
+
+            dictationRecognizer.DictationComplete += (completionCause) =>
+            {
+                if (!dictationShouldRun)
+                    return;
+
+                dictationRecognizer.Dispose();
+                Dictation();
+            };
+
+            dictationRecognizer.Start();
         }
     }
 }

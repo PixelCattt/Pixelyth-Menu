@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using UnityEngine;
 using static Pixelyth.Menu.Main;
 using static Pixelyth.Utilities.FileUtilities;
 
@@ -209,14 +210,24 @@ namespace Pixelyth.Managers
             }
         }
 
-        public static void ExecuteOnGUI()
+        public static void ExecuteOnGUI(Event pad = null)
         {
+            pad ??= Event.current;
             foreach (Plugin plugin in Plugins.Where(plugin => plugin.Enabled))
             {
                 try
                 {
                     foreach (MethodInfo method in ResolveHooks(plugin.Assembly).OnGUI)
-                        method.Invoke(null, null);
+                    {
+                        if (pad == null) { method.Invoke(null, null); continue; }
+                        Event original = Event.current;
+                        try
+                        {
+                            Event.current = pad;
+                            method.Invoke(null, null);
+                        }
+                        finally { Event.current = original; }
+                    }
                 }
                 catch (Exception e) { LogManager.Log("Error with OnGUI() with plugin " + plugin.Name + ": " + e); }
             }

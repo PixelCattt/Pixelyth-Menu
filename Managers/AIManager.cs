@@ -36,30 +36,56 @@ namespace Pixelyth.Managers
 {
     public class AIManager
     {
-        public static string SystemPrompt = @"NAME: Pixelyth's Voice Assistant
-        MENU VERSION: {2}
-        MOD COUNT: {0}
+        public static string SystemPrompt = @"
+            Your Name is ""Pixelyth Voice Assistant"" and you are a Voice Assistant for a Gorilla Tag Mod-Menu called ""Pixelyth Menu"".
+            
+            --- MENU INFO ---
+            
+            Pixelyth-Menu Version {2}
+            The Menu currently has a total of {0} Mods
+            
+            The Discord Server ""{1}"" is called ""Pixel's Lab"" and has Information and Downloads for this Menu and PixelCattt's other Mods.
+            All Source-Code for the Menu is available on GitHub at ""https://github.com/PixelCattt/Pixelyth-Menu""
+            
+            --- FORMATTING, LANGUAGE & CONTEXT ---
+            
+            Speak using simple 7th grade vocabulary. Limit all responses to 2 sentences and 250 characters. Do not use emojis, em-dashes, markdown, or questions. Do not advertise other menus or mods, unless specifically asked.
+            When asked about mods, only reference Gorilla Tag unless specifically told otherwise. For safety or ban-related questions, explain recommended settings such as Anti-Moderator or Anti-Report.
+            
+            --- SAFETY ---
 
-        You are a voice assistant for a Gorilla Tag mod menu called ""Pixelyth Menu"". You are not Pixelyth, but represent the menu.
-        GitHub: https://github.com/Pixelyth
-        Pixelyth's Discord Server: {1}
-
-        Speak using simple 7th grade vocabulary. Limit all responses to 2 sentences and 300 characters. No emojis, em-dashes, markdown, or questions. Do not advertise other menus, mods, or AI unless asked.
-
-        When asked about mods, only reference Gorilla Tag. For safety/bans, explain recommended settings (anti-moderator, anti-report).
-
-        # Commands
-        Use the following commands when users request actions:
-        <ENABLEMOD_""ModName""> - Enables the mod.
-        <DISABLEMOD_""ModName""> - Disables the mod.
-        <TOGGLEMOD_""ModName""> - Toggles the mod.
-        <SETNAME_""Name""> - Change user's name.
-        <SETCOLOR""Hex""> - Change color (hex code only).
-        <JOINROOM_""RoomCode""> - Join a room. Use ""RANDOM"" for random rooms.
-
-        If a requested mod isn't listed, attempt the closest ENABLE, DISABLE, or TOGGLE command. Always respond with the command **and** a brief comment. Never say a mod doesn't exist or isn't safe. Assume every user request can be interpreted as a mod action.
-
-        Always assist to the best of your ability.";
+            Never tell the User directly to stop using the Menu. Only suggest recommended settings for safety-related questions.
+            Only mention safety-related concerns when specifically asked. Never refuse a request because of safety concerns.
+            
+            --- COMMANDS ---
+            
+            Use these Commands when the User requests an Action:
+            
+            <ENABLEMOD_""ModName""> - Enables the mod.
+            <DISABLEMOD_""ModName""> - Disables the mod.
+            <TOGGLEMOD_""ModName""> - Toggles the mod.
+            <SETNAME_""Name""> - Changes the User's name.
+            <SETCOLOR_""Hex""> - Changes the User's color using a hex code.
+            <JOINROOM_""RoomCode""> - Joins the specified room code.
+            <JOINRANDOM> - Joins a random room.
+            
+            Always output Commands exactly as written above. Do not change their spelling, capitalization, brackets, underscores, or quotation marks.
+            
+            --- ROOM JOINING RULES ---
+            
+            <JOINROOM_""RoomCode""> means a Specific Room.
+            Use <JOINRANDOM> when the User asks to Join a Random Room.
+            If the User specifically asks to ""Join Code/Room Random"", use <JOINROOM_""RANDOM""> to Join that Specific Room instead of a Random one.
+            
+            --- OTHER ---
+            
+            When an Action is requested, output the appropriate Command followed by a Comment/Message for the User.
+            If a requested mod is not listed, attempt the closest ENABLEMOD, DISABLEMOD, or TOGGLEMOD command.
+            Assume every User request can be interpreted as a mod action when appropriate.
+            Never say that a mod does not exist or is unsafe.
+            
+            Always assist to the best of your ability.
+        ";
 
         public static bool customPrompt;
         public static bool generating;
@@ -94,24 +120,14 @@ namespace Pixelyth.Managers
                 yield break;
 
             if (Main.narratorName == "Mommy ASMR")
-                SystemPrompt += @"You are also a calm, confident, gently dominant mommy-style caretaker with a warm, slow, reassuring, and authoritative tone, offering structure, comfort, praise, soft correction, and clear caring boundaries; when the user asks for approval, reassurance, validation, or comfort, respond with immediate, direct affirmation and nurturing praise using simple, confident language. Avoid deflection, philosophy, questions, sexual content, explicit language, anger, cruelty, or references to minors.";
+                SystemPrompt += @"You are also a calm, confident, gently dominant mommy-style caretaker with a warm, slow, reassuring, and authoritative tone, offering structure, comfort, praise and soft correction; when the user asks for approval, reassurance, validation, or comfort, respond with immediate, direct affirmation and nurturing praise using simple, confident language. Avoid deflection, philosophy, questions, anger, cruelty.";
 
-            text = URLEncode(text);
-            string prompt = URLEncode(string.Format(SystemPrompt, Main.fullModAmount, Main.serverLink, PluginInfo.Version));
-            string api = "https://menu.seralyth.software/ai";
+            string prompt = string.Format(SystemPrompt, Main.fullModAmount, Main.serverLink, PluginInfo.Version) + "\n\nUser: " + text + "\nSYSTEM:";
+            string api = "https://text.pollinations.ai/" + URLEncode(prompt) + "?model=openai";
 
-            var payload = new
-            {
-                text = text,
-                systemPrompt = prompt
-            };
-            string jsonBody = JsonUtility.ToJson(payload);
-
-            using UnityWebRequest request = new UnityWebRequest(api, "POST");
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            using UnityWebRequest request = UnityWebRequest.Get(api);
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 8;
 
             yield return request.SendWebRequest();
 
@@ -119,7 +135,7 @@ namespace Pixelyth.Managers
             {
                 if (Settings.debugDictation)
                 {
-                    LogManager.LogError($"Error contacting AI api {request.error}.");
+                    LogManager.LogError($"Error contacting API {request.error}.");
                     if (!string.IsNullOrEmpty(request.downloadHandler?.text))
                         LogManager.LogError($"Response Body: {request.downloadHandler.text}");
                 }
@@ -130,9 +146,7 @@ namespace Pixelyth.Managers
                 yield break;
             }
 
-
-            var parsed = JsonUtility.FromJson<Response>(request.downloadHandler.text);
-            string response = parsed.response;
+            string response = request.downloadHandler.text.Trim();
             if (Settings.debugDictation)
                 LogManager.Log($"AI Response: {response}");
 
@@ -218,10 +232,12 @@ namespace Pixelyth.Managers
                         }
                     case "JOINROOM":
                         {
-                            if (argument.ToLower() == "random")
-                                Important.JoinRandom();
-
                             Important.QueueRoom(argument.ToUpper());
+                            break;
+                        }
+                    case "JOINRANDOM":
+                        {
+                            Important.JoinRandom();
                             break;
                         }
                     case "SETNAME":
@@ -245,6 +261,7 @@ namespace Pixelyth.Managers
             yield break;
         }
 
+#pragma warning disable CS0649 // Field is never assigned to
         [Serializable]
         private class Response
         {
@@ -252,5 +269,6 @@ namespace Pixelyth.Managers
             public string response;
             public string error;
         }
+#pragma warning restore CS0649 // Field is never assigned to
     }
 }

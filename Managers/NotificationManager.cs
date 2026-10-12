@@ -66,10 +66,12 @@ namespace Pixelyth.Managers
         public static int NotifiCounter;
         private class NotificationEntry
         {
+#pragma warning disable CS0649 // Field is never assigned to
             public string RawText;
             public string BaseDisplay;
             public int Counter;
             public float ExpireTime;
+#pragma warning restore CS0649 // Field is never assigned to
         }
 
         private static readonly List<NotificationEntry> activeNotifications = new List<NotificationEntry>();

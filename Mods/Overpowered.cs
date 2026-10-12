@@ -61,6 +61,8 @@ namespace Pixelyth.Mods
 {
     public static class Overpowered
     {
+        private const string NotMasterClientError = "<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.";
+
         public static void VIMKickGun()
         {
             if (!VRRig.LocalRig.IsVIMSubscriber())
@@ -150,7 +152,7 @@ namespace Pixelyth.Mods
 
         public static void SetGuardianTarget(NetPlayer target)
         {
-            if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client."); return; }
+            if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification(NotMasterClientError); return; }
             GorillaGuardianManager guardianManager = (GorillaGuardianManager)GorillaGameManager.instance;
             if (guardianManager.IsPlayerGuardian(target))
                 return;
@@ -201,7 +203,7 @@ namespace Pixelyth.Mods
                     i++;
                 }
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void UnguardianSelf()
@@ -211,7 +213,7 @@ namespace Pixelyth.Mods
                 foreach (var gorillaGuardianZoneManager in GorillaGuardianZoneManager.zoneManagers.Where(gorillaGuardianZoneManager => gorillaGuardianZoneManager.enabled && gorillaGuardianZoneManager.IsZoneValid()).Where(gorillaGuardianZoneManager => gorillaGuardianZoneManager.CurrentGuardian == NetworkSystem.Instance.LocalPlayer))
                     gorillaGuardianZoneManager.SetGuardian(null);
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void UnguardianGun()
@@ -229,7 +231,7 @@ namespace Pixelyth.Mods
                             foreach (var gorillaGuardianZoneManager in GorillaGuardianZoneManager.zoneManagers.Where(gorillaGuardianZoneManager => gorillaGuardianZoneManager.enabled && gorillaGuardianZoneManager.IsZoneValid()).Where(gorillaGuardianZoneManager => gorillaGuardianZoneManager.CurrentGuardian == GetPlayerFromVRRig(gunLockedPlayer)))
                                 gorillaGuardianZoneManager.SetGuardian(null);
                         }
-                        else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                        else NotificationManager.SendNotification(NotMasterClientError);
                         guardianDelay = Time.time + 0.1f;
                     }
                 }
@@ -243,7 +245,7 @@ namespace Pixelyth.Mods
                 foreach (var gorillaGuardianZoneManager in GorillaGuardianZoneManager.zoneManagers.Where(gorillaGuardianZoneManager => gorillaGuardianZoneManager.enabled && gorillaGuardianZoneManager.IsZoneValid()))
                     gorillaGuardianZoneManager.SetGuardian(null);
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void SetPlayerColors(Dictionary<int, int> colors) // ActorNumber : Team // 0 = Blue, 1 = Red, -1 = None
@@ -285,7 +287,7 @@ namespace Pixelyth.Mods
                         if (PhotonNetwork.IsMasterClient)
                             SetPlayerColors(new Dictionary<int, int> { { GetPlayerFromVRRig(gunLockedPlayer).ActorNumber, color } });
                         else
-                            NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                            NotificationManager.SendNotification(NotMasterClientError);
                     }
                 }
             }
@@ -296,7 +298,7 @@ namespace Pixelyth.Mods
             if (PhotonNetwork.IsMasterClient)
                 SetPlayerColors(NetworkSystem.Instance.AllNetPlayers.ToDictionary(p => p.ActorNumber, p => color));
             else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void StrobeColorSelf()
@@ -307,7 +309,7 @@ namespace Pixelyth.Mods
                 if (NetworkSystem.Instance.IsMasterClient)
                     SetColorSelf(Time.time % 0.2f > 0.1f ? 1 : 0);
                 else
-                    NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                    NotificationManager.SendNotification(NotMasterClientError);
             }
         }
 
@@ -325,7 +327,7 @@ namespace Pixelyth.Mods
                         if (NetworkSystem.Instance.IsMasterClient)
                             SetPlayerColors(new Dictionary<int, int> { { gunLockedPlayer.GetPlayer().ActorNumber, Time.time % 0.2f > 0.1f ? 1 : 0 } });
                         else
-                            NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                            NotificationManager.SendNotification(NotMasterClientError);
                     }
                 }
             }
@@ -339,7 +341,7 @@ namespace Pixelyth.Mods
                 if (NetworkSystem.Instance.IsMasterClient)
                     SetColorAll(Time.time % 0.2f > 0.1f ? 1 : 0);
                 else
-                    NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                    NotificationManager.SendNotification(NotMasterClientError);
             }
         }
 
@@ -349,7 +351,7 @@ namespace Pixelyth.Mods
         {
             if (!NetworkSystem.Instance.IsMasterClient)
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 return;
             }
 
@@ -399,7 +401,7 @@ namespace Pixelyth.Mods
                 if (gunLockedPlayer != null)
                 {
                     if (!NetworkSystem.Instance.IsMasterClient)
-                        NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                        NotificationManager.SendNotification(NotMasterClientError);
                     else
                     {
                         if (Time.time > materialDelay)
@@ -589,74 +591,17 @@ namespace Pixelyth.Mods
             }
         }
 
-        public static void DriverStatus(bool locked)
-        {
-            if (PhotonNetwork.IsMasterClient)
-                CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, locked, PhotonNetwork.LocalPlayer.ActorNumber);
-            else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
-        }
-
-        private static float spazDriverDelay;
-        public static void SpazDriver()
-        {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                if (Time.time > spazDriverDelay)
-                {
-                    spazDriverDelay = Time.time + 0.1f;
-                    CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, true, PhotonNetwork.LocalPlayer.ActorNumber);
-                    CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, false, PhotonNetwork.LocalPlayer.ActorNumber);
-                }
-            }
-        }
-
-        public static void DriverStatusGun(bool locked)
-        {
-            if (GetGunInput(false))
-            {
-                var GunData = RenderGun(true);
-
-                if (gunLockedPlayer != null)
-                {
-                    if (PhotonNetwork.IsMasterClient)
-                        CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, locked, gunLockedPlayer.GetPlayer().ActorNumber);
-                }
-            }
-        }
-
-        public static void SpazDriverStatusGun()
-        {
-            if (GetGunInput(false))
-            {
-                var GunData = RenderGun(true);
-
-                if (gunLockedPlayer != null)
-                {
-                    if (PhotonNetwork.IsMasterClient)
-                    {
-                        if (Time.time > spazDriverDelay)
-                        {
-                            spazDriverDelay = Time.time + 0.1f;
-                            CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, true, gunLockedPlayer.GetPlayer().ActorNumber);
-                            CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, false, gunLockedPlayer.GetPlayer().ActorNumber);
-                        }
-                    }
-                }
-            }
-        }
-
         public static void BecomeDriver()
         {
             if (PhotonNetwork.IsMasterClient)
-                CustomMapsTerminal.instance.mapTerminalNetworkObject.SendRPC("SetTerminalControlStatus_RPC", true, true, PhotonNetwork.LocalPlayer.ActorNumber);
+                CustomMapsTerminal.instance.getMapTerminalNetworkObject().SendRPC("SetTerminalControlStatus_RPC", true, true, PhotonNetwork.LocalPlayer.ActorNumber);
             else
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 return;
             }
 
-            CustomMapsTerminal.instance.mapTerminalNetworkObject.photonView.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
+            CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
         }
 
         private static long? id;
@@ -671,7 +616,7 @@ namespace Pixelyth.Mods
 
             if (!PhotonNetwork.IsMasterClient)
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 Buttons.GetIndex("Virtual Stump Kick Gun").SetEnabled(false);
                 return;
             }
@@ -691,7 +636,7 @@ namespace Pixelyth.Mods
                 {
                     id = CustomMaps.Manager.currentMapId == 4977315 ? 5024157 : 4977315;
 
-                    CustomMapsTerminal.instance.mapTerminalNetworkObject.photonView.RPC("UpdateScreen_RPC", gunLockedPlayer.GetPhotonPlayer(), new object[]
+                    CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("UpdateScreen_RPC", gunLockedPlayer.GetPhotonPlayer(), new object[]
                     {
                         6,
                         id,
@@ -706,10 +651,9 @@ namespace Pixelyth.Mods
             if (GetGunInput(false) && id != null)
             {
                 var GunData = RenderGun(true);
-                RaycastHit Ray = GunData.Ray;
 
                 if (gunLockedPlayer)
-                    CustomMapsTerminal.instance.mapTerminalNetworkObject.photonView.RPC("SetRoomMap_RPC", gunLockedPlayer.GetPhotonPlayer(), id.Value);
+                    CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("SetRoomMap_RPC", gunLockedPlayer.GetPhotonPlayer(), id.Value);
             }
         }
 
@@ -723,7 +667,7 @@ namespace Pixelyth.Mods
 
             if (!PhotonNetwork.IsMasterClient)
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 Toggle("Virtual Stump Kick All");
                 return;
             }
@@ -743,7 +687,7 @@ namespace Pixelyth.Mods
                 {
                     id = CustomMaps.Manager.currentMapId == 4977315 ? 5024157 : 4977315;
 
-                    CustomMapsTerminal.instance.mapTerminalNetworkObject.photonView.RPC("UpdateScreen_RPC", RpcTarget.Others, new object[]
+                    CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("UpdateScreen_RPC", RpcTarget.Others, new object[]
                     {
                         6,
                         id,
@@ -755,7 +699,7 @@ namespace Pixelyth.Mods
                     NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> Please temporarily enter the Virtual Stump.");
             }
 
-            CustomMapsTerminal.instance.mapTerminalNetworkObject.photonView.RPC("SetRoomMap_RPC", RpcTarget.Others, id.Value);
+            CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("SetRoomMap_RPC", RpcTarget.Others, id.Value);
 
             NotificationManager.SendNotification("<color=grey>[</color><color=green>SUCCESS</color><color=grey>]</color> Successfully kicked others.");
             Toggle("Virtual Stump Kick All");
@@ -1087,7 +1031,7 @@ namespace Pixelyth.Mods
                 propHuntSpazDelay = Time.time + 0.1f;
                 propHuntSpazMode = !propHuntSpazMode;
 
-                if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client."); return; }
+                if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification(NotMasterClientError); return; }
 
                 if (NetworkSystem.Instance.InRoom && GorillaGameManager.instance.GameType() == GameModeType.PropHunt)
                 {
@@ -1105,7 +1049,7 @@ namespace Pixelyth.Mods
                 propHuntSpazDelay = Time.time + 0.1f;
                 propHuntSpazMode = !propHuntSpazMode;
 
-                if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client."); return; }
+                if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification(NotMasterClientError); return; }
 
                 if (NetworkSystem.Instance.InRoom && GorillaGameManager.instance.GameType() == GameModeType.PropHunt)
                 {
@@ -2474,73 +2418,144 @@ namespace Pixelyth.Mods
         }
 
         public static HalloweenGhostChaser _lucy;
+        public static float lucyFindTime;
+
         public static HalloweenGhostChaser Lucy
         {
             get
             {
-                _lucy ??= GetObject("Environment Objects/05Maze_PersistentObjects/2025_Halloween1_PersistentObjects/Halloween Ghosts/Lucy/Halloween Ghost/FloatingChaseSkeleton").GetComponent<HalloweenGhostChaser>();
+                if ((_lucy == null || _lucy.GetView.ViewID == 0 || (NetworkSystem.Instance.IsMasterClient && !_lucy.IsMine)) && Time.time > lucyFindTime)
+                {
+                    lucyFindTime = Time.time + 5f;
+
+                    GameObject lucyObject = GetObject("Environment Objects/05Maze_PersistentObjects/2025_Halloween1_PersistentObjects/Halloween Ghosts/Lucy/Halloween Ghost/FloatingChaseSkeleton");
+
+                    _lucy = lucyObject != null ? lucyObject.GetComponent<HalloweenGhostChaser>() : GetAllType<HalloweenGhostChaser>().Where(ghost => ghost != null && ghost.HasView && ghost.GetView.ViewID != 0).OrderByDescending(ghost => ghost.IsMine).ThenBy(ghost => ghost.gameObject.activeInHierarchy ? 0 : 1).FirstOrDefault();
+                }
+
                 return _lucy;
             }
             set => _lucy = value;
         }
 
         public static LurkerGhost _lurker;
+        public static float lurkerFindTime;
         public static LurkerGhost Lurker
         {
             get
             {
-                _lurker ??= GetObject("Environment Objects/05Maze_PersistentObjects/2025_Halloween1_PersistentObjects/Halloween Ghosts/Lurker Ghost/GhostLurker_Prefab").GetComponent<LurkerGhost>();
+                if ((_lurker == null || _lurker.GetView.ViewID == 0) && Time.time > lurkerFindTime)
+                {
+                    lurkerFindTime = Time.time + 5f;
+
+                    GameObject lurkerObject = GetObject("Environment Objects/05Maze_PersistentObjects/2025_Halloween1_PersistentObjects/Halloween Ghosts/Lurker Ghost/GhostLurker_Prefab");
+
+                    _lurker = lurkerObject != null ? lurkerObject.GetComponent<LurkerGhost>() : GetAllType<LurkerGhost>().FirstOrDefault(ghost => ghost != null && ghost.HasView && ghost.GetView.ViewID != 0);
+                }
+
+                if (lurkerOwnershipActive)
+                    TakeLurkerOwnership();
+
                 return _lurker;
             }
             set => _lurker = value;
         }
 
+        private static Coroutine blueLucyCoroutine = null;
         public static void SpawnBlueLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
-                hgc.timeGongStarted = Time.time;
-                hgc.currentState = HalloweenGhostChaser.ChaseState.Gong;
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
                 hgc.isSummoned = false;
+
+                if (!hgc.ghostBody.activeSelf)
+                    hgc.ghostBody.SetActive(true);
+
+                hgc.ChooseRandomTarget();
+                hgc.SetInitialSpawnPoint();
+
+                hgc.transform.position =
+                    hgc.spawnTransforms[hgc.spawnIndex].position;
+
+                hgc.timeGongStarted = Time.time;
+                hgc.laugh.volume = 1f;
+                hgc.laugh.GTPlayOneShot(hgc.gong);
+
+                if (blueLucyCoroutine != null)
+                {
+                    CoroutineManager.instance.StopCoroutine(blueLucyCoroutine);
+                    blueLucyCoroutine = null;
+                }
+
+                blueLucyCoroutine = CoroutineManager.instance.StartCoroutine(BlueLucyRise(hgc));
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else
+            {
+                NotificationManager.SendNotification(NotMasterClientError);
+            }
+        }
+
+        private static IEnumerator BlueLucyRise(HalloweenGhostChaser hgc)
+        {
+            if (hgc == null || !hgc.IsMine)
+                yield break;
+
+            yield return new WaitForSeconds(hgc.gongDuration);
+
+            hgc.laugh.Play();
+            hgc.isSummoned = false;
+            hgc.SetInitialRotations();
+            hgc.SetInitialSpawnPoint();
+
+            hgc.timeRiseStarted = Time.time;
+            hgc.currentState = HalloweenGhostChaser.ChaseState.InitialRise;
+
+            blueLucyCoroutine = null;
         }
 
         public static void SpawnRedLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
                 hgc.timeGongStarted = Time.time;
                 hgc.currentState = HalloweenGhostChaser.ChaseState.Gong;
                 hgc.isSummoned = true;
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void DespawnLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
                 hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
                 hgc.isSummoned = false;
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void LucyChase(NetPlayer player)
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
+                VRRig targetRig = GetVRRigFromPlayer(player);
+                if (targetRig == null) return;
+
                 hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
                 hgc.targetPlayer = player;
-                hgc.followTarget = GorillaTagger.Instance.offlineVRRig.transform;
+                hgc.followTarget = targetRig.transform;
             }
             else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void LucyChaseGun()
@@ -2560,6 +2575,7 @@ namespace Pixelyth.Mods
         public static void LucyAttack(NetPlayer player)
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
                 if (Time.time > hgc.grabTime + hgc.grabDuration + 0.1f)
@@ -2575,7 +2591,7 @@ namespace Pixelyth.Mods
                 }
             }
             else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void LucyAttackGun()
@@ -2611,7 +2627,7 @@ namespace Pixelyth.Mods
                         }
                     }
                     else
-                        NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                        NotificationManager.SendNotification(NotMasterClientError);
                 }
             }
         }
@@ -2619,6 +2635,7 @@ namespace Pixelyth.Mods
         public static void LucyAttackAll()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (SerializePatch.OverrideSerialization != null)
             {
                 SerializePatch.OverrideSerialization = () =>
@@ -2637,18 +2654,19 @@ namespace Pixelyth.Mods
                         hgc.currentState = HalloweenGhostChaser.ChaseState.Grabbing;
                         hgc.grabTime = Time.time;
                         hgc.targetPlayer = player;
-                        SendSerialize(Lucy.GetView, new RaiseEventOptions { TargetActors = new[] { player.ActorNumber } });
+                        SendSerialize(hgc.GetView, new RaiseEventOptions { TargetActors = new[] { player.ActorNumber } });
                     }
                 }
             }
             else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static float lucyDelay;
         public static void SpazLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
                 if (Time.time > lucyDelay)
@@ -2659,12 +2677,13 @@ namespace Pixelyth.Mods
                     lucyDelay = Time.time + 0.1f;
                 }
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void AnnoyingLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
             {
                 if (Time.time > lucyDelay)
@@ -2676,28 +2695,27 @@ namespace Pixelyth.Mods
                     lucyDelay = Time.time + 0.1f;
                 }
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void BecomeLucy()
         {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (!NetworkSystem.Instance.IsMasterClient)
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 return;
             }
 
-            if (Lucy != null)
-            {
                 VRRig.LocalRig.enabled = false;
                 VRRig.LocalRig.transform.position = GorillaTagger.Instance.bodyCollider.transform.position - Vector3.up * 99999f;
 
-                Lucy.transform.position = GorillaTagger.Instance.bodyCollider.transform.position;
-                Lucy.transform.rotation = GorillaTagger.Instance.headCollider.transform.rotation;
+            hgc.transform.position = GorillaTagger.Instance.bodyCollider.transform.position;
+            hgc.transform.rotation = GorillaTagger.Instance.headCollider.transform.rotation;
 
-                Lucy.currentState = HalloweenGhostChaser.ChaseState.Chasing;
-                Lucy.targetPlayer = null;
-            }
+            hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
+            hgc.targetPlayer = null;
         }
 
         public static void MoveLucyGun()
@@ -2711,7 +2729,7 @@ namespace Pixelyth.Mods
                 {
                     if (Lucy.IsMine)
                         Lucy.transform.position = GunPointer.transform.position + Vector3.up;
-                    else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                    else NotificationManager.SendNotification(NotMasterClientError);
                 }
             }
         }
@@ -2719,24 +2737,601 @@ namespace Pixelyth.Mods
         public static void FastLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
                 hgc.currentSpeed = 10f;
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void SlowLucy()
         {
             HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
             if (hgc.IsMine)
                 hgc.currentSpeed = 1f;
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static int lucySpeedIndex = 10;
+        public static void ApplyLucySpeed(int index)
+        {
+            lucySpeedIndex = index;
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+                hgc.currentSpeed = index;
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static bool lucyCooldownsSaved;
+        public static float lucyMinGrabCooldown, lucyMaxChaseTime;
+        public static void RestlessLucy()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (!lucyCooldownsSaved)
+                {
+                    lucyCooldownsSaved = true;
+                    lucyMinGrabCooldown = hgc.minGrabCooldown;
+                    lucyMaxChaseTime = hgc.maxNextTimeToChasePlayer;
+                }
+                hgc.minGrabCooldown = 0f;
+                hgc.maxNextTimeToChasePlayer = 5f;
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void CalmLucy()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null || !lucyCooldownsSaved) return;
+
+            hgc.minGrabCooldown = lucyMinGrabCooldown;
+            hgc.maxNextTimeToChasePlayer = lucyMaxChaseTime;
+            lucyCooldownsSaved = false;
+        }
+
+        public static bool lucyPetActive;
+        public static float lucyOldCatchDistance;
+        public static void PetLucyEnable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (!lucyPetActive)
+                {
+                    lucyPetActive = true;
+                    lucyOldCatchDistance = hgc.catchDistance;
+                }
+                hgc.catchDistance = 0f;
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
+                hgc.targetPlayer = NetworkSystem.Instance.LocalPlayer;
+                hgc.followTarget = GorillaTagger.Instance.offlineVRRig.transform;
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void PetLucyDisable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (lucyPetActive)
+                {
+                    hgc.catchDistance = lucyOldCatchDistance;
+                    lucyPetActive = false;
+                }
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
+                hgc.targetPlayer = null;
+            }
+        }
+
+        public static void SteerLucyGun()
+        {
+            if (GetGunInput(false))
+            {
+                var GunData = RenderGun();
+                GameObject GunPointer = GunData.GunPointer;
+
+                if (GetGunInput(true))
+                {
+                    HalloweenGhostChaser hgc = Lucy;
+                    if (hgc == null) return;
+                    if (hgc.IsMine)
+                    {
+                        hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
+                        hgc.targetPlayer = NetworkSystem.Instance.LocalPlayer;
+                        hgc.followTarget = GunPointer.transform;
+                    }
+                    else NotificationManager.SendNotification(NotMasterClientError);
+                }
+            }
+        }
+
+        public static float lucyRainDelay;
+        public static void LucyRain()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine && hgc.spawnTransforms != null && hgc.spawnTransforms.Length != 0)
+            {
+                if (Time.time > lucyRainDelay)
+                {
+                    lucyRainDelay = Time.time + 0.25f;
+                    hgc.spawnIndex = Random.Range(0, hgc.spawnTransforms.Length);
+                    hgc.timeGongStarted = Time.time;
+                    hgc.currentState = HalloweenGhostChaser.ChaseState.Gong;
+                    hgc.isSummoned = Random.value > 0.5f;
+                }
+            }
+            else if (!hgc.IsMine) NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void BanishLucy()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
+                hgc.transform.position = hgc.spawnTransforms[0].position - Vector3.up * 50f;
+                hgc.ghostBody.SetActive(false);
+                hgc.isSummoned = false;
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static bool lucySpeedSaved;
+        public static float lucyOldVelocityStep, lucyOldVelocityTime;
+        public static void HyperLucyEnable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (!lucySpeedSaved)
+                {
+                    lucySpeedSaved = true;
+                    lucyOldVelocityStep = hgc.velocityStep;
+                    lucyOldVelocityTime = hgc.velocityIncreaseTime;
+                }
+                hgc.velocityStep = 10f;
+                hgc.velocityIncreaseTime = 2f;
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void HyperLucyDisable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null || !lucySpeedSaved) return;
+            if (hgc.IsMine)
+            {
+                hgc.velocityStep = lucyOldVelocityStep;
+                hgc.velocityIncreaseTime = lucyOldVelocityTime;
+                lucySpeedSaved = false;
+            }
+        }
+
+        public static float skeletonSummonDelay;
+        public static void SkeletonSummonGun()
+        {
+            if (GetGunInput(false))
+            {
+                var GunData = RenderGun();
+                GameObject GunPointer = GunData.GunPointer;
+
+                if (GetGunInput(true) && Time.time > skeletonSummonDelay)
+                {
+                    skeletonSummonDelay = Time.time + 1f;
+                    foreach (SecondLookSkeleton skeleton in GetAllType<SecondLookSkeleton>())
+                    {
+                        skeleton.tapped = true;
+                        skeleton.spookyGhost.transform.position = GunPointer.transform.position;
+                        skeleton.spookyGhost.transform.rotation = Quaternion.LookRotation(GorillaTagger.Instance.bodyCollider.transform.position - skeleton.spookyGhost.transform.position);
+                        skeleton.currentState = SecondLookSkeleton.GhostState.Unactivated;
+                        skeleton.ChangeState(SecondLookSkeleton.GhostState.Activated);
+                    }
+                }
+            }
+        }
+
+        public static bool skeletonRageSaved;
+        public static float skeletonOldChase, skeletonOldCatch, skeletonOldThrow, skeletonOldSee;
+        public static void SkeletonRage()
+        {
+            SecondLookSkeleton[] skeletons = GetAllType<SecondLookSkeleton>();
+            if (skeletons.Length == 0)
+                return;
+
+            foreach (SecondLookSkeleton skeleton in skeletons)
+            {
+                if (!skeletonRageSaved)
+                {
+                    skeletonRageSaved = true;
+                    skeletonOldChase = skeleton.chaseSpeed;
+                    skeletonOldCatch = skeleton.catchDistance;
+                    skeletonOldThrow = skeleton.throwForce;
+                    skeletonOldSee = skeleton.maxSeeDistance;
+                }
+                skeleton.chaseSpeed = 9f;
+                skeleton.catchDistance = 10f;
+                skeleton.throwForce = 40f;
+                skeleton.maxSeeDistance = 100f;
+            }
+        }
+
+        public static void CalmSkeleton()
+        {
+            SecondLookSkeleton[] skeletons = GetAllType<SecondLookSkeleton>();
+            if (skeletons.Length == 0 || !skeletonRageSaved)
+                return;
+
+            foreach (SecondLookSkeleton skeleton in skeletons)
+            {
+                skeleton.chaseSpeed = skeletonOldChase;
+                skeleton.catchDistance = skeletonOldCatch;
+                skeleton.throwForce = skeletonOldThrow;
+                skeleton.maxSeeDistance = skeletonOldSee;
+            }
+            skeletonRageSaved = false;
+        }
+
+        public static bool skeletonPacifistSaved, skeletonPacifistApplied;
+        public static float skeletonPacifistOldCatch;
+        public static void SkeletonPacifist()
+        {
+            SecondLookSkeleton[] skeletons = GetAllType<SecondLookSkeleton>();
+            if (skeletons.Length == 0)
+                return;
+
+            foreach (SecondLookSkeleton skeleton in skeletons)
+            {
+                if (!skeletonPacifistSaved)
+                {
+                    skeletonPacifistSaved = true;
+                    skeletonPacifistOldCatch = skeleton.catchDistance;
+                }
+                skeleton.catchDistance = 0f;
+                skeletonPacifistApplied = true;
+            }
+        }
+
+        public static void NormalSkeleton()
+        {
+            SecondLookSkeleton[] skeletons = GetAllType<SecondLookSkeleton>();
+            if (skeletons.Length == 0 || !skeletonPacifistApplied)
+                return;
+
+            foreach (SecondLookSkeleton skeleton in skeletons)
+                skeleton.catchDistance = skeletonPacifistOldCatch;
+            skeletonPacifistSaved = false;
+            skeletonPacifistApplied = false;
+        }
+
+        public static void TrickTreatRain()
+        {
+            TrickTreatItem[] items = GetAllType<TrickTreatItem>();
+            if (items.Length == 0)
+                return;
+
+            foreach (TrickTreatItem item in items)
+                item.Randomize();
+        }
+
+        public static bool pumpkinSaved;
+        public static float pumpkinOldUpdate, pumpkinOldRange;
+        public static void PumpkinHypno()
+        {
+            HalloweenWatcherEyes[] eyeses = GetAllType<HalloweenWatcherEyes>();
+            if (eyeses.Length == 0)
+                return;
+
+            foreach (HalloweenWatcherEyes watcher in eyeses)
+            {
+                if (!pumpkinSaved)
+                {
+                    pumpkinSaved = true;
+                    pumpkinOldUpdate = watcher.timeBetweenUpdates;
+                    pumpkinOldRange = watcher.watchRange;
+                }
+                watcher.timeBetweenUpdates = 0.05f;
+                watcher.watchRange = 2000f;
+            }
+        }
+
+        public static void NormalPumpkin()
+        {
+            HalloweenWatcherEyes[] eyeses = GetAllType<HalloweenWatcherEyes>();
+            if (eyeses.Length == 0 || !pumpkinSaved)
+                return;
+
+            foreach (HalloweenWatcherEyes watcher in eyeses)
+            {
+                watcher.timeBetweenUpdates = pumpkinOldUpdate;
+                watcher.watchRange = pumpkinOldRange;
+            }
+            pumpkinSaved = false;
+        }
+
+        public static bool spiderSaved;
+        public static Vector4 spiderOldSpins;
+        public static void SpiderParty()
+        {
+            SpiderDangler[] spiders = GetAllType<SpiderDangler>();
+            if (spiders.Length == 0)
+                return;
+
+            foreach (SpiderDangler spider in spiders)
+            {
+                if (!spiderSaved)
+                {
+                    spiderSaved = true;
+                    spiderOldSpins = spider.spinSpeeds;
+                }
+                spider.spinSpeeds = new Vector4(spiderOldSpins.x * 8f, spiderOldSpins.y * 8f, spiderOldSpins.z * 8f, spiderOldSpins.w * 8f);
+            }
+        }
+
+        public static void NormalSpiders()
+        {
+            SpiderDangler[] spiders = GetAllType<SpiderDangler>();
+            if (spiders.Length == 0 || !spiderSaved)
+                return;
+
+            foreach (SpiderDangler spider in spiders)
+                spider.spinSpeeds = spiderOldSpins;
+            spiderSaved = false;
+        }
+
+        public static void RainbowLucy()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            hgc.ghostMaterial.color = Color.HSVToRGB((Time.time % 2f) / 2f, 1f, 1f);
+        }
+
+        public static void ResetLucyColor()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            hgc.ghostMaterial.color = hgc.isSummoned ? hgc.summonedColor : hgc.defaultColor;
+        }
+
+        public static bool lucyRiseSaved;
+        public static Vector3[] lucyOldSpawnPositions;
+        public static float lucyRiseGunDelay;
+        public static void LucyRiseEnable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (!lucyRiseSaved && hgc.spawnTransforms != null)
+                {
+                    Vector3[] allSpawns = new Vector3[hgc.spawnTransforms.Length];
+                    for (int i = 0; i < hgc.spawnTransforms.Length; i++)
+                        allSpawns[i] = hgc.spawnTransforms[i].position;
+                    lucyOldSpawnPositions = allSpawns;
+                    lucyRiseSaved = true;
+                }
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void LucyRiseGun()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (GetGunInput(false))
+                {
+                    var GunData = RenderGun();
+                    GameObject GunPointer = GunData.GunPointer;
+
+                    if (GetGunInput(true) && hgc.spawnTransforms != null && hgc.spawnTransforms.Length != 0 && Time.time > lucyRiseGunDelay)
+                    {
+                        lucyRiseGunDelay = Time.time + 1.5f;
+                        Vector3 spawnPosition = GunPointer.transform.position - Vector3.up * 2f;
+                        for (int i = 0; i < hgc.spawnTransforms.Length; i++)
+                            hgc.spawnTransforms[i].position = spawnPosition;
+
+                        hgc.currentState = HalloweenGhostChaser.ChaseState.Gong;
+                        hgc.timeGongStarted = Time.time;
+                        hgc.isSummoned = false;
+                    }
+                }
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void LucyRiseDisable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null || !lucyRiseSaved) return;
+            if (hgc.IsMine && hgc.spawnTransforms != null && lucyOldSpawnPositions != null)
+            {
+                for (int i = 0; i < hgc.spawnTransforms.Length && i < lucyOldSpawnPositions.Length; i++)
+                    hgc.spawnTransforms[i].position = lucyOldSpawnPositions[i];
+                lucyRiseSaved = false;
+            }
+        }
+
+        public static bool lucyCarrySaved;
+        public static float lucyOldSpeed;
+        public static void CarryLucyEnable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (!lucyCarrySaved)
+                {
+                    lucyCarrySaved = true;
+                    lucyOldSpeed = hgc.currentSpeed;
+                }
+                hgc.currentSpeed = 0f;
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
+                hgc.targetPlayer = NetworkSystem.Instance.LocalPlayer;
+                hgc.followTarget = GorillaTagger.Instance.offlineVRRig.transform;
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void CarryLucyMethod()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                hgc.transform.position = GorillaTagger.Instance.rightHandTransform.position;
+                hgc.transform.rotation = GorillaTagger.Instance.rightHandTransform.rotation;
+            }
+        }
+
+        public static void CarryLucyDisable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null || !lucyCarrySaved) return;
+            if (hgc.IsMine)
+            {
+                hgc.currentSpeed = lucyOldSpeed;
+                lucyCarrySaved = false;
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
+            }
+        }
+
+        public static bool lucyFlightSaved;
+        public static float lucyOldGrabSpeed, lucyOldGrabDuration;
+        public static void LucyFlightEnable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (!lucyFlightSaved)
+            {
+                lucyFlightSaved = true;
+                lucyOldGrabSpeed = hgc.grabSpeed;
+                lucyOldGrabDuration = hgc.grabDuration;
+            }
+            hgc.grabSpeed = 5f;
+            hgc.grabDuration = 99999f;
+            hgc.minGrabCooldown = 0.5f;
+            LucySyncPatch.enabled = true;
+        }
+
+        public static void LucyFlightMethod()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+
+            hgc.grabTime = Time.time;
+            hgc.currentState = HalloweenGhostChaser.ChaseState.Grabbing;
+            hgc.targetPlayer = NetworkSystem.Instance.LocalPlayer;
+            hgc.followTarget = GorillaTagger.Instance.offlineVRRig.transform;
+        }
+
+        public static void LucyFlightDisable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null || !lucyFlightSaved) return;
+
+            hgc.grabSpeed = lucyOldGrabSpeed;
+            hgc.grabDuration = lucyOldGrabDuration;
+            lucyFlightSaved = false;
+            LucySyncPatch.enabled = false;
+
+            hgc.targetPlayer = null;
+            hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
+        }
+
+        public static float lucyGrabDelay;
+        public static void LucyGrabGun()
+        {
+            if (GetGunInput(false))
+            {
+                var GunData = RenderGun();
+
+                if (gunLockedPlayer != null && Time.time > lucyGrabDelay)
+                {
+                    lucyGrabDelay = Time.time + 1f;
+                    HalloweenGhostChaser hgc = Lucy;
+                    if (hgc == null) return;
+                    if (hgc.IsMine)
+                    {
+                        hgc.currentState = HalloweenGhostChaser.ChaseState.Grabbing;
+                        hgc.grabTime = Time.time;
+                        hgc.targetPlayer = gunLockedPlayer.GetPlayer();
+                        hgc.followTarget = gunLockedPlayer.transform;
+                    }
+                    else NotificationManager.SendNotification(NotMasterClientError);
+                }
+            }
+        }
+
+        public static float lucyBodyguardDelay;
+        public static void LucyBodyguard()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (Time.time > lucyBodyguardDelay)
+                {
+                    lucyBodyguardDelay = Time.time + 1f;
+                    foreach (VRRig rig in VRRigExtensions.ActiveRigs)
+                    {
+                        if (!rig.IsLocal() && hgc.targetPlayer != rig.GetPlayer() && (rig.transform.position - VRRig.LocalRig.transform.position).magnitude < 25f)
+                        {
+                            hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
+                            hgc.targetPlayer = rig.GetPlayer();
+                            hgc.followTarget = rig.transform;
+                            break;
+                        }
+                    }
+                }
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static float lucySiegeDelay;
+        public static void LucySiege()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (Time.time > lucySiegeDelay)
+                {
+                    lucySiegeDelay = Time.time;
+                    hgc.currentState = HalloweenGhostChaser.ChaseState.Grabbing;
+                    hgc.grabTime = Time.time;
+                    hgc.targetPlayer = GetRandomPlayer(false);
+                }
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static bool lurkerOwnershipActive;
+        public static void TakeLurkerOwnership()
+        {
+            if (_lurker == null) return;
+            if (!_lurker.IsMine)
+            {
+                _lurker.ControllerActorNr = NetworkSystem.Instance.LocalPlayer.ActorNumber;
+                _lurker.OwnerActorNr = NetworkSystem.Instance.LocalPlayer.ActorNumber;
+            }
         }
 
         public static void SpawnLurker()
         {
             if (Lurker.IsMine)
                 Lurker.currentState = LurkerGhost.ghostState.patrol;
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void MoveLurkerGun()
@@ -2750,7 +3345,7 @@ namespace Pixelyth.Mods
                 {
                     if (Lurker.IsMine)
                         Lurker.transform.position = GunPointer.transform.position + Vector3.up;
-                    else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                    else NotificationManager.SendNotification(NotMasterClientError);
                 }
             }
         }
@@ -2761,7 +3356,7 @@ namespace Pixelyth.Mods
             {
                 Lurker.currentState = LurkerGhost.ghostState.patrol;
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void LurkerAttack(NetPlayer player)
@@ -2777,7 +3372,7 @@ namespace Pixelyth.Mods
                 Lurker.currentState = LurkerGhost.ghostState.possess;
                 Lurker.targetPlayer = player;
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void LurkerAttackGun()
@@ -2815,7 +3410,7 @@ namespace Pixelyth.Mods
                 }
             }
             else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static float lurkerDelay;
@@ -2830,7 +3425,7 @@ namespace Pixelyth.Mods
                     lurkerDelay = Time.time + 0.1f;
                 }
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void BreakLurker()
@@ -2842,7 +3437,7 @@ namespace Pixelyth.Mods
 
                 SendSerialize(Lurker.GetView);
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void AnnoyingLurker()
@@ -2856,14 +3451,14 @@ namespace Pixelyth.Mods
                     lurkerDelay = Time.time + 0.1f;
                 }
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void BecomeLurker()
         {
             if (!NetworkSystem.Instance.IsMasterClient)
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 return;
             }
 
@@ -3104,7 +3699,7 @@ namespace Pixelyth.Mods
 
                 if (gunLockedPlayer != null)
                 {
-                    if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client."); return; }
+                    if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification(NotMasterClientError); return; }
                     Fun.RequestCreatePiece(1934114066, new Vector3(-127.6248f, 16.99441f, -217.2094f), Quaternion.identity, 0, NetPlayerToPlayer(gunLockedPlayer.GetPlayer()), false, true);
                 }
             }
@@ -3114,7 +3709,7 @@ namespace Pixelyth.Mods
         {
             if (rightTrigger > 0.5f)
             {
-                if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client."); return; }
+                if (!NetworkSystem.Instance.IsMasterClient) { NotificationManager.SendNotification(NotMasterClientError); return; }
                 Fun.RequestCreatePiece(1934114066, new Vector3(-127.6248f, 16.99441f, -217.2094f), Quaternion.identity, 0, RpcTarget.Others, false, true);
             }
         }
@@ -4565,7 +5160,7 @@ namespace Pixelyth.Mods
         {
             if (!NetworkSystem.Instance.IsMasterClient)
             {
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
                 return;
             }
 
@@ -4591,7 +5186,7 @@ namespace Pixelyth.Mods
             {
                 if (!NetworkSystem.Instance.IsMasterClient)
                 {
-                    NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                    NotificationManager.SendNotification(NotMasterClientError);
                     return;
                 }
 
@@ -5016,13 +5611,13 @@ namespace Pixelyth.Mods
                     hitTargetNetworkState.TargetHit(Vector3.zero, Vector3.zero);
                 }
             }
-            else NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+            else NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void InfectionToTag()
         {
             if (!NetworkSystem.Instance.IsMasterClient)
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
             else
             {
                 GorillaTagManager gorillaTagManager = (GorillaTagManager)GorillaGameManager.instance;
@@ -5033,7 +5628,7 @@ namespace Pixelyth.Mods
         public static void TagToInfection()
         {
             if (!NetworkSystem.Instance.IsMasterClient)
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
             else
             {
                 GorillaTagManager gorillaTagManager = (GorillaTagManager)GorillaGameManager.instance;
@@ -5053,7 +5648,7 @@ namespace Pixelyth.Mods
             if (PhotonNetwork.IsMasterClient)
                 AddRock(NetworkSystem.Instance.LocalPlayer);
             else
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
         }
 
         public static void RockGun()
@@ -5070,7 +5665,7 @@ namespace Pixelyth.Mods
                         if (PhotonNetwork.IsMasterClient)
                             AddRock(GetPlayerFromVRRig(gunLockedPlayer));
                         else
-                            NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                            NotificationManager.SendNotification(NotMasterClientError);
                     }
                 }
             }
@@ -5099,7 +5694,7 @@ namespace Pixelyth.Mods
                         if (PhotonNetwork.IsMasterClient)
                             AddRock(GetPlayerFromVRRig(nearbyPlayer));
                         else
-                            NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                            NotificationManager.SendNotification(NotMasterClientError);
                     }
                 }
             }
@@ -5132,7 +5727,7 @@ namespace Pixelyth.Mods
                         if (PhotonNetwork.IsMasterClient)
                             AddRock(rig.GetPlayer());
                         else
-                            NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                            NotificationManager.SendNotification(NotMasterClientError);
                     }
                 }
             }
@@ -5146,14 +5741,14 @@ namespace Pixelyth.Mods
                 if (PhotonNetwork.IsMasterClient)
                     AddRock(GetRandomPlayer(true));
                 else
-                    NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                    NotificationManager.SendNotification(NotMasterClientError);
             }
         }
 
         public static void BetaSetStatus(RoomSystem.StatusEffects state, RaiseEventOptions reo)
         {
             if (!NetworkSystem.Instance.IsMasterClient)
-                NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.");
+                NotificationManager.SendNotification(NotMasterClientError);
             else
             {
                 object[] statusSendData = new object[1];
