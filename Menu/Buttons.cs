@@ -1039,6 +1039,7 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Voice ESP", method = Visuals.VoiceESP, disableMethod = Visuals.DisableVoiceIndicators, toolTip = "Puts voice indicators above people's heads when they're talking."},
                 new ButtonInfo { buttonText = "Mic Volume Bars", enableMethod = Visuals.EnableMicVolumeBars, method = Visuals.MicVolumeBars, disableMethod = Visuals.DisableMicVolumeBars, toolTip = "Shows speaking players' microphone loudness as a vertical bar that fills upward."},
+                new ButtonInfo { buttonText = "Proximity Alert", method = Visuals.ProximityAlert, disableMethod = Visuals.DisableProximityAlert, toolTip = "Fades a red screen-edge vignette when another player is within two meters behind you."},
 
                 new ButtonInfo { buttonText = "Grabbable Indicators", method = Visuals.GripESP, disableMethod = Visuals.DisableGripESP, toolTip = "Puts indicators above people's heads when they can be grabbed."},
 

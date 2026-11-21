@@ -4270,6 +4270,82 @@ namespace Pixelyth.Mods
             nextBeeTracerScan = 0f;
         }
 
+        private static GameObject proximityAlertCanvas;
+        private static Image proximityAlertImage;
+        private static Material proximityAlertMaterial;
+        private static Texture2D proximityAlertTexture;
+
+        public static void ProximityAlert()
+        {
+            if (GorillaTagger.Instance == null || Camera.main == null) return;
+            if (proximityAlertCanvas == null) CreateProximityAlert();
+            if (proximityAlertImage == null) return;
+
+            Transform head = GorillaTagger.Instance.headCollider.transform;
+            float closest = float.MaxValue;
+            foreach (VRRig rig in VRRigExtensions.ActiveRigs)
+            {
+                if (rig == null || rig.isLocal) continue;
+                Vector3 toRig = rig.transform.position - head.position;
+                float distance = toRig.magnitude;
+                if (distance > 2f || distance <= 0.001f) continue;
+                if (Vector3.Dot(head.forward, toRig / distance) < 0f && distance < closest) closest = distance;
+            }
+
+            float targetAlpha = closest < float.MaxValue ? 1f - closest / 2f : 0f;
+            Color color = proximityAlertImage.color;
+            color.a = Mathf.Lerp(color.a, targetAlpha, Mathf.Clamp01(Time.deltaTime * 12f));
+            proximityAlertImage.color = color;
+        }
+
+        private static void CreateProximityAlert()
+        {
+            proximityAlertCanvas = new GameObject("Pixelyth_ProximityAlert");
+            Canvas canvas = proximityAlertCanvas.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 999;
+
+            GameObject vignette = new GameObject("Vignette");
+            vignette.transform.SetParent(proximityAlertCanvas.transform, false);
+            RectTransform rect = vignette.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            if (proximityAlertTexture == null)
+            {
+                proximityAlertTexture = new Texture2D(64, 64, TextureFormat.ARGB32, false);
+                for (int y = 0; y < 64; y++)
+                    for (int x = 0; x < 64; x++)
+                    {
+                        float edge = Mathf.Max(Mathf.Abs(x / 63f - 0.5f), Mathf.Abs(y / 63f - 0.5f)) * 2f;
+                        proximityAlertTexture.SetPixel(x, y, new Color(1f, 0f, 0f, Mathf.Clamp01((edge - 0.35f) / 0.65f)));
+                    }
+                proximityAlertTexture.Apply();
+            }
+
+            proximityAlertMaterial = new Material(Shader.Find("UI/Default") ?? Shader.Find("Sprites/Default"))
+            {
+                mainTexture = proximityAlertTexture
+            };
+            proximityAlertImage = vignette.AddComponent<Image>();
+            proximityAlertImage.material = proximityAlertMaterial;
+            proximityAlertImage.color = new Color(1f, 0f, 0f, 0f);
+            proximityAlertImage.raycastTarget = false;
+        }
+
+        public static void DisableProximityAlert()
+        {
+            if (proximityAlertCanvas != null) Object.Destroy(proximityAlertCanvas);
+            if (proximityAlertMaterial != null) Object.Destroy(proximityAlertMaterial);
+            if (proximityAlertTexture != null) Object.Destroy(proximityAlertTexture);
+            proximityAlertCanvas = null;
+            proximityAlertImage = null;
+            proximityAlertMaterial = null;
+            proximityAlertTexture = null;
+        }
+
         private static readonly Dictionary<VRRig, GameObject> micVolumeBars = new Dictionary<VRRig, GameObject>();
 
         public static void EnableMicVolumeBars()
