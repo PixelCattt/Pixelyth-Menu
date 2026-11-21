@@ -591,119 +591,119 @@ namespace Pixelyth.Mods
             }
         }
 
-        public static void BecomeDriver()
-        {
-            if (PhotonNetwork.IsMasterClient)
-                CustomMapsTerminal.instance.getMapTerminalNetworkObject().SendRPC("SetTerminalControlStatus_RPC", true, true, PhotonNetwork.LocalPlayer.ActorNumber);
-            else
-            {
-                NotificationManager.SendNotification(NotMasterClientError);
-                return;
-            }
-
-            CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
-        }
-
-        private static long? id;
-        private static float setMapDelay;
-        public static void VirtualStumpKickGun()
-        {
-            if (!NetworkSystem.Instance.InRoom)
-            {
-                id = null;
-                return;
-            }
-
-            if (!PhotonNetwork.IsMasterClient)
-            {
-                NotificationManager.SendNotification(NotMasterClientError);
-                Buttons.GetIndex("Virtual Stump Kick Gun").SetEnabled(false);
-                return;
-            }
-
-            if (id == null && Time.time > setMapDelay)
-            {
-                setMapDelay = Time.time + 1f;
-
-                if (CustomMapsTerminal.GetDriverID() != PhotonNetwork.LocalPlayer.ActorNumber)
-                {
-                    NotificationManager.SendNotification("<color=grey>[</color><color=purple>VSTUMP</color><color=grey>]</color> Gaining control of the terminal, please wait...");
-                    BecomeDriver();
-                    return;
-                }
-
-                if (CustomMapManager.IsRemotePlayerInVirtualStump(NetworkSystem.Instance.LocalPlayer.UserId))
-                {
-                    id = CustomMaps.Manager.currentMapId == 4977315 ? 5024157 : 4977315;
-
-                    CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("UpdateScreen_RPC", gunLockedPlayer.GetPhotonPlayer(), new object[]
-                    {
-                        6,
-                        id,
-                        CustomMapsTerminal.GetDriverID()
-                    });
-                    NotificationManager.SendNotification("<color=grey>[</color><color=green>SUCCESS</color><color=grey>]</color> You now have access to use the gun.");
-                }
-                else
-                    NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> Please temporarily enter the Virtual Stump.");
-            }
-
-            if (GetGunInput(false) && id != null)
-            {
-                var GunData = RenderGun(true);
-
-                if (gunLockedPlayer)
-                    CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("SetRoomMap_RPC", gunLockedPlayer.GetPhotonPlayer(), id.Value);
-            }
-        }
-
-        public static void VirtualStumpKickAll()
-        {
-            if (!NetworkSystem.Instance.InRoom)
-            {
-                id = null;
-                return;
-            }
-
-            if (!PhotonNetwork.IsMasterClient)
-            {
-                NotificationManager.SendNotification(NotMasterClientError);
-                Toggle("Virtual Stump Kick All");
-                return;
-            }
-
-            if (id == null && Time.time > setMapDelay)
-            {
-                setMapDelay = Time.time + 1f;
-
-                if (CustomMapsTerminal.GetDriverID() != PhotonNetwork.LocalPlayer.ActorNumber)
-                {
-                    NotificationManager.SendNotification("<color=grey>[</color><color=purple>INFO</color><color=grey>]</color> Gaining control of the terminal, please wait...");
-                    BecomeDriver();
-                    return;
-                }
-
-                if (CustomMapManager.IsRemotePlayerInVirtualStump(NetworkSystem.Instance.LocalPlayer.UserId))
-                {
-                    id = CustomMaps.Manager.currentMapId == 4977315 ? 5024157 : 4977315;
-
-                    CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("UpdateScreen_RPC", RpcTarget.Others, new object[]
-                    {
-                        6,
-                        id,
-                        CustomMapsTerminal.GetDriverID()
-                    });
-                    NotificationManager.SendNotification("<color=grey>[</color><color=purple>INFO</color><color=grey>]</color> Kicking...");
-                }
-                else
-                    NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> Please temporarily enter the Virtual Stump.");
-            }
-
-            CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("SetRoomMap_RPC", RpcTarget.Others, id.Value);
-
-            NotificationManager.SendNotification("<color=grey>[</color><color=green>SUCCESS</color><color=grey>]</color> Successfully kicked others.");
-            Toggle("Virtual Stump Kick All");
-        }
+        // public static void BecomeDriver()
+        // {
+        //     if (PhotonNetwork.IsMasterClient)
+        //         CustomMapsTerminal.instance.getMapTerminalNetworkObject().SendRPC("SetTerminalControlStatus_RPC", true, true, PhotonNetwork.LocalPlayer.ActorNumber);
+        //     else
+        //     {
+        //         NotificationManager.SendNotification(NotMasterClientError);
+        //         return;
+        //     }
+        // 
+        //     CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
+        // }
+        // 
+        // private static long? id;
+        // private static float setMapDelay;
+        // public static void VirtualStumpKickGun()
+        // {
+        //     if (!NetworkSystem.Instance.InRoom)
+        //     {
+        //         id = null;
+        //         return;
+        //     }
+        // 
+        //     if (!PhotonNetwork.IsMasterClient)
+        //     {
+        //         NotificationManager.SendNotification(NotMasterClientError);
+        //         Buttons.GetIndex("Virtual Stump Kick Gun").SetEnabled(false);
+        //         return;
+        //     }
+        // 
+        //     if (id == null && Time.time > setMapDelay)
+        //     {
+        //         setMapDelay = Time.time + 1f;
+        // 
+        //         if (CustomMapsTerminal.GetDriverID() != PhotonNetwork.LocalPlayer.ActorNumber)
+        //         {
+        //             NotificationManager.SendNotification("<color=grey>[</color><color=purple>VSTUMP</color><color=grey>]</color> Gaining control of the terminal, please wait...");
+        //             BecomeDriver();
+        //             return;
+        //         }
+        // 
+        //         if (CustomMapManager.IsRemotePlayerInVirtualStump(NetworkSystem.Instance.LocalPlayer.UserId))
+        //         {
+        //             id = CustomMaps.Manager.currentMapId == 4977315 ? 5024157 : 4977315;
+        // 
+        //             CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("UpdateScreen_RPC", gunLockedPlayer.GetPhotonPlayer(), new object[]
+        //             {
+        //                 6,
+        //                 id,
+        //                 CustomMapsTerminal.GetDriverID()
+        //             });
+        //             NotificationManager.SendNotification("<color=grey>[</color><color=green>SUCCESS</color><color=grey>]</color> You now have access to use the gun.");
+        //         }
+        //         else
+        //             NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> Please temporarily enter the Virtual Stump.");
+        //     }
+        // 
+        //     if (GetGunInput(false) && id != null)
+        //     {
+        //         var GunData = RenderGun(true);
+        // 
+        //         if (gunLockedPlayer)
+        //             CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("SetRoomMap_RPC", gunLockedPlayer.GetPhotonPlayer(), id.Value);
+        //     }
+        // }
+        // 
+        // public static void VirtualStumpKickAll()
+        // {
+        //     if (!NetworkSystem.Instance.InRoom)
+        //     {
+        //         id = null;
+        //         return;
+        //     }
+        // 
+        //     if (!PhotonNetwork.IsMasterClient)
+        //     {
+        //         NotificationManager.SendNotification(NotMasterClientError);
+        //         Toggle("Virtual Stump Kick All");
+        //         return;
+        //     }
+        // 
+        //     if (id == null && Time.time > setMapDelay)
+        //     {
+        //         setMapDelay = Time.time + 1f;
+        // 
+        //         if (CustomMapsTerminal.GetDriverID() != PhotonNetwork.LocalPlayer.ActorNumber)
+        //         {
+        //             NotificationManager.SendNotification("<color=grey>[</color><color=purple>INFO</color><color=grey>]</color> Gaining control of the terminal, please wait...");
+        //             BecomeDriver();
+        //             return;
+        //         }
+        // 
+        //         if (CustomMapManager.IsRemotePlayerInVirtualStump(NetworkSystem.Instance.LocalPlayer.UserId))
+        //         {
+        //             id = CustomMaps.Manager.currentMapId == 4977315 ? 5024157 : 4977315;
+        // 
+        //             CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("UpdateScreen_RPC", RpcTarget.Others, new object[]
+        //             {
+        //                 6,
+        //                 id,
+        //                 CustomMapsTerminal.GetDriverID()
+        //             });
+        //             NotificationManager.SendNotification("<color=grey>[</color><color=purple>INFO</color><color=grey>]</color> Kicking...");
+        //         }
+        //         else
+        //             NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> Please temporarily enter the Virtual Stump.");
+        //     }
+        // 
+        //     CustomMapsTerminal.instance.getMapTerminalNetworkObject().photonView.RPC("SetRoomMap_RPC", RpcTarget.Others, id.Value);
+        // 
+        //     NotificationManager.SendNotification("<color=grey>[</color><color=green>SUCCESS</color><color=grey>]</color> Successfully kicked others.");
+        //     Toggle("Virtual Stump Kick All");
+        // }
 
         public const int ItemCrashCount = 500;
         public static void GameEntityCrash(GameEntityManager manager, object target, Vector3? targetPosition = null)
@@ -713,7 +713,7 @@ namespace Pixelyth.Mods
 
             targetPosition ??= GorillaTagger.Instance.bodyCollider.transform.position;
 
-            int[] objectIds = manager.itemPrefabFactory.Keys.ToArray();
+            int[] objectIds = GameEntityManager.itemPrefabFactory.Keys.ToArray();
             int[] ids = new int[ItemCrashCount];
             Vector3[] positions = new Vector3[ItemCrashCount];
             Quaternion[] rotations = new Quaternion[ItemCrashCount];
@@ -1296,7 +1296,7 @@ namespace Pixelyth.Mods
                 CreateItem(target, hashes[0], positions[0], rotations[0], Vector3.zero, Vector3.zero, sendData.Length > 0 ? sendData[1] : 0L, manager);
         }
 
-        public static Dictionary<string, int> ObjectByName { get => ManagerRegistry.GhostReactor.GameEntityManager.itemPrefabFactory.ToDictionary(prefab => prefab.Value.name, prefab => prefab.Key); }
+        public static Dictionary<string, int> ObjectByName { get => GameEntityManager.itemPrefabFactory.ToDictionary(prefab => prefab.Value.name, prefab => prefab.Key); }
 
         public static void SpamObjectGrip(int objectId)
         {
@@ -2307,7 +2307,7 @@ namespace Pixelyth.Mods
         public static Dictionary<string, int> GadgetByName
         {
             get =>
-                ManagerRegistry.SuperInfection.GameEntityManager.itemPrefabFactory
+                GameEntityManager.itemPrefabFactory
                 .ToDictionary(prefab => prefab.Value.name, prefab => prefab.Key);
         }
 
@@ -2419,7 +2419,6 @@ namespace Pixelyth.Mods
 
         public static HalloweenGhostChaser _lucy;
         public static float lucyFindTime;
-
         public static HalloweenGhostChaser Lucy
         {
             get
@@ -2428,7 +2427,8 @@ namespace Pixelyth.Mods
                 {
                     lucyFindTime = Time.time + 5f;
 
-                    GameObject lucyObject = GetObject("Environment Objects/05Maze_PersistentObjects/2025_Halloween1_PersistentObjects/Halloween Ghosts/Lucy/Halloween Ghost/FloatingChaseSkeleton");
+                    GameObject lucyObject = GetObject("Environment Objects/05Maze_PersistentObjects/Ghosts/Halloween Ghost/FloatingChaseSkeleton");
+                    lucyObject.SetActive(true);
 
                     _lucy = lucyObject != null ? lucyObject.GetComponent<HalloweenGhostChaser>() : GetAllType<HalloweenGhostChaser>().Where(ghost => ghost != null && ghost.HasView && ghost.GetView.ViewID != 0).OrderByDescending(ghost => ghost.IsMine).ThenBy(ghost => ghost.gameObject.activeInHierarchy ? 0 : 1).FirstOrDefault();
                 }
@@ -2444,32 +2444,58 @@ namespace Pixelyth.Mods
         {
             get
             {
-                if ((_lurker == null || _lurker.GetView.ViewID == 0) && Time.time > lurkerFindTime)
+                bool invalidCachedLurker = _lurker == null || _lurker.GetView == null || _lurker.GetView.ViewID == 0;
+                if (invalidCachedLurker && Time.time > lurkerFindTime)
                 {
                     lurkerFindTime = Time.time + 5f;
 
-                    GameObject lurkerObject = GetObject("Environment Objects/05Maze_PersistentObjects/2025_Halloween1_PersistentObjects/Halloween Ghosts/Lurker Ghost/GhostLurker_Prefab");
+                    GameObject lurkerObject = GetObject("Environment Objects/05Maze_PersistentObjects/Ghosts/GhostLurker_Prefab");
 
-                    _lurker = lurkerObject != null ? lurkerObject.GetComponent<LurkerGhost>() : GetAllType<LurkerGhost>().FirstOrDefault(ghost => ghost != null && ghost.HasView && ghost.GetView.ViewID != 0);
+                    lurkerObject.SetActive(true);
+                    Lurker.waypointsContainer.SetActive(true);
+
+                    _lurker = lurkerObject != null ? lurkerObject.GetComponent<LurkerGhost>() : GetAllType<LurkerGhost>().Where(ghost => ghost != null && ghost.HasView && ghost.GetView.ViewID != 0).OrderByDescending(ghost => ghost.IsMine).ThenBy(ghost => ghost.gameObject.activeInHierarchy ? 0 : 1).FirstOrDefault();
                 }
-
-                if (lurkerOwnershipActive)
-                    TakeLurkerOwnership();
 
                 return _lurker;
             }
             set => _lurker = value;
         }
 
-        private static Coroutine blueLucyCoroutine = null;
-        public static void SpawnBlueLucy()
+        public static WanderingGhost _wanderer;
+        public static float wandererFindTime;
+        public static WanderingGhost Wanderer
+        {
+            get
+            {
+                bool invalidCachedWanderer = _wanderer == null || _wanderer.GetView == null || _wanderer.GetView.ViewID == 0;
+                if (invalidCachedWanderer && Time.time > wandererFindTime)
+                {
+                    wandererFindTime = Time.time + 5f;
+
+                    GameObject wandererObject = GetObject("Environment Objects/05Maze_PersistentObjects/Ghosts/GhostWanderer_Prefab");
+                    wandererObject.SetActive(true);
+                    Wanderer.waypointsContainer.SetActive(true);
+
+                    _wanderer = wandererObject != null ? wandererObject.GetComponent<WanderingGhost>() : GetAllType<WanderingGhost>().Where(ghost => ghost != null && ghost.HasView && ghost.GetView.ViewID != 0).OrderByDescending(ghost => ghost.IsMine).ThenBy(ghost => ghost.gameObject.activeInHierarchy ? 0 : 1).FirstOrDefault();
+
+                    WanderingGhostVisibilityPatch.enabled = true;
+                }
+
+                return _wanderer;
+            }
+            set => _wanderer = value;
+        }
+
+        private static Coroutine lucyCoroutine = null;
+        public static void SpawnLucy(bool isRed)
         {
             HalloweenGhostChaser hgc = Lucy;
             if (hgc == null) return;
             if (hgc.IsMine)
             {
                 hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
-                hgc.isSummoned = false;
+                hgc.isSummoned = isRed;
 
                 if (!hgc.ghostBody.activeSelf)
                     hgc.ghostBody.SetActive(true);
@@ -2477,20 +2503,18 @@ namespace Pixelyth.Mods
                 hgc.ChooseRandomTarget();
                 hgc.SetInitialSpawnPoint();
 
-                hgc.transform.position =
-                    hgc.spawnTransforms[hgc.spawnIndex].position;
+                hgc.transform.position = hgc.spawnTransforms[hgc.spawnIndex].position;
 
-                hgc.timeGongStarted = Time.time;
                 hgc.laugh.volume = 1f;
                 hgc.laugh.GTPlayOneShot(hgc.gong);
 
-                if (blueLucyCoroutine != null)
+                if (lucyCoroutine != null)
                 {
-                    CoroutineManager.instance.StopCoroutine(blueLucyCoroutine);
-                    blueLucyCoroutine = null;
+                    CoroutineManager.instance.StopCoroutine(lucyCoroutine);
+                    lucyCoroutine = null;
                 }
 
-                blueLucyCoroutine = CoroutineManager.instance.StartCoroutine(BlueLucyRise(hgc));
+                lucyCoroutine = CoroutineManager.instance.StartCoroutine(LucyRise(hgc, isRed));
             }
             else
             {
@@ -2498,35 +2522,26 @@ namespace Pixelyth.Mods
             }
         }
 
-        private static IEnumerator BlueLucyRise(HalloweenGhostChaser hgc)
+        private static IEnumerator LucyRise(HalloweenGhostChaser hgc, bool isRed)
         {
             if (hgc == null || !hgc.IsMine)
                 yield break;
 
             yield return new WaitForSeconds(hgc.gongDuration);
 
-            hgc.laugh.Play();
-            hgc.isSummoned = false;
+            if (!isRed)
+                hgc.laugh.GTPlay();
+            else
+                hgc.laugh.GTPlayOneShot(hgc.deepLaugh);
+
+            hgc.isSummoned = isRed;
             hgc.SetInitialRotations();
             hgc.SetInitialSpawnPoint();
 
             hgc.timeRiseStarted = Time.time;
             hgc.currentState = HalloweenGhostChaser.ChaseState.InitialRise;
 
-            blueLucyCoroutine = null;
-        }
-
-        public static void SpawnRedLucy()
-        {
-            HalloweenGhostChaser hgc = Lucy;
-            if (hgc == null) return;
-            if (hgc.IsMine)
-            {
-                hgc.timeGongStarted = Time.time;
-                hgc.currentState = HalloweenGhostChaser.ChaseState.Gong;
-                hgc.isSummoned = true;
-            }
-            else NotificationManager.SendNotification(NotMasterClientError);
+            lucyCoroutine = null;
         }
 
         public static void DespawnLucy()
@@ -2539,6 +2554,22 @@ namespace Pixelyth.Mods
                 hgc.isSummoned = false;
             }
             else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void SetLucyType(bool isRed)
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                hgc.isSummoned = isRed;
+                hgc.currentSpeed = isRed ? 3f : 1f;
+                hgc.ghostMaterial.color = isRed ? hgc.summonedColor : hgc.defaultColor;
+            }
+            else
+            {
+                NotificationManager.SendNotification(NotMasterClientError);
+            }
         }
 
         public static void LucyChase(NetPlayer player)
@@ -2804,7 +2835,7 @@ namespace Pixelyth.Mods
                 if (!lucyPetActive)
                 {
                     lucyPetActive = true;
-                    lucyOldCatchDistance = hgc.catchDistance;
+                    lucyOldCatchDistance = hgc.catchDistance != 0f ? hgc.catchDistance : 1f;
                 }
                 hgc.catchDistance = 0f;
                 hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
@@ -2825,6 +2856,54 @@ namespace Pixelyth.Mods
                     hgc.catchDistance = lucyOldCatchDistance;
                     lucyPetActive = false;
                 }
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
+                hgc.targetPlayer = null;
+            }
+        }
+
+        public static bool lucyCarrySaved;
+        public static float lucyOldSpeed;
+        public static void CarryLucyEnable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                if (!lucyCarrySaved)
+                {
+                    lucyCarrySaved = true;
+                    lucyOldSpeed = hgc.currentSpeed;
+                    lucyOldCatchDistance = hgc.catchDistance != 0f ? hgc.catchDistance : 1f;
+                }
+                hgc.currentSpeed = 0f;
+                hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
+                hgc.targetPlayer = NetworkSystem.Instance.LocalPlayer;
+                hgc.followTarget = GorillaTagger.Instance.offlineVRRig.transform;
+            }
+            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void CarryLucyMethod()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null) return;
+            if (hgc.IsMine)
+            {
+                hgc.transform.position = GorillaTagger.Instance.rightHandTransform.position;
+                hgc.transform.rotation = GorillaTagger.Instance.rightHandTransform.rotation;
+            }
+        }
+
+        public static void CarryLucyDisable()
+        {
+            HalloweenGhostChaser hgc = Lucy;
+            if (hgc == null || !lucyCarrySaved) return;
+            if (hgc.IsMine)
+            {
+                hgc.currentSpeed = lucyOldSpeed;
+                hgc.catchDistance = lucyOldCatchDistance;
+
+                lucyCarrySaved = false;
                 hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
                 hgc.targetPlayer = null;
             }
@@ -2853,7 +2932,7 @@ namespace Pixelyth.Mods
         }
 
         public static float lucyRainDelay;
-        public static void LucyRain()
+        public static void LucyGongTeleport()
         {
             HalloweenGhostChaser hgc = Lucy;
             if (hgc == null) return;
@@ -3162,50 +3241,6 @@ namespace Pixelyth.Mods
             }
         }
 
-        public static bool lucyCarrySaved;
-        public static float lucyOldSpeed;
-        public static void CarryLucyEnable()
-        {
-            HalloweenGhostChaser hgc = Lucy;
-            if (hgc == null) return;
-            if (hgc.IsMine)
-            {
-                if (!lucyCarrySaved)
-                {
-                    lucyCarrySaved = true;
-                    lucyOldSpeed = hgc.currentSpeed;
-                }
-                hgc.currentSpeed = 0f;
-                hgc.currentState = HalloweenGhostChaser.ChaseState.Chasing;
-                hgc.targetPlayer = NetworkSystem.Instance.LocalPlayer;
-                hgc.followTarget = GorillaTagger.Instance.offlineVRRig.transform;
-            }
-            else NotificationManager.SendNotification(NotMasterClientError);
-        }
-
-        public static void CarryLucyMethod()
-        {
-            HalloweenGhostChaser hgc = Lucy;
-            if (hgc == null) return;
-            if (hgc.IsMine)
-            {
-                hgc.transform.position = GorillaTagger.Instance.rightHandTransform.position;
-                hgc.transform.rotation = GorillaTagger.Instance.rightHandTransform.rotation;
-            }
-        }
-
-        public static void CarryLucyDisable()
-        {
-            HalloweenGhostChaser hgc = Lucy;
-            if (hgc == null || !lucyCarrySaved) return;
-            if (hgc.IsMine)
-            {
-                hgc.currentSpeed = lucyOldSpeed;
-                lucyCarrySaved = false;
-                hgc.currentState = HalloweenGhostChaser.ChaseState.Dormant;
-            }
-        }
-
         public static bool lucyFlightSaved;
         public static float lucyOldGrabSpeed, lucyOldGrabDuration;
         public static void LucyFlightEnable()
@@ -3298,16 +3333,16 @@ namespace Pixelyth.Mods
             else NotificationManager.SendNotification(NotMasterClientError);
         }
 
-        public static float lucySiegeDelay;
-        public static void LucySiege()
+        public static float lucyHarassAllDelay;
+        public static void LucyHarassAll()
         {
             HalloweenGhostChaser hgc = Lucy;
             if (hgc == null) return;
             if (hgc.IsMine)
             {
-                if (Time.time > lucySiegeDelay)
+                if (Time.time > lucyHarassAllDelay)
                 {
-                    lucySiegeDelay = Time.time;
+                    lucyHarassAllDelay = Time.time + 2.5f;
                     hgc.currentState = HalloweenGhostChaser.ChaseState.Grabbing;
                     hgc.grabTime = Time.time;
                     hgc.targetPlayer = GetRandomPlayer(false);
@@ -3316,176 +3351,339 @@ namespace Pixelyth.Mods
             else NotificationManager.SendNotification(NotMasterClientError);
         }
 
-        public static bool lurkerOwnershipActive;
-        public static void TakeLurkerOwnership()
+        private static bool SetLurkerState(LurkerGhost lurker, NetPlayer target, LurkerGhost.ghostState state, RaiseEventOptions options = null)
         {
-            if (_lurker == null) return;
-            if (!_lurker.IsMine)
+            if (target != null)
             {
-                _lurker.ControllerActorNr = NetworkSystem.Instance.LocalPlayer.ActorNumber;
-                _lurker.OwnerActorNr = NetworkSystem.Instance.LocalPlayer.ActorNumber;
+                lurker.targetPlayer = null;
+                lurker.targetTransform = null;
+                lurker.targetVRRig = null;
+                lurker.PickPlayer(target);
+                if (lurker.targetPlayer != target || lurker.targetTransform == null || lurker.targetVRRig == null)
+                    return false;
             }
+            else
+            {
+                lurker.targetPlayer = null;
+                lurker.targetTransform = null;
+                lurker.targetVRRig = null;
+            }
+
+            lurker.ChangeState(state);
+            if (lurker.currentState != state)
+                return false;
+
+            SendSerialize(lurker.GetView, options);
+            return true;
         }
 
         public static void SpawnLurker()
         {
-            if (Lurker.IsMine)
-                Lurker.currentState = LurkerGhost.ghostState.patrol;
-            else NotificationManager.SendNotification(NotMasterClientError);
-        }
-
-        public static void MoveLurkerGun()
-        {
-            if (GetGunInput(false))
+            const string scenePath = "Environment Objects/05Maze_PersistentObjects/Ghosts/GhostLurker_Prefab";
+            GameObject pathObject = null;
+            try
             {
-                var GunData = RenderGun();
-                GameObject GunPointer = GunData.GunPointer;
-
-                if (GetGunInput(true))
-                {
-                    if (Lurker.IsMine)
-                        Lurker.transform.position = GunPointer.transform.position + Vector3.up;
-                    else NotificationManager.SendNotification(NotMasterClientError);
-                }
+                pathObject = GetObject(scenePath);
             }
+            catch
+            {
+            }
+
+            LurkerGhost[] candidates = Object.FindObjectsByType<LurkerGhost>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            LurkerGhost lurker = pathObject != null ? pathObject.GetComponent<LurkerGhost>() : null;
+            if (lurker == null)
+                lurker = candidates
+                    .Where(candidate => candidate != null)
+                    .OrderByDescending(candidate => candidate.IsMine)
+                    .ThenBy(candidate => candidate.gameObject.activeInHierarchy ? 0 : 1)
+                    .FirstOrDefault();
+
+            if (lurker == null)
+                return;
+
+            _lurker = lurker;
+
+            lurkerFindTime = -1f;
+            if (!Lurker)
+                return;
+
+            if (!lurker.gameObject.activeSelf)
+                lurker.gameObject.SetActive(true);
+
+            if (lurker.meshRenderer != null) lurker.meshRenderer.enabled = true;
+            if (lurker.bonesMeshRenderer != null) lurker.bonesMeshRenderer.enabled = true;
+
+            if (lurker.waypointsContainer != null && !lurker.waypointsContainer.activeSelf)
+                lurker.waypointsContainer.SetActive(true);
+
+            if (lurker.currentWaypoint == null)
+                lurker.PickNextWaypoint();
+
+            SetLurkerState(lurker, null, LurkerGhost.ghostState.patrol);
         }
 
         public static void DespawnLurker()
         {
-            if (Lurker.IsMine)
+            if (!Lurker) return;
+
+            LurkerGhost lurker = Lurker;
+
+            SetLurkerState(lurker, null, LurkerGhost.ghostState.patrol);
+            if (lurker.meshRenderer != null) lurker.meshRenderer.enabled = false;
+            if (lurker.bonesMeshRenderer != null) lurker.bonesMeshRenderer.enabled = false;
+        }
+
+        public static void SpawnWanderingGhost()
+        {
+            WanderingGhost ghost = Wanderer;
+            if (ghost == null) return;
+
+            if (!ghost.gameObject.activeSelf)
+                ghost.gameObject.SetActive(true);
+
+            if (ghost.mrenderer != null)
+                ghost.mrenderer.enabled = true;
+
+            if (ghost.waypointsContainer != null && !ghost.waypointsContainer.activeSelf)
+                ghost.waypointsContainer.SetActive(true);
+
+            SendSerialize(ghost.GetView);
+        }
+
+        public static void DespawnWanderingGhost()
+        {
+            if (!Wanderer) return;
+
+            WanderingGhost ghost = Wanderer;
+
+            Wanderer.currentState = WanderingGhost.GhostState.Idle;
+            if (ghost?.mrenderer != null) ghost.mrenderer.enabled = false;
+        }
+
+        public static void MoveWanderingGhostGun()
+        {
+            if (!GetGunInput(false)) return;
+
+            var gunData = RenderGun();
+            if (gunData.GunPointer == null || !GetGunInput(true)) return;
+
+            WanderingGhost ghost = Wanderer;
+            if (ghost == null) return;
+
+            ghost.transform.position = gunData.GunPointer.transform.position + Vector3.up;
+            SendSerialize(ghost.GetView);
+        }
+
+        private static float wanderingOriginalPatrolSpeed;
+        private static bool wanderingPatrolSpeedSaved;
+        private static float becomeWanderingSerializeDelay;
+        private static readonly Dictionary<Renderer, bool> wandererWaypointRendererStates = new Dictionary<Renderer, bool>();
+
+        private static void HideWandererWaypoints(WanderingGhost ghost)
+        {
+            if (ghost.waypointsContainer == null) return;
+
+            foreach (ZoneBasedObject region in ghost.waypointsContainer.GetComponentsInChildren<ZoneBasedObject>(true))
             {
-                Lurker.currentState = LurkerGhost.ghostState.patrol;
+                foreach (Transform waypoint in region.transform)
+                {
+                    foreach (Renderer renderer in waypoint.GetComponentsInChildren<Renderer>(true))
+                    {
+                        if (renderer == null) continue;
+                        if (!wandererWaypointRendererStates.ContainsKey(renderer))
+                            wandererWaypointRendererStates[renderer] = renderer.enabled;
+                        renderer.enabled = false;
+                    }
+                }
             }
-            else NotificationManager.SendNotification(NotMasterClientError);
+        }
+
+        public static void BecomeWanderer()
+        {
+            WanderingGhost ghost = Wanderer;
+            if (ghost == null) return;
+
+            if (!wanderingPatrolSpeedSaved)
+            {
+                wanderingOriginalPatrolSpeed = ghost.patrolSpeed;
+                wanderingPatrolSpeedSaved = true;
+            }
+
+            ghost.patrolSpeed = 0f;
+
+            if (ghost.waypointsContainer != null)
+            {
+                foreach (ZoneBasedObject region in ghost.waypointsContainer.GetComponentsInChildren<ZoneBasedObject>(true))
+                {
+                    foreach (Transform waypoint in region.transform)
+                    {
+                        foreach (Renderer renderer in waypoint.GetComponentsInChildren<Renderer>(true))
+                        {
+                            if (renderer == null) continue;
+                            if (!wandererWaypointRendererStates.ContainsKey(renderer))
+                                wandererWaypointRendererStates[renderer] = renderer.enabled;
+                            renderer.enabled = false;
+                        }
+                    }
+                }
+            }
+
+            if (ghost.mrenderer != null)
+                ghost.mrenderer.sharedMaterial = ghost.visibleMaterial;
+
+            VRRig.LocalRig.enabled = false;
+            VRRig.LocalRig.transform.position = GorillaTagger.Instance.bodyCollider.transform.position - Vector3.up * 99999f;
+            ghost.transform.position = GorillaTagger.Instance.bodyCollider.transform.position;
+            ghost.transform.rotation = GorillaTagger.Instance.headCollider.transform.rotation;
+
+            if (Time.time >= becomeWanderingSerializeDelay)
+            {
+                becomeWanderingSerializeDelay = Time.time + 0.25f;
+                SendSerialize(ghost.GetView);
+            }
+
+            SerializePatch.OverrideSerialization = () =>
+            {
+                MassSerialize(true, new[] { VRRig.LocalRig.GetPhotonView() });
+                RPCProtection();
+                return false;
+            };
+        }
+
+        public static void StopBecomingWanderer()
+        {
+            WanderingGhost ghost = Wanderer;
+            if (ghost != null && wanderingPatrolSpeedSaved)
+                ghost.patrolSpeed = wanderingOriginalPatrolSpeed;
+
+            wanderingPatrolSpeedSaved = false;
+            Movement.EnableRig();
+            SerializePatch.OverrideSerialization = null;
         }
 
         public static void LurkerAttack(NetPlayer player)
         {
-            if (Lurker.IsMine)
-            {
-                if (Lurker.targetPlayer != player)
-                {
-                    Lurker.ChangeState(LurkerGhost.ghostState.patrol);
-                    SendSerialize(Lurker.GetView);
-                }
+            if (player == null || !Lurker) return;
 
-                Lurker.currentState = LurkerGhost.ghostState.possess;
-                Lurker.targetPlayer = player;
-            }
-            else NotificationManager.SendNotification(NotMasterClientError);
+            LurkerGhost lurker = Lurker;
+
+            SetLurkerState(lurker, player, LurkerGhost.ghostState.possess);
+        }
+
+        public static void LurkerChase(NetPlayer player)
+        {
+            if (player == null || !Lurker) return;
+
+            LurkerGhost lurker = Lurker;
+
+            SetLurkerState(lurker, player, LurkerGhost.ghostState.seek);
+        }
+
+        public static void LurkerChaseGun()
+        {
+            if (!GetGunInput(false) || gunLockedPlayer == null || !GetGunInput(true)) return;
+            LurkerChase(gunLockedPlayer.GetPlayer());
         }
 
         public static void LurkerAttackGun()
         {
-            if (GetGunInput(false))
-            {
-                var GunData = RenderGun(true);
-
-                if (gunLockedPlayer != null)
-                    LurkerAttack(gunLockedPlayer.GetPlayer());
-            }
+            if (!GetGunInput(false) || gunLockedPlayer == null || !GetGunInput(true)) return;
+            LurkerAttack(gunLockedPlayer.GetPlayer());
         }
 
+        public static float lurkerAttackAllDelay;
         public static void LurkerAttackAll()
         {
-            if (SerializePatch.OverrideSerialization != null)
-            {
-                SerializePatch.OverrideSerialization = () =>
-                {
-                    MassSerialize(true, new[] { Lurker.GetView });
-                    return false;
-                };
-            }
+            if (Time.time < lurkerAttackAllDelay || !Lurker) return;
 
-            if (Lurker.IsMine)
-            {
-                if (Lurker.currentState != LurkerGhost.ghostState.possess)
-                {
-                    foreach (NetPlayer player in NetworkSystem.Instance.PlayerListOthers)
-                    {
-                        Lurker.currentState = LurkerGhost.ghostState.possess;
-                        Lurker.targetPlayer = player;
-                        SendSerialize(Lucy.GetView, new RaiseEventOptions { TargetActors = new[] { player.ActorNumber } });
-                    }
-                }
-            }
-            else
-                NotificationManager.SendNotification(NotMasterClientError);
+            LurkerGhost lurker = Lurker;
+
+            NetPlayer[] targets = NetworkSystem.Instance.PlayerListOthers.ToArray();
+            if (targets.Length == 0) return;
+
+            lurkerAttackAllDelay = Time.time + 1f;
+            foreach (NetPlayer player in targets)
+                SetLurkerState(lurker, player, LurkerGhost.ghostState.possess,
+                    new RaiseEventOptions { TargetActors = new[] { player.ActorNumber } });
         }
 
         public static float lurkerDelay;
         public static void SpazLurker()
         {
-            if (Lurker.IsMine)
-            {
-                if (Time.time > lurkerDelay)
-                {
-                    Lurker.currentState = Lurker.currentState == LurkerGhost.ghostState.charge ? LurkerGhost.ghostState.seek : LurkerGhost.ghostState.charge;
-                    Lurker.targetPlayer = GetRandomPlayer(true);
-                    lurkerDelay = Time.time + 0.1f;
-                }
-            }
-            else NotificationManager.SendNotification(NotMasterClientError);
-        }
+            if (Time.time < lurkerDelay || !Lurker) return;
 
-        public static void BreakLurker()
-        {
-            if (Lurker.IsMine)
-            {
-                Lurker.currentState = Lurker.currentState == LurkerGhost.ghostState.charge ? LurkerGhost.ghostState.possess : LurkerGhost.ghostState.charge;
-                Lurker.targetPlayer = GetRandomPlayer(true);
+            LurkerGhost lurker = Lurker;
 
-                SendSerialize(Lurker.GetView);
-            }
-            else NotificationManager.SendNotification(NotMasterClientError);
+            NetPlayer target = GetRandomPlayer(true);
+            if (target == null) return;
+
+            LurkerGhost.ghostState state = lurker.currentState == LurkerGhost.ghostState.charge
+                ? LurkerGhost.ghostState.seek
+                : LurkerGhost.ghostState.charge;
+
+            if (SetLurkerState(lurker, target, state))
+                lurkerDelay = Time.time + 0.1f;
         }
 
         public static void AnnoyingLurker()
         {
-            if (Lurker.IsMine)
-            {
-                if (Time.time > lurkerDelay)
-                {
-                    Lurker.currentState = Lurker.currentState == LurkerGhost.ghostState.possess ? LurkerGhost.ghostState.charge : LurkerGhost.ghostState.possess;
-                    Lurker.targetPlayer = GetRandomPlayer(true);
-                    lurkerDelay = Time.time + 0.1f;
-                }
-            }
-            else NotificationManager.SendNotification(NotMasterClientError);
+            if (Time.time < lurkerDelay || !Lurker) return;
+
+            LurkerGhost lurker = Lurker;
+
+            NetPlayer target = GetRandomPlayer(true);
+            if (target == null) return;
+
+            LurkerGhost.ghostState state = lurker.currentState == LurkerGhost.ghostState.possess
+                ? LurkerGhost.ghostState.charge
+                : LurkerGhost.ghostState.possess;
+
+            if (SetLurkerState(lurker, target, state))
+                lurkerDelay = Time.time + 0.1f;
         }
 
+        public static void MoveLurkerGun()
+        {
+            if (!GetGunInput(false)) return;
+
+            var gunData = RenderGun();
+            if (gunData.GunPointer == null || !GetGunInput(true)) return;
+            if (!Lurker) return;
+
+            LurkerGhost lurker = Lurker;
+
+            lurker.transform.position = gunData.GunPointer.transform.position + Vector3.up;
+            SendSerialize(lurker.GetView);
+        }
+
+        public static float becomeLurkerSerializeDelay;
         public static void BecomeLurker()
         {
-            if (!NetworkSystem.Instance.IsMasterClient)
+            if (!Lurker) return;
+
+            LurkerGhost lurker = Lurker;
+
+            VRRig.LocalRig.enabled = false;
+            VRRig.LocalRig.transform.position = GorillaTagger.Instance.bodyCollider.transform.position - Vector3.up * 99999f;
+
+            lurker.transform.position = GorillaTagger.Instance.bodyCollider.transform.position;
+            lurker.transform.rotation = GorillaTagger.Instance.headCollider.transform.rotation;
+
+            if (Time.time >= becomeLurkerSerializeDelay)
             {
-                NotificationManager.SendNotification(NotMasterClientError);
-                return;
+                becomeLurkerSerializeDelay = Time.time + 0.25f;
+                foreach (NetPlayer player in NetworkSystem.Instance.PlayerListOthers)
+                    SetLurkerState(lurker, player, LurkerGhost.ghostState.seek,
+                        new RaiseEventOptions { TargetActors = new[] { player.ActorNumber } });
             }
 
-            if (Lurker != null)
+            SerializePatch.OverrideSerialization = () =>
             {
-                VRRig.LocalRig.enabled = false;
-                VRRig.LocalRig.transform.position = GorillaTagger.Instance.bodyCollider.transform.position - Vector3.up * 99999f;
-
-                Lurker.transform.position = GorillaTagger.Instance.bodyCollider.transform.position;
-                Lurker.transform.rotation = GorillaTagger.Instance.headCollider.transform.rotation;
-
-                Lurker.currentState = LurkerGhost.ghostState.seek;
-                SerializePatch.OverrideSerialization = () =>
-                {
-                    MassSerialize(true, new[] { VRRig.LocalRig.GetPhotonView() });
-
-                    foreach (NetPlayer Player in NetworkSystem.Instance.PlayerListOthers)
-                    {
-                        Lurker.targetPlayer = Player;
-                        SendSerialize(Lurker.GetView, new RaiseEventOptions { TargetActors = new[] { Player.ActorNumber } });
-                    }
-
-                    RPCProtection();
-
-                    return false;
-                };
-            }
+                MassSerialize(true, new[] { VRRig.LocalRig.GetPhotonView() });
+                RPCProtection();
+                return false;
+            };
         }
 
         public static void BetaSetVelocityPlayer(NetPlayer victim, Vector3 velocity)

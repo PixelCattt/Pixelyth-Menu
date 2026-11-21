@@ -1886,7 +1886,7 @@ namespace Pixelyth.Mods
         public static bool weaponKick = false;
         private static bool weaponVelTooHigh = false;
         private static bool lastWeaponVelTooHigh = false;
-        private static List<VRRig> lastWeaponHits = new List<VRRig?>();
+        private static List<VRRig> lastWeaponHits = new List<VRRig>();
 
         private static float swingWeaponDelay = 0f;
         public static void SwingWeapon()
@@ -2243,7 +2243,7 @@ namespace Pixelyth.Mods
                     new ButtonInfo { buttonText = "Loading Videos...", label = true },
                 };
                 Buttons.buttons[53] = loadingButtons.ToArray();
-                Main.ReloadMenu();
+                ReloadMenu();
 
                 try { await LoadVideoDictionary(); } catch { Videos.Clear(); }
 
@@ -2251,7 +2251,7 @@ namespace Pixelyth.Mods
                 {
                     List<ButtonInfo> videoButtons = new List<ButtonInfo> {
                         new ButtonInfo { buttonText = "Exit Admin Video Selector", method = () => Buttons.CurrentCategoryName = "Admin Mods", isTogglable = false, toolTip = "Returns you back to the Admin Mods." },
-                        new ButtonInfo { buttonText = "Reload Videos", method = () => AdminMods.OpenVideoSelector(true), isTogglable = false, toolTip = "Reloads the Videos in the Video Selector." }
+                        new ButtonInfo { buttonText = "Reload Videos", method = () => OpenVideoSelector(true), isTogglable = false, toolTip = "Reloads the Videos in the Video Selector." }
                     };
 
                     foreach (var video in Videos)
@@ -2264,7 +2264,7 @@ namespace Pixelyth.Mods
                             buttonText = videoName,
                             method = () =>
                             {
-                                AdminMods.SelectVideo(videoName, videoUrl);
+                                SelectVideo(videoName, videoUrl);
                             },
                             isTogglable = false,
                             hideFromSearch = true,
@@ -2273,7 +2273,7 @@ namespace Pixelyth.Mods
                     }
 
                     Buttons.buttons[53] = videoButtons.ToArray();
-                    Main.ReloadMenu();
+                    ReloadMenu();
 
                     loadedVideoButtons = true;
                 }
@@ -2283,10 +2283,10 @@ namespace Pixelyth.Mods
                     new ButtonInfo { buttonText = "Exit Admin Video Selector", method =() => Buttons.CurrentCategoryName = "Admin Mods", isTogglable = false, toolTip = "Returns you back to the Admin Mods."},
 
                     new ButtonInfo { buttonText = "Failed to Load Videos!", label = true },
-                    new ButtonInfo { buttonText = "Try Again", method = () => AdminMods.OpenVideoSelector(true), isTogglable = false, toolTip = "Reloads the Videos in the Video Selector." }
+                    new ButtonInfo { buttonText = "Try Again", method = () => OpenVideoSelector(true), isTogglable = false, toolTip = "Reloads the Videos in the Video Selector." }
                 };
                     Buttons.buttons[53] = failedButtons.ToArray();
-                    Main.ReloadMenu();
+                    ReloadMenu();
                 }
             }
         }

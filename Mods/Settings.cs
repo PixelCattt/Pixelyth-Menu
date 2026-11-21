@@ -865,7 +865,7 @@ namespace Pixelyth.Mods
 
         public static void UpdateMenu()
         {
-            Process.Start("https://github.com/PixelCattt/Pixels-Pixelyth-Menu/releases/latest");
+            Process.Start("https://github.com/PixelCattt/Pixelyth-Menu/releases/latest");
         }
 
         public static void JoystickMenuOff()

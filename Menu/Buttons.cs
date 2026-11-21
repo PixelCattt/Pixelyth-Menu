@@ -164,24 +164,27 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Particle Spawn Effect", enableMethod =() => particleSpawnEffect = true, disableMethod =() => particleSpawnEffect = false, toolTip = "Spawns particles when opening the menu."},
                 new ButtonInfo { buttonText = "Gradient Title", enableMethod =() => gradientTitle = true, disableMethod =() => gradientTitle = false, toolTip = "Gives a gradient to the title of the menu depending on your theme."},
                 new ButtonInfo { buttonText = "Animated Title", enableMethod =() => animatedTitle = true, disableMethod =() => animatedTitle = false, toolTip = "Animates the title of the menu."},
+                
+                //new ButtonInfo { buttonText = "Click GUI", enableMethod = Settings.EnableClickGUI, method = Settings.ClickGUI, disableMethod = Settings.DisableClickGUI, toolTip = "A modern version of the menu."},
+
                 new ButtonInfo { buttonText = "AI Assistant", enableMethod =() => CoroutineManager.instance.StartCoroutine(Settings.DictationOn()), method = Settings.CheckFocus, disableMethod = Settings.DictationOff, toolTip = "A voice assistant with artificial intelligence capabilities."},
                 new ButtonInfo { buttonText = "Voice Commands", enableMethod = Settings.VoiceRecognitionOn, method = Settings.CheckFocus, disableMethod = Settings.VoiceRecognitionOff, toolTip = "Enable and disable mods using your voice. Activate it like how you would any other voice assistant, such as \"Jarvis, Platforms\"."},
                 new ButtonInfo { buttonText = "Chain Voice Commands", toolTip = "Makes voice commands chain together, so you don't have to repeatedly ask it to listen to you."},
-                //new ButtonInfo { buttonText = "Click GUI", enableMethod = Settings.EnableClickGUI, method = Settings.ClickGUI, disableMethod = Settings.DisableClickGUI, toolTip = "A modern version of the menu."},
-
-                new ButtonInfo { buttonText = "Narrate Assistant", toolTip = "Narrates what the voice assistant says locally."},
-                new ButtonInfo { buttonText = "Global Narrate Assistant", toolTip = "Narrates what the voice assistant says globally."},
-                new ButtonInfo { buttonText = "Global Dynamic Sounds", toolTip = "Plays the dynamic sounds through your microphone."},
 
                 new ButtonInfo { buttonText = "Test Speech Recognition", enableMethod = Experimental.StartDictationListening, disableMethod = Experimental.StopDictationListening, toolTip = "Test Speech Recognition Results."},
                 new ButtonInfo { buttonText = "Debug Dictation", enableMethod =() => Settings.debugDictation = true, disableMethod =() => Settings.debugDictation = false, toolTip = "Debug what you say to the AI Assistant in your Unity console."},
 
                 new ButtonInfo { buttonText = "Custom System Prompt", enableMethod =() => AIManager.customPrompt = true, disableMethod =() => AIManager.customPrompt = false, toolTip = "Never resets the system prompt, allowing you to edit the file."},
 
+                new ButtonInfo { buttonText = "Narrate Assistant", toolTip = "Narrates what the voice assistant says locally."},
+                new ButtonInfo { buttonText = "Global Narrate Assistant", toolTip = "Narrates what the voice assistant says globally."},
+                new ButtonInfo { buttonText = "Global Dynamic Sounds", toolTip = "Plays the dynamic sounds through your microphone."},
+
                 new ButtonInfo { buttonText = "Reset Voice Commands Keywords", method = Settings.ResetVoiceCommandsKeywords, isTogglable = false, toolTip = "Resets the keywords for all the voice command related mods."},
                 new ButtonInfo { buttonText = "Reset System Prompt", method = Settings.ResetSystemPrompt, isTogglable = false, toolTip = "Resets the system prompt for the AI Assistant."},
 
                 new ButtonInfo { buttonText = "Player Select", method = Settings.PlayerSelect, toolTip = "Spawns a line in your hand when moving your hand away from the menu that you can select players with."},
+
                 //new ButtonInfo { buttonText = "Menu Intro", enableMethod = Settings.MenuIntro, toolTip = "Plays an intro for the menu."},
 
                 new ButtonInfo { buttonText = "Annoying Mode", enableMethod =() => annoyingMode = true, disableMethod = Settings.AnnoyingModeOff, toolTip = "Turns on the April Fools 2024 settings."},
@@ -923,7 +926,9 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Creature ESP", method = Visuals.CreatureESP, toolTip = "Puts dots on your screen at where all of the creatures are in forest and caves."},
                 new ButtonInfo { buttonText = "Enemy ESP", method = Visuals.EnemyESP, toolTip = "Puts dots on your screen at where all of the cores in the ghost reactor map are."},
                 new ButtonInfo { buttonText = "Resource ESP", method = Visuals.ResourceESP, toolTip = "Puts dots on your screen at where all of the resources are in the Super Infection gamemode."},
-                new ButtonInfo { buttonText = "Lucy ESP", method = Visuals.LucyESP, toolTip = "Puts a dot on your screen at where Lucy is, even when she's hiding underground."},
+                new ButtonInfo { buttonText = "Lucy ESP", method = Visuals.LucyESP, toolTip = "Puts a dot on your screen at Lucy's current position, even when she's hiding underground."},
+                new ButtonInfo { buttonText = "Lurker ESP", method = Visuals.LurkerESP, toolTip = "Puts a dot on your screen at the Lurker's current position."},
+                new ButtonInfo { buttonText = "Wanderer ESP", method = Visuals.WanderingGhostESP, toolTip = "Puts a dot on your screen at the Wanderer's current position."},
 
                 new ButtonInfo { buttonText = "Enable Snow", aliases = new[] { "Winter" }, enableMethod =() => Visuals.ToggleSnow(true), disableMethod =() => Visuals.ToggleSnow(false), toolTip = "Forcibly enables the snow."},
                 new ButtonInfo { buttonText = "Rainy Weather", aliases = new[] { "Enable Rain" }, method =() => Visuals.WeatherChange(true), toolTip = "Forces the weather to rain."},
@@ -953,6 +958,8 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Velocity Overlay", method =() => NotificationManager.information["Velocity"] = $"{GorillaTagger.Instance.rigidbody.linearVelocity.magnitude:F1}m/s", disableMethod =() => NotificationManager.information.Remove("Velocity"), toolTip = "Displays your velocity on your screen."},
                 new ButtonInfo { buttonText = "Nearby Overlay", method = Visuals.NearbyTaggerOverlay, disableMethod =() => NotificationManager.information.Remove("Nearby"), toolTip = "Displays the distance to the nearest tagger/target on your screen."},
                 new ButtonInfo { buttonText = "Lucy Overlay", method = Visuals.LucyOverlay, disableMethod =() => NotificationManager.information.Remove("Lucy"), toolTip = "Displays Lucy's current state, speed, and target on your screen."},
+                new ButtonInfo { buttonText = "Lurker Overlay", method = Visuals.LurkerOverlay, disableMethod =() => NotificationManager.information.Remove("Lurker"), toolTip = "Displays the Lurker's current state, speed, and target on your screen."},
+                new ButtonInfo { buttonText = "Wanderer Overlay", method = Visuals.WanderingGhostOverlay, disableMethod =() => NotificationManager.information.Remove("Wanderer"), toolTip = "Displays whether the Wanderer is visible and its patrol speed."},
                 new ButtonInfo { buttonText = "Info Overlay Gun", method = Visuals.InfoOverlayGun, toolTip = "Displays an overlay, showing the information of whoever your hand desires."},
 
                 new ButtonInfo { buttonText = "Debug HUD", aliases = new[] { "Developer HUD", "Debug UI", "Developer UI" }, enableMethod = Visuals.EnableDebugHUD, disableMethod = Visuals.DisableDebugHUD, toolTip = "Displays the developer debug HUD."},
@@ -2075,9 +2082,12 @@ namespace Pixelyth.Menu
             new[] { // Overpowered Mods [17]
                 new ButtonInfo { buttonText = "Exit Overpowered Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
-                new ButtonInfo { buttonText = "Spawn Red Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpawnRedLucy, isTogglable = false, toolTip = "Summons the red Lucy in forest. Requires master client, or the Lucy Ownership mod."},
-                new ButtonInfo { buttonText = "Spawn Blue Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpawnBlueLucy, isTogglable = false, toolTip = "Summons the blue Lucy in forest. Requires master client."},
+                new ButtonInfo { buttonText = "Spawn Blue Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.SpawnLucy(false), isTogglable = false, toolTip = "Summons the blue Lucy in forest. Requires master client."},
+                new ButtonInfo { buttonText = "Spawn Red Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.SpawnLucy(true), isTogglable = false, toolTip = "Summons the red Lucy in forest. Requires master client, or the Lucy Ownership mod."},
                 new ButtonInfo { buttonText = "Despawn Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.DespawnLucy, isTogglable = false, toolTip = "Sends Lucy back into the ground in forest. Requires master client."},
+
+                new ButtonInfo { buttonText = "Set Lucy Type Blue <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.SetLucyType(false), isTogglable = false, toolTip = "Sets Lucys Type to Blue. Requires master client."},
+                new ButtonInfo { buttonText = "Set Lucy Type Red <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.SetLucyType(true), isTogglable = false, toolTip = "Sets Lucys Type to Red. Requires master client."},
 
                 new ButtonInfo { buttonText = "Lucy Chase Self <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.LucyChase(NetworkSystem.Instance.LocalPlayer), isTogglable = false, toolTip = "Makes Lucy chase you. Requires master client."},
                 new ButtonInfo { buttonText = "Lucy Chase Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyChaseGun, toolTip = "Makes Lucy chase whoever your hand desires. Requires master client."},
@@ -2087,12 +2097,15 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Lucy Attack All <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyAttackAll, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Makes Lucy grab everyone in the room. Requires master client."},
 
                 new ButtonInfo { buttonText = "Lucy Harass Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyHarassGun, toolTip = "Makes Lucy relentlessly harass whoever your hand desires. Requires master client."},
-                new ButtonInfo { buttonText = "Move Lucy Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.MoveLucyGun, toolTip = "Moves Lucy to wherever your hand desires. Requires master client."},
+                new ButtonInfo { buttonText = "Lucy Harass All <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.LucyHarassAll, method = Overpowered.LucyHarassAll, disableMethod =() => Overpowered.DespawnLucy(), toolTip = "Makes Lucy grab a random player every 2.5 seconds, non stop. Requires master client, or the Lucy Ownership mod."},
 
                 new ButtonInfo { buttonText = "Spaz Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpazLucy, toolTip = "Gives Lucy a seizure. Requires master client."},
                 new ButtonInfo { buttonText = "Annoying Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.AnnoyingLucy, toolTip = "Makes Lucy really annoying, by attacking everyone and playing the sounds of the bells. Requires master client."},
 
+                new ButtonInfo { buttonText = "Move Lucy Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.MoveLucyGun, toolTip = "Moves Lucy to wherever your hand desires. Requires master client."},
                 new ButtonInfo { buttonText = "Become Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.BecomeLucy, disableMethod = Movement.EnableRig, toolTip = "Turns you into Lucy. Requires master client."},
+
+                new ButtonInfo { buttonText = "Hyper Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.HyperLucyEnable, disableMethod = Overpowered.HyperLucyDisable, toolTip = "Makes Lucy permanently accelerate, until she's breaking the sound barrier. Requires master client, or the Lucy Ownership mod."},
 
                 new ButtonInfo { buttonText = "Fast Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.FastLucy, toolTip = "Makes Lucy become really fast. Requires master client."},
                 new ButtonInfo { buttonText = "Slow Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SlowLucy, toolTip = "Makes Lucy become really slow. Requires master client."},
@@ -2100,21 +2113,44 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Restless Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.RestlessLucy, disableMethod = Overpowered.CalmLucy, toolTip = "Makes Lucy rise way more often, never giving anyone a break. Requires master client, or the Lucy Ownership mod."},
 
-                // new ButtonInfo { buttonText = "Lucy Pet <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod =() => { Overpowered.lucyOwnershipActive = true; Overpowered.PetLucyEnable(); }, method = Overpowered.TakeLucyOwnership, disableMethod = Overpowered.PetLucyDisable, toolTip = "Makes Lucy follow you around like a pet, and she can never grab you. Requires master client, or the Lucy Ownership mod."},
-                new ButtonInfo { buttonText = "Lucy Steer Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SteerLucyGun, toolTip = "Remote control Lucy, sending her wherever your hand desires. Hold trigger to steer. Requires master client, or the Lucy Ownership mod."},
-                new ButtonInfo { buttonText = "Lucy Rain <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyRain, toolTip = "Makes Lucy gong teleport between her spawn points over and over. Requires master client, or the Lucy Ownership mod."},
+                new ButtonInfo { buttonText = "Lucy Pet <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.PetLucyEnable, disableMethod = Overpowered.PetLucyDisable, toolTip = "Makes Lucy follow you around like a pet, and she can never grab you. Requires master client, or the Lucy Ownership mod."},
+                
+                // new ButtonInfo { buttonText = "Lucy Steer Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SteerLucyGun, toolTip = "Remote control Lucy, sending her wherever your hand desires. Hold trigger to steer. Requires master client, or the Lucy Ownership mod."},
+                
+                new ButtonInfo { buttonText = "Lucy Gong TP <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyGongTeleport, toolTip = "Makes Lucy gong teleport between her spawn points over and over. Requires master client, or the Lucy Ownership mod."},
                 new ButtonInfo { buttonText = "Banish Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.BanishLucy, isTogglable = false, toolTip = "Sends Lucy 50 meters into the ground. Requires master client, or the Lucy Ownership mod."},
-                // new ButtonInfo { buttonText = "Hyper Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod =() => { Overpowered.lucyOwnershipActive = true; Overpowered.HyperLucyEnable(); }, method = Overpowered.TakeLucyOwnership, disableMethod = Overpowered.HyperLucyDisable, toolTip = "Makes Lucy permanently accelerate, until she's breaking the sound barrier. Requires master client, or the Lucy Ownership mod."},
                 new ButtonInfo { buttonText = "Lucy Grab Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LucyGrabGun, toolTip = "Teleports Lucy straight at whoever your hand desires and makes her grab them. Requires master client, or the Lucy Ownership mod."},
                 new ButtonInfo { buttonText = "Lucy Bodyguard <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.LucyBodyguard, method = Overpowered.LucyBodyguard, disableMethod =() => Overpowered.DespawnLucy(), toolTip = "Makes Lucy hunt down anyone who gets within 25 meters of you. Requires master client, or the Lucy Ownership mod."},
-                new ButtonInfo { buttonText = "Lucy Siege <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.LucySiege, method = Overpowered.LucySiege, disableMethod =() => Overpowered.DespawnLucy(), toolTip = "Makes Lucy grab a random player every 2 seconds, non stop. Requires master client, or the Lucy Ownership mod."},
 
                 new ButtonInfo { buttonText = "Carry Lucy <color=grey>[</color><color=red>M</color><color=grey>]</color>", enableMethod = Overpowered.CarryLucyEnable, method = Overpowered.CarryLucyMethod, disableMethod = Overpowered.CarryLucyDisable, toolTip = "Picks Lucy up and lets everyone watch you carry the ghost around in your hand. Requires master client, or the Lucy Ownership mod."},
                 new ButtonInfo { buttonText = "Lucy Flight", enableMethod = Overpowered.LucyFlightEnable, method = Overpowered.LucyFlightMethod, disableMethod = Overpowered.LucyFlightDisable, toolTip = "Makes Lucy carry you up into the sky. Everyone sees you levitating, and she grabs you on your screen."},
+
                 new ButtonInfo { buttonText = "Rainbow Lucy", method = Overpowered.RainbowLucy, disableMethod = Overpowered.ResetLucyColor, toolTip = "Makes Lucy cycle through the colors of the rainbow."},
 
                 new ButtonInfo { buttonText = "Anti Lucy", enableMethod =() => RisePatch.enabled = true, disableMethod =() => RisePatch.enabled = false, toolTip = "Prevents Lucy from lifting you up when she grabs you."},
                 new ButtonInfo { buttonText = "Disable Lucy", enableMethod =() => LucyPatch.enabled = true, disableMethod =() => LucyPatch.enabled = false, toolTip = "Freezes Lucy completely on your client, and stops her AI if you're master client."},
+
+                new ButtonInfo { buttonText = "Spawn Lurker <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpawnLurker, isTogglable = false, toolTip = "Summons the Lurker. Requires master client."},
+                new ButtonInfo { buttonText = "Despawn Lurker <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.DespawnLurker, isTogglable = false, toolTip = "Hides the Lurker locally and resets its state. The game does not expose a networked despawn state."},
+
+                new ButtonInfo { buttonText = "Lurker Chase Self <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.LurkerChase(NetworkSystem.Instance.LocalPlayer), isTogglable = false, toolTip = "Makes the Lurker chase you. Requires master client."},
+                new ButtonInfo { buttonText = "Lurker Chase Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LurkerChaseGun, toolTip = "Makes the Lurker chase whoever your hand desires. Requires master client."},
+                
+                new ButtonInfo { buttonText = "Lurker Attack Self <color=grey>[</color><color=red>M</color><color=grey>]</color>", method =() => Overpowered.LurkerAttack(NetworkSystem.Instance.LocalPlayer), isTogglable = false, toolTip = "Makes the Lurker attack you. Requires master client."},
+                new ButtonInfo { buttonText = "Lurker Attack Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LurkerAttackGun, toolTip = "Makes the Lurker attack whoever your hand desires. Requires master client."},
+                new ButtonInfo { buttonText = "Lurker Attack All <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.LurkerAttackAll, toolTip = "Makes the Lurker attack everyone in the room. Requires master client."},
+
+                new ButtonInfo { buttonText = "Spaz Lurker <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.SpazLurker, toolTip = "Gives the Lurker a seizure. Requires master client."},
+                new ButtonInfo { buttonText = "Annoying Lurker <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.AnnoyingLurker, toolTip = "Makes the Lurker really annoying, by attacking everyone and playing the sounds of the bells. Requires master client."},
+
+                new ButtonInfo { buttonText = "Move Lurker Gun <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.MoveLurkerGun, toolTip = "Moves the Lurker to wherever your hand desires. Requires master client."},
+                new ButtonInfo { buttonText = "Become Lurker <color=grey>[</color><color=red>M</color><color=grey>]</color>", method = Overpowered.BecomeLurker, disableMethod =() => { Movement.EnableRig(); SerializePatch.OverrideSerialization = null; }, toolTip = "Turns you into the Lurker. Requires master client."},
+
+                new ButtonInfo { buttonText = "Spawn Wanderer", method = Overpowered.SpawnWanderingGhost, isTogglable = false, toolTip = "Shows the Wanderer if it is loaded in this map."},
+                new ButtonInfo { buttonText = "Despawn Wanderer", method = Overpowered.DespawnWanderingGhost, isTogglable = false, toolTip = "Hides the Wanderer locally."},
+
+                new ButtonInfo { buttonText = "Move Wanderer Gun", method = Overpowered.MoveWanderingGhostGun, toolTip = "Moves the Wanderer to wherever your hand desires. Requires master client."},
+                new ButtonInfo { buttonText = "Become Wanderer", method = Overpowered.BecomeWanderer, disableMethod = Overpowered.StopBecomingWanderer, toolTip = "Hides your rig, hides Wanderer waypoints, and keeps the visible Wanderer at your position."},
 
                 new ButtonInfo { buttonText = "Always Guardian", method = Overpowered.AlwaysGuardian, disableMethod = Movement.EnableRig, toolTip = "Makes you always the guardian."},
                 new ButtonInfo { buttonText = "Guardian Protector", method = Overpowered.GuardianProtector, toolTip = "Pushes people away from the guardian moon if they try to approach it."},

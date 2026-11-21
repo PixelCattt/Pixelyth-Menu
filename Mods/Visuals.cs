@@ -310,7 +310,43 @@ namespace Pixelyth.Mods
             if (tt)
                 lucyColor.a = 0.5f;
 
-            Visualize(PrimitiveType.Sphere, hgc.transform.position, hgc.transform.rotation, Vector3.one * 0.75f, lucyColor, 778293, lucyColor.a);
+            Visualize(PrimitiveType.Sphere, hgc.transform.position, hgc.transform.rotation, Vector3.one * 0.25f, lucyColor, 778293, lucyColor.a);
+        }
+
+        public static void LurkerESP()
+        {
+            if (!NetworkSystem.Instance.InRoom)
+                return;
+
+            LurkerGhost lurker = Overpowered.Lurker;
+            if (lurker == null)
+                return;
+
+            bool fmt = Buttons.GetIndex("Follow Menu Theme").enabled;
+            bool transparent = Buttons.GetIndex("Transparent Theme").enabled;
+            Color lurkerColor = fmt ? backgroundColor.GetCurrentColor() : new Color(0.65f, 0.15f, 0.9f);
+            if (transparent)
+                lurkerColor.a = 0.5f;
+
+            Visualize(PrimitiveType.Sphere, lurker.transform.position, lurker.transform.rotation, Vector3.one * 0.25f, lurkerColor, 778294, lurkerColor.a);
+        }
+
+        public static void WanderingGhostESP()
+        {
+            if (!NetworkSystem.Instance.InRoom)
+                return;
+
+            WanderingGhost ghost = Overpowered.Wanderer;
+            if (ghost == null)
+                return;
+
+            bool fmt = Buttons.GetIndex("Follow Menu Theme").enabled;
+            bool transparent = Buttons.GetIndex("Transparent Theme").enabled;
+            Color ghostColor = fmt ? backgroundColor.GetCurrentColor() : new Color(0.25f, 0.8f, 0.9f);
+            if (transparent)
+                ghostColor.a = 0.5f;
+
+            Visualize(PrimitiveType.Sphere, ghost.transform.position, ghost.transform.rotation, Vector3.one * 0.25f, ghostColor, 778295, ghostColor.a);
         }
 
         public static void LucyOverlay()
@@ -333,6 +369,45 @@ namespace Pixelyth.Mods
             };
 
             NotificationManager.information["Lucy"] = $"{stateName} | {hgc.currentSpeed:F1}m/s | {hgc.targetPlayer?.NickName ?? "Nobody"}";
+        }
+
+        public static void LurkerOverlay()
+        {
+            LurkerGhost lurker = Overpowered.Lurker;
+            if (lurker == null)
+            {
+                NotificationManager.information.Remove("Lurker");
+                return;
+            }
+
+            string stateName = lurker.currentState switch
+            {
+                LurkerGhost.ghostState.patrol => "Patrol",
+                LurkerGhost.ghostState.seek => "Seek",
+                LurkerGhost.ghostState.charge => "Charge",
+                LurkerGhost.ghostState.possess => "Possess",
+                _ => "Unknown"
+            };
+            float speed = lurker.currentState == LurkerGhost.ghostState.patrol
+                ? lurker.patrolSpeed
+                : lurker.currentState == LurkerGhost.ghostState.possess
+                    ? lurker.chargeSpeed
+                    : lurker.seekSpeed;
+
+            NotificationManager.information["Lurker"] = $"{stateName} | {speed:F1}m/s | {lurker.targetPlayer?.NickName ?? "Nobody"}";
+        }
+
+        public static void WanderingGhostOverlay()
+        {
+            WanderingGhost ghost = Overpowered.Wanderer;
+            if (ghost == null)
+            {
+                NotificationManager.information.Remove("Wanderer");
+                return;
+            }
+
+            string visibility = ghost.isActiveAndEnabled && ghost.mrenderer != null && ghost.mrenderer.enabled ? "Visible" : "Hidden";
+            NotificationManager.information["Wanderer"] = $"{visibility} | Patrol {ghost.patrolSpeed:F1}m/s";
         }
 
         public static void ResourceESP()
@@ -981,16 +1056,11 @@ namespace Pixelyth.Mods
         public static void EnableDebugHUD()
         {
             DebugHudStats debugStats = Camera.main.transform.Find("DebugCanvas").GetComponent<DebugHudStats>();
+            Traverse debugStatsFields = Traverse.Create(debugStats);
 
-            debugStats.builder = new StringBuilder();
-            debugStats.drawCallsRecorder = ProfilerRecorder.StartNew(
-                ProfilerCategory.Render,
-                "Draw Calls Count"
-            );
-            debugStats.trisRecorder = ProfilerRecorder.StartNew(
-                ProfilerCategory.Render,
-                "Tris Count"
-            );
+            debugStatsFields.Field("_builder").SetValue(new StringBuilder());
+            debugStatsFields.Field("_trisRecorder").SetValue(ProfilerRecorder.StartNew(ProfilerCategory.Render, "Tris Count"));
+            debugStatsFields.Field("_drawCallsRecorder").SetValue(ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count"));
 
             debugStats.gameObject.SetActive(true);
             debugStats.text.gameObject.SetActive(true);
