@@ -2221,6 +2221,13 @@ namespace Pixelyth.Mods
         
         private static NetPlayer talkThroughTarget;
         private static readonly System.Random talkThroughRandom = new System.Random();
+        private static Recorder talkThroughRecorder;
+        private static bool talkThroughRecorderStateCaptured;
+        private static bool talkThroughOriginalIsRecording;
+        private static bool talkThroughOriginalTransmitEnabled;
+        private static bool talkThroughOriginalVoiceDetection;
+        private static bool talkThroughOriginalMuteMicrophone;
+        private static bool talkThroughUsedRecorderPatch;
 
         public static bool IsTalkingThroughSomeone => talkThroughTarget != null;
 
@@ -2345,6 +2352,19 @@ namespace Pixelyth.Mods
         }
         
         private static float talkThroughVerboseDelay;
+
+        private static void CaptureTalkThroughRecorderState(Recorder recorder)
+        {
+            if (talkThroughRecorderStateCaptured || recorder == null) return;
+
+            talkThroughRecorder = recorder;
+            talkThroughOriginalIsRecording = recorder.IsRecording;
+            talkThroughOriginalTransmitEnabled = recorder.TransmitEnabled;
+            talkThroughOriginalVoiceDetection = recorder.VoiceDetection;
+            talkThroughUsedRecorderPatch = RecorderPatch.enabled;
+            talkThroughOriginalMuteMicrophone = talkThroughUsedRecorderPatch && VoiceManager.Get().MuteMicrophone;
+            talkThroughRecorderStateCaptured = true;
+        }
         
         private static bool IsVoiceSlotClaimable(NetPlayer player, bool verbose)
         {
@@ -2398,11 +2418,14 @@ namespace Pixelyth.Mods
                 return false;
             }
 
-            if (GetTalkRecorder() == null)
+            Recorder recorder = GetTalkRecorder();
+            if (recorder == null)
             {
                 TTLog($"TrySet({player.NickName}): no recorder");
                 return false;
             }
+
+            CaptureTalkThroughRecorderState(recorder);
 
             if (!IsVoiceSlotClaimable(player, true))
             {
@@ -2551,9 +2574,20 @@ namespace Pixelyth.Mods
                 }
             }
 
-            Recorder rec = GetTalkRecorder();
-            if (rec != null)
+            Recorder rec = talkThroughRecorder != null ? talkThroughRecorder : GetTalkRecorder();
+            if (talkThroughRecorderStateCaptured && rec != null)
+            {
+                rec.IsRecording = talkThroughOriginalIsRecording;
+                rec.TransmitEnabled = talkThroughOriginalTransmitEnabled;
+                rec.VoiceDetection = talkThroughOriginalVoiceDetection;
+                if (talkThroughUsedRecorderPatch)
+                    VoiceManager.Get().MuteMicrophone = talkThroughOriginalMuteMicrophone;
+            }
+            else if (rec != null)
                 rec.VoiceDetection = true;
+
+            talkThroughRecorder = null;
+            talkThroughRecorderStateCaptured = false;
         }
         
         private static void TTLog(string message)
