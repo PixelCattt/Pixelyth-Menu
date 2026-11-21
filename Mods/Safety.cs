@@ -110,6 +110,63 @@ namespace Pixelyth.Mods
             NotificationManager.SendNotification("<color=grey>[</color><color=red>MODULE HISTORY</color><color=grey>]</color> Logging disabled.");
         }
 
+        private static bool micMutedByGate;
+        private static float micGateThreatTime;
+        private static readonly float[] micGateHoldTimes = { 0f, 0.5f, 1f, 2f };
+        private static readonly string[] micGateHoldNames = { "Instant", "Short", "Normal", "Long" };
+        public static int micGateHoldIndex = 2;
+
+        public static void ChangeMicGateHoldTime(bool positive = true)
+        {
+            micGateHoldIndex = (micGateHoldIndex + (positive ? 1 : -1) + micGateHoldTimes.Length) % micGateHoldTimes.Length;
+            ButtonInfo holdButton = Buttons.GetIndex("Change Mic Gate Hold Time");
+            if (holdButton != null)
+                holdButton.overlapText = $"Change Mic Gate Hold Time <color=grey>[</color><color=green>{micGateHoldNames[micGateHoldIndex]}</color><color=grey>]</color>";
+        }
+
+        public static void MicSafetyGate()
+        {
+            bool threat = false;
+            try
+            {
+                if (NetworkSystem.Instance.InRoom && GorillaScoreboardTotalUpdater.allScoreboardLines != null)
+                {
+                    GorillaPlayerScoreboardLine localLine = GorillaScoreboardTotalUpdater.allScoreboardLines
+                        .FirstOrDefault(line => line != null && line.linePlayer == NetworkSystem.Instance.LocalPlayer);
+                    if (localLine != null && localLine.reportButton != null)
+                    {
+                        Vector3 reportPosition = localLine.reportButton.transform.position;
+                        threat = VRRigCache.ActiveRigs.Any(rig => rig != null && !rig.isLocal && OverlappingButton(rig, reportPosition));
+                    }
+                }
+            }
+            catch { }
+
+            Recorder mic = GorillaTagger.Instance != null ? GorillaTagger.Instance.myRecorder : null;
+            if (mic == null) return;
+            if (threat) micGateThreatTime = Time.time;
+
+            if (threat && !micMutedByGate)
+            {
+                micMutedByGate = true;
+                mic.IsRecording = false;
+                NotificationManager.SendNotification("<color=grey>[</color><color=purple>MIC GATE</color><color=grey>]</color> Someone is near your report button — microphone muted.");
+            }
+            else if (!threat && micMutedByGate && Time.time > micGateThreatTime + micGateHoldTimes[micGateHoldIndex])
+            {
+                micMutedByGate = false;
+                mic.IsRecording = true;
+                NotificationManager.SendNotification("<color=grey>[</color><color=purple>MIC GATE</color><color=grey>]</color> Area clear — microphone restored.");
+            }
+        }
+
+        public static void DisableMicSafetyGate()
+        {
+            if (micMutedByGate && GorillaTagger.Instance != null && GorillaTagger.Instance.myRecorder != null)
+                GorillaTagger.Instance.myRecorder.IsRecording = true;
+            micMutedByGate = false;
+        }
+
         private static bool antiOculusReportHooked;
         public static void GeneralSafety()
         {

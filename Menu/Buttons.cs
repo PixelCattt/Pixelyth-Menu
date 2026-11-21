@@ -578,6 +578,8 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Exit Safety Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "Module History Log", enableMethod = Safety.ModuleHistoryLog, disableMethod = Safety.DisableModuleHistoryLog, toolTip = "Records mod enable and disable actions with timestamps and the current room to ModuleHistory.log."},
+                new ButtonInfo { buttonText = "Mic Safety Gate", method = Safety.MicSafetyGate, disableMethod = Safety.DisableMicSafetyGate, toolTip = "Mutes your microphone while another player is within reach of your report button, then restores it after the area is clear."},
+                new ButtonInfo { buttonText = "Change Mic Gate Hold Time", overlapText = "Change Mic Gate Hold Time <color=grey>[</color><color=green>Normal</color><color=grey>]</color>", method =() => Safety.ChangeMicGateHoldTime(), enableMethod =() => Safety.ChangeMicGateHoldTime(), disableMethod =() => Safety.ChangeMicGateHoldTime(false), incremental = true, isTogglable = false, toolTip = "Sets how long the mic stays muted after the nearby player leaves."},
 
                 new ButtonInfo { buttonText = "No Finger Movement", aliases = new[] { "Disable Fingers" }, postMethod = Safety.NoFinger, toolTip = "Makes your fingers not move, so you can use wall walk without getting called out." },
 
