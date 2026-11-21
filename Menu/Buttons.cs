@@ -959,6 +959,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Lucy Look Tracer", method = Visuals.LucyLookTracer, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a line in the direction Lucy is looking."},
                 new ButtonInfo { buttonText = "Lucy Skeleton ESP", method = Visuals.LucySkeletonESP, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws lines connecting Lucy's body joints."},
                 new ButtonInfo { buttonText = "FOV Frustum ESP", aliases = new[] { "FOV Cone ESP" }, method = Visuals.FOVFrustumESP, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a 3D view frustum in front of each player; it turns red when you are inside it."},
+                new ButtonInfo { buttonText = "Outline ESP", method = Visuals.OutlineESP, disableMethod = Visuals.DisableOutlineESP, toolTip = "Draws a bright outline around other players, including through walls."},
                 new ButtonInfo { buttonText = "Past Steps", enableMethod = Visuals.EnablePastStepsESP, method = Visuals.PastStepsESP, disableMethod = Visuals.DisablePastStepsESP, toolTip = "Shows fading handprints at players' recent hand taps for three seconds."},
                 new ButtonInfo { buttonText = "Lurker ESP", method = Visuals.LurkerESP, toolTip = "Puts a dot on your screen at the Lurker's current position."},
                 new ButtonInfo { buttonText = "Wanderer ESP", method = Visuals.WanderingGhostESP, toolTip = "Puts a dot on your screen at the Wanderer's current position."},

@@ -583,6 +583,87 @@ namespace Pixelyth.Mods
             pastStepTexture = null;
         }
 
+        private static readonly Dictionary<VRRig, GameObject> outlineEspObjects = new Dictionary<VRRig, GameObject>();
+        private static Mesh outlineEspMesh;
+
+        private static Mesh GetOutlineEspMesh(Mesh source)
+        {
+            if (outlineEspMesh != null) return outlineEspMesh;
+            outlineEspMesh = Object.Instantiate(source);
+            outlineEspMesh.name = "Pixelyth_OutlineMesh";
+            Vector3[] vertices = outlineEspMesh.vertices;
+            Vector3[] normals = outlineEspMesh.normals;
+            for (int i = 0; i < vertices.Length && i < normals.Length; i++)
+                vertices[i] += normals[i] * 0.075f;
+            outlineEspMesh.vertices = vertices;
+            outlineEspMesh.RecalculateBounds();
+            return outlineEspMesh;
+        }
+
+        public static void OutlineESP()
+        {
+            foreach (VRRig rig in outlineEspObjects.Keys.Where(rig => rig == null || !VRRigCache.ActiveRigs.Contains(rig)).ToArray())
+            {
+                if (outlineEspObjects.TryGetValue(rig, out GameObject oldObject) && oldObject != null)
+                    Object.Destroy(oldObject);
+                outlineEspObjects.Remove(rig);
+            }
+
+            bool hiddenOnCamera = Buttons.GetIndex("Hidden on Camera").enabled;
+            Color theme = backgroundColor.GetCurrentColor();
+            Color outlineColor = new Color(Mathf.Clamp01(theme.r * 1.8f), Mathf.Clamp01(theme.g * 1.8f), Mathf.Clamp01(theme.b * 1.8f), 1f);
+            foreach (VRRig rig in VRRigCache.ActiveRigs)
+            {
+                if (rig == null || rig.isLocal || rig.mainSkin == null || rig.mainSkin.sharedMesh == null) continue;
+                try
+                {
+                    if (!outlineEspObjects.TryGetValue(rig, out GameObject container) || container == null)
+                    {
+                        container = new GameObject("Pixelyth_OutlineESP");
+                        container.transform.SetParent(rig.transform, false);
+                        GameObject outerObject = new GameObject("Outer");
+                        outerObject.transform.SetParent(container.transform, false);
+                        SkinnedMeshRenderer outline = outerObject.AddComponent<SkinnedMeshRenderer>();
+                        outline.sharedMesh = GetOutlineEspMesh(rig.mainSkin.sharedMesh);
+                        outline.bones = rig.mainSkin.bones;
+                        outline.rootBone = rig.mainSkin.rootBone;
+                        Shader shader = LoadAsset<Shader>("Chams") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Sprites/Default");
+                        outline.material = new Material(shader);
+                        outline.material.SetFloat("_Cull", 1f);
+                        outlineEspObjects[rig] = container;
+                    }
+
+                    int layer = hiddenOnCamera ? 19 : 0;
+                    container.layer = layer;
+                    Transform outer = container.transform.Find("Outer");
+                    if (outer != null)
+                    {
+                        outer.gameObject.layer = layer;
+                        SkinnedMeshRenderer outline = outer.GetComponent<SkinnedMeshRenderer>();
+                        if (outline != null)
+                        {
+                            outline.bones = rig.mainSkin.bones;
+                            outline.rootBone = rig.mainSkin.rootBone;
+                            outline.material.color = outlineColor;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogManager.LogError($"Outline ESP failed for a rig: {ex.Message}");
+                }
+            }
+        }
+
+        public static void DisableOutlineESP()
+        {
+            foreach (GameObject container in outlineEspObjects.Values)
+                if (container != null) Object.Destroy(container);
+            outlineEspObjects.Clear();
+            if (outlineEspMesh != null) Object.Destroy(outlineEspMesh);
+            outlineEspMesh = null;
+        }
+
         private static void DrawLucyTransformBones(Transform parent, Color color, float width)
         {
             for (int i = 0; i < parent.childCount; i++)
