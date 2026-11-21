@@ -2787,6 +2787,21 @@ namespace Pixelyth.Mods
             timeRewindWasGrabbing = false;
         }
 
+        private static bool alwaysZiplineActive;
+        public static void EnableAlwaysZipline() => alwaysZiplineActive = true;
+        public static void DisableAlwaysZipline() => alwaysZiplineActive = false;
+
+        public static void AlwaysZipline()
+        {
+            if (!alwaysZiplineActive || GTPlayer.Instance == null || !leftGrab)
+                return;
+
+            Vector3 direction = GorillaTagger.Instance.headCollider.transform.forward;
+            direction.y = 0f;
+            if (direction.sqrMagnitude > 0.001f)
+                GorillaTagger.Instance.rigidbody.linearVelocity = direction.normalized * 15f + Vector3.down;
+        }
+
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 
