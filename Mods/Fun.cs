@@ -2218,6 +2218,348 @@ namespace Pixelyth.Mods
 
             NetworkSystem.Instance.VoiceConnection.PrimaryRecorder.DebugEchoMode = false;
         }
+        
+        private static NetPlayer talkThroughTarget;
+        private static readonly System.Random talkThroughRandom = new System.Random();
+
+        public static bool IsTalkingThroughSomeone => talkThroughTarget != null;
+
+        public static string CurrentTalkThroughName => talkThroughTarget != null ? CleanPlayerName(talkThroughTarget.NickName) : null;
+
+        private static List<NetPlayer> GetTalkThroughCandidates()
+        {
+            List<NetPlayer> list = new List<NetPlayer>();
+            if (NetworkSystem.Instance == null || NetworkSystem.Instance.AllNetPlayers == null)
+                return list;
+
+            foreach (NetPlayer p in NetworkSystem.Instance.AllNetPlayers)
+            {
+                if (p == null || p == NetworkSystem.Instance.LocalPlayer)
+                    continue;
+
+                list.Add(p);
+            }
+
+            list.Sort((a, b) => a.ActorNumber.CompareTo(b.ActorNumber));
+            return list;
+        }
+        
+        private static float talkThroughNullLogDelay;
+        
+        private static Recorder GetTalkRecorder()
+        {
+            if (GorillaTagger.Instance != null && GorillaTagger.Instance.myRecorder != null)
+                return GorillaTagger.Instance.myRecorder;
+            if (NetworkSystem.Instance != null)
+            {
+                Recorder fallback = NetworkSystem.Instance.LocalRecorder;
+                if (Time.time > talkThroughNullLogDelay)
+                {
+                    talkThroughNullLogDelay = Time.time + 5f;
+                    TTLog("GetTalkRecorder: myRecorder is null, LocalRecorder fallback = " + (fallback != null ? "FOUND" : "NULL"));
+                }
+                return fallback;
+            }
+            return null;
+        }
+        
+        private static float talkThroughReassertDelay;
+
+        public static void UpdateTalkThrough()
+        {
+            if (talkThroughTarget == null)
+                return;
+
+            Recorder rec = GetTalkRecorder();
+            if (rec == null)
+                return;
+
+            bool stillHere = NetworkSystem.Instance != null
+                && NetworkSystem.Instance.AllNetPlayers != null
+                && NetworkSystem.Instance.AllNetPlayers.Contains(talkThroughTarget);
+
+            if (!stillHere)
+            {
+                string goneName = CleanPlayerName(talkThroughTarget.NickName);
+                talkThroughTarget = null;
+                DisableTalkThrough();
+                NotificationManager.SendNotification($"<color=grey>[</color><color=orange>TALK</color><color=grey>]</color> {goneName} left, talk through stopped.");
+                return;
+            }
+
+            int stableId;
+            bool hasStableId = TryGetTargetViewId(talkThroughTarget, out stableId);
+            if (rec.UserData is int currentId && hasStableId && currentId == stableId)
+            {
+                if (hasStableId)
+                    RunScheduledReasserts(stableId);
+                return;
+            }
+
+            if (Time.time < talkThroughReassertDelay) return;
+            talkThroughReassertDelay = Time.time + 2f;
+
+            TTLog($"Update: DRIFT on {CleanPlayerName(talkThroughTarget.NickName)} | UserData={rec.UserData} (type {(rec.UserData == null ? "null" : rec.UserData.GetType().Name)}), expected={stableId}, appliedId={talkThroughAppliedViewId}");
+
+            VRRig rig = GetVRRigFromPlayer(talkThroughTarget);
+            if (rig == null && VRRigCache.Instance != null && VRRigCache.Instance.TryGetVrrig(talkThroughTarget, out RigContainer container))
+            {
+                rig = (container != null) ? container.Rig : null;
+            }
+            if (rig == null)
+            {
+                TTLog("Update: drift reassert aborted, rig unresolved");
+                return;
+            }
+
+            PhotonView view = rig.GetComponent<PhotonView>();
+            if (view == null && rig.netView != null)
+                view = rig.netView.GetView;
+            if (view != null)
+                ApplyRecorderUserData(view.ViewID);
+        }
+        
+        private static int talkThroughAppliedViewId;
+        
+        private static void ApplyRecorderUserData(int viewId)
+        {
+            Recorder rec = GetTalkRecorder();
+            if (rec == null)
+            {
+                TTLog("ApplyRecorderUserData: aborted, no recorder");
+                return;
+            }
+
+            TTLog($"ApplyRecorderUserData: {rec.UserData} -> {viewId} | IsRecording={rec.IsRecording} Transmit={rec.TransmitEnabled} Echo={rec.DebugEchoMode} VoiceDetect={rec.VoiceDetection}");
+            rec.UserData = viewId;
+            talkThroughAppliedViewId = viewId;
+            try
+            {
+                rec.RestartRecording(force: true);
+                TTLog($"ApplyRecorderUserData: restart OK | readback UserData={rec.UserData} IsRecording={rec.IsRecording} Transmit={rec.TransmitEnabled}");
+            }
+            catch (Exception ex)
+            {
+                TTLog("ApplyRecorderUserData: RestartRecording THREW: " + ex.GetType().Name + " - " + ex.Message);
+            }
+        }
+        
+        private static float talkThroughVerboseDelay;
+        
+        private static bool IsVoiceSlotClaimable(NetPlayer player, bool verbose)
+        {
+            if (player == null || VRRigCache.Instance == null)
+            {
+                if (verbose) TTLog("Claimable: player null or no VRRigCache");
+                return false;
+            }
+
+            if (!VRRigCache.Instance.TryGetVrrig(player, out RigContainer container) || container == null)
+            {
+                if (verbose) TTLog($"Claimable({player.NickName}): no RigContainer");
+                return false;
+            }
+            if (container.Voice == null)
+            {
+                if (verbose) TTLog($"Claimable({player.NickName}): no PhotonVoiceView");
+                return false;
+            }
+
+            var speaker = container.Voice.SpeakerInUse;
+            bool claimable = speaker == null || !speaker.IsLinked;
+            if (verbose) TTLog($"Claimable({player.NickName}): SpeakerInUse={(speaker == null ? "NULL" : "exists")} IsLinked={(speaker != null && speaker.IsLinked)} => {(claimable ? "CLAIMABLE" : "TAKEN")}");
+            return claimable;
+        }
+        
+        private static bool TryGetTargetViewId(NetPlayer player, out int viewId)
+        {
+            viewId = 0;
+            VRRig rig = GetVRRigFromPlayer(player);
+            if (rig == null && VRRigCache.Instance != null && VRRigCache.Instance.TryGetVrrig(player, out RigContainer container))
+            {
+                rig = (container != null) ? container.Rig : null;
+            }
+            if (rig == null) return false;
+
+            PhotonView view = rig.GetComponent<PhotonView>();
+            if (view == null && rig.netView != null)
+                view = rig.netView.GetView;
+            if (view == null) return false;
+
+            viewId = view.ViewID;
+            return true;
+        }
+        
+        private static bool TrySetTalkThrough(NetPlayer player)
+        {
+            if (player == null || player == NetworkSystem.Instance.LocalPlayer)
+            {
+                TTLog("TrySet: player null or local");
+                return false;
+            }
+
+            if (GetTalkRecorder() == null)
+            {
+                TTLog($"TrySet({player.NickName}): no recorder");
+                return false;
+            }
+
+            if (!IsVoiceSlotClaimable(player, true))
+            {
+                TTLog($"TrySet({player.NickName}): slot TAKEN, aborting");
+                return false;
+            }
+
+            VRRig rig = GetVRRigFromPlayer(player);
+            if (rig == null && VRRigCache.Instance != null && VRRigCache.Instance.TryGetVrrig(player, out RigContainer container))
+            {
+                rig = (container != null) ? container.Rig : null;
+            }
+            if (rig == null || rig.IsLocal())
+            {
+                TTLog($"TrySet({player.NickName}): rig null or local");
+                return false;
+            }
+
+            PhotonView view = rig.GetComponent<PhotonView>();
+            if (view == null && rig.netView != null)
+                view = rig.netView.GetView;
+            if (view == null)
+                return false;
+
+            talkThroughTarget = player;
+            talkThroughClaimTime = Time.time;
+            talkThroughReassert1Done = false;
+            talkThroughReassert2Done = false;
+            ApplyRecorderUserData(view.ViewID);
+            EnsureMainMicTransmitting();
+            TTLog($"TrySet: SUCCESS {player.NickName} view {view.ViewID}");
+            return true;
+        }
+
+        private static float talkThroughClaimTime;
+        private static bool talkThroughReassert1Done;
+        private static bool talkThroughReassert2Done;
+
+        private static void RunScheduledReasserts(int targetViewId)
+        {
+            float age = Time.time - talkThroughClaimTime;
+
+            if (!talkThroughReassert1Done && age >= 2.5f)
+            {
+                talkThroughReassert1Done = true;
+                TTLog($"Reassert 1 at +{age:F1}s: resending voice info to catch slow-spawn clients");
+                ApplyRecorderUserData(targetViewId);
+                return;
+            }
+
+            if (!talkThroughReassert2Done && age >= 6f)
+            {
+                talkThroughReassert2Done = true;
+                TTLog($"Reassert 2 at +{age:F1}s: final resend");
+                ApplyRecorderUserData(targetViewId);
+            }
+        }
+        
+        private static void EnsureMainMicTransmitting()
+        {
+            Recorder mic = GetTalkRecorder();
+            if (mic == null)
+            {
+                TTLog("EnsureTransmit: no recorder");
+                return;
+            }
+
+            if (RecorderPatch.enabled)
+                VoiceManager.Get().MuteMicrophone = false;
+
+            if (PhotonNetwork.InRoom)
+                mic.IsRecording = true;
+
+            bool transmitWas = mic.TransmitEnabled;
+            mic.TransmitEnabled = true;
+            mic.VoiceDetection = false;
+            TTLog($"EnsureTransmit: Transmit {transmitWas} -> {mic.TransmitEnabled}, IsRecording={mic.IsRecording}");
+        }
+        
+        public static bool talkThroughKeepTarget;
+        private static float talkThroughAutoDelay;
+
+        private static readonly Dictionary<int, float> talkThroughRigFirstSeen = new Dictionary<int, float>();
+
+        public static void VoiceHijack()
+        {
+            if (Time.time < talkThroughAutoDelay) return;
+            talkThroughAutoDelay = Time.time + 0.1f;
+
+            if (talkThroughTarget != null)
+            {
+                UpdateTalkThrough();
+                return;
+            }
+
+            List<NetPlayer> candidates = GetTalkThroughCandidates();
+            if (candidates.Count == 0) return;
+
+            bool verbose = Time.time > talkThroughVerboseDelay;
+            if (verbose)
+            {
+                talkThroughVerboseDelay = Time.time + 1f;
+                TTLog($"Hijack poll: no target, scanning {candidates.Count} candidates");
+            }
+
+            for (int i = candidates.Count - 1; i >= 0; i--)
+            {
+                NetPlayer candidate = candidates[i];
+
+                if (!IsVoiceSlotClaimable(candidate, verbose))
+                {
+                    if (talkThroughRigFirstSeen.Remove(candidate.ActorNumber))
+                    {
+                        TTLog($"Hijack: {candidate.NickName}'s own voice locked their slot, skipping, waiting for next joiner");
+                        NotificationManager.SendNotification($"<color=grey>[</color><color=orange>HIJACK</color><color=grey>]</color> {CleanPlayerName(candidate.NickName)}'s voice locked their slot, waiting for the next joiner.");
+                    }
+                    continue;
+                }
+
+                if (!talkThroughRigFirstSeen.ContainsKey(candidate.ActorNumber))
+                {
+                    talkThroughRigFirstSeen[candidate.ActorNumber] = Time.time;
+                }
+
+                if (TrySetTalkThrough(candidate))
+                {
+                    TTLog($"Hijack: CLAIMED {candidate.NickName} (actor {candidate.ActorNumber}) instantly, re-asserts scheduled at +2.5s and +6s");
+                    NotificationManager.SendNotification($"<color=grey>[</color><color=green>HIJACK</color><color=green>]</color> Now speaking through {CleanPlayerName(candidate.NickName)}. Sticking with them until they leave.");
+                    return;
+                }
+            }
+        }
+
+        public static void DisableTalkThrough()
+        {
+            TTLog($"Disable: clearing target, appliedId={talkThroughAppliedViewId}");
+            talkThroughTarget = null;
+
+            if (GorillaTagger.Instance != null && GorillaTagger.Instance.myVRRig != null)
+            {
+                PhotonView view = GorillaTagger.Instance.myVRRig.GetComponent<PhotonView>();
+                if (view != null)
+                {
+                    TTLog($"Disable: restoring own rig view {view.ViewID}");
+                    ApplyRecorderUserData(view.ViewID);
+                }
+            }
+
+            Recorder rec = GetTalkRecorder();
+            if (rec != null)
+                rec.VoiceDetection = true;
+        }
+        
+        private static void TTLog(string message)
+        {
+            UnityEngine.Debug.Log("[TALKTHROUGH] " + message);
+        }
 
         private static Transform speakerHijackOriginalParent;
         private static GorillaSpeakerLoudness speakerHijackTarget;

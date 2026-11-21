@@ -27,7 +27,7 @@ namespace Pixelyth
         public const string GUID = "com.pixelcatt.gtag.pixelyth";
         public const string Name = "Pixelyth-Menu";
         public const string Description = "An Open-Source Mod Menu for Gorilla Tag with 2000+ Mods!";
-        public const string BuildTimestamp = "2026-11-21@17-55-18";
+        public const string BuildTimestamp = "2026-11-21@22-52-46";
         public const string Version = "9.1.0";
 
         public const string BaseDirectory = "Pixelyth-Menu";
