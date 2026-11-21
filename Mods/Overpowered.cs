@@ -27,7 +27,6 @@ using GorillaLocomotion;
 using GorillaLocomotion.Gameplay;
 using GorillaNetworking;
 using GorillaTagScripts;
-using GorillaTagScripts.VirtualStumpCustomMaps;
 using Ionic.Zlib;
 using Photon.Pun;
 using Photon.Realtime;
@@ -44,7 +43,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.XR.CoreUtils;
 using UnityEngine;
 using Voxels;
 using static Pixelyth.Menu.Main;
@@ -2715,16 +2713,16 @@ namespace Pixelyth.Mods
         {
             HalloweenGhostChaser hgc = Lucy;
             if (hgc == null) return;
-            if (hgc.IsMine)
+            
+            if (hgc.IsMine && Time.time > lucyDelay)
             {
-                if (Time.time > lucyDelay)
-                {
-                    hgc.timeGongStarted = Time.time;
-                    hgc.grabTime = Time.time;
-                    hgc.currentState = hgc.currentState == HalloweenGhostChaser.ChaseState.Gong ? HalloweenGhostChaser.ChaseState.Grabbing : HalloweenGhostChaser.ChaseState.Gong;
-                    hgc.targetPlayer = GetRandomPlayer(true);
-                    lucyDelay = Time.time + 0.1f;
-                }
+                hgc.timeGongStarted = Time.time;
+                hgc.grabTime = Time.time;
+                hgc.currentState = hgc.currentState == HalloweenGhostChaser.ChaseState.Gong
+                    ? HalloweenGhostChaser.ChaseState.Grabbing
+                    : HalloweenGhostChaser.ChaseState.Gong;
+                hgc.targetPlayer = GetRandomPlayer(true);
+                lucyDelay = Time.time + 0.1f;
             }
             else NotificationManager.SendNotification(NotMasterClientError);
         }
@@ -2739,8 +2737,8 @@ namespace Pixelyth.Mods
                 return;
             }
 
-                VRRig.LocalRig.enabled = false;
-                VRRig.LocalRig.transform.position = GorillaTagger.Instance.bodyCollider.transform.position - Vector3.up * 99999f;
+            VRRig.LocalRig.enabled = false;
+            VRRig.LocalRig.transform.position = GorillaTagger.Instance.bodyCollider.transform.position - Vector3.up * 99999f;
 
             hgc.transform.position = GorillaTagger.Instance.bodyCollider.transform.position;
             hgc.transform.rotation = GorillaTagger.Instance.headCollider.transform.rotation;

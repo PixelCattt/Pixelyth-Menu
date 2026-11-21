@@ -37,6 +37,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Pixelyth.Classes.Menu;
 using UnityEngine;
 using static Pixelyth.Menu.Main;
 using static Pixelyth.Utilities.RigUtilities;
@@ -46,7 +47,6 @@ namespace Pixelyth.Mods
 {
     public static class Safety
     {
-        private static bool antiOculusReportHooked;
         private static readonly List<ButtonInfo> panicSavedButtons = new List<ButtonInfo>();
         private static bool panicRestoreReady;
 
@@ -75,6 +75,7 @@ namespace Pixelyth.Mods
             NotificationManager.SendNotification("<color=grey>[</color><color=red>PANIC</color><color=grey>]</color> Previous mod state restored.");
         }
 
+        private static bool antiOculusReportHooked;
         public static void GeneralSafety()
         {
             if (!Buttons.GetIndex("Anti Report <color=grey>[</color><color=green>Disconnect</color><color=grey>]</color>").enabled) AntiReportDisconnect();
