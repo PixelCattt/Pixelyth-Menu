@@ -454,6 +454,129 @@ namespace Pixelyth.Mods
             line.SetPosition(1, end);
         }
 
+        private sealed class PastStepMarker
+        {
+            public GameObject marker;
+            public Renderer renderer;
+            public float spawnTime;
+            public Color baseColor;
+        }
+
+        private static readonly List<PastStepMarker> pastStepMarkers = new List<PastStepMarker>();
+        private static Texture2D pastStepTexture;
+        private static bool pastStepsHooked;
+
+        private static Texture2D GetPastStepTexture()
+        {
+            if (pastStepTexture != null) return pastStepTexture;
+            const int size = 64;
+            pastStepTexture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            pastStepTexture.filterMode = FilterMode.Bilinear;
+            Color[] pixels = new Color[size * size];
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                Vector2 p = new Vector2(x, y);
+                float distance = Vector2.Distance(p, new Vector2(32f, 20f)) - 14f;
+                for (int finger = 0; finger < 4; finger++)
+                {
+                    Vector2 start = new Vector2(13f + finger * 12f, 28f);
+                    Vector2 end = new Vector2(10f + finger * 12f, 57f - (finger == 1 || finger == 2 ? 5f : 0f));
+                    Vector2 segment = end - start;
+                    float t = Mathf.Clamp01(Vector2.Dot(p - start, segment) / segment.sqrMagnitude);
+                    distance = Mathf.Min(distance, Vector2.Distance(p, start + segment * t) - 5f);
+                }
+                Vector2 thumbStart = new Vector2(19f, 25f);
+                Vector2 thumbEnd = new Vector2(5f, 38f);
+                Vector2 thumbSegment = thumbEnd - thumbStart;
+                float thumbT = Mathf.Clamp01(Vector2.Dot(p - thumbStart, thumbSegment) / thumbSegment.sqrMagnitude);
+                distance = Mathf.Min(distance, Vector2.Distance(p, thumbStart + thumbSegment * thumbT) - 5f);
+                float alpha = Mathf.Clamp01(1f - distance / 2f);
+                pixels[y * size + x] = new Color(1f, 1f, 1f, alpha);
+            }
+            pastStepTexture.SetPixels(pixels);
+            pastStepTexture.Apply();
+            return pastStepTexture;
+        }
+
+        public static void EnablePastStepsESP()
+        {
+            if (pastStepsHooked) return;
+            HandTapPatch.OnHandTapWithHand += OnPastStepTap;
+            pastStepsHooked = true;
+        }
+
+        private static void OnPastStepTap(VRRig rig, Vector3 tapPosition, bool isLeftHand)
+        {
+            if (rig == null) return;
+            Vector3 spawnPosition = tapPosition;
+            Vector3 normal = Vector3.up;
+            int mask = LayerMask.GetMask("Default", "NoMirror", "Terrain");
+            if (Physics.Raycast(tapPosition + Vector3.up * 0.2f, Vector3.down, out RaycastHit hit, 0.6f, mask))
+            {
+                spawnPosition = hit.point + hit.normal * 0.015f;
+                normal = hit.normal;
+            }
+
+            GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            marker.name = "Pixelyth_PastStep";
+            Object.Destroy(marker.GetComponent<Collider>());
+            if (Buttons.GetIndex("Hidden on Camera").enabled) marker.layer = 19;
+            marker.transform.position = spawnPosition;
+            marker.transform.rotation = Quaternion.LookRotation(-normal, rig.transform.forward);
+            float scale = 0.26f * Mathf.Max(0.5f, rig.scaleFactor);
+            marker.transform.localScale = new Vector3(isLeftHand ? -scale : scale, scale, 1f);
+
+            Color color = rig.playerColor;
+            if (color.r < 0.15f && color.g < 0.15f && color.b < 0.15f)
+                color = Color.Lerp(color, Color.white, 0.35f);
+            color.a = 0.9f;
+            Renderer renderer = marker.GetComponent<Renderer>();
+            renderer.material = new Material(Shader.Find("Sprites/Default"))
+            {
+                mainTexture = GetPastStepTexture(),
+                color = color
+            };
+            pastStepMarkers.Add(new PastStepMarker { marker = marker, renderer = renderer, spawnTime = Time.time, baseColor = color });
+        }
+
+        public static void PastStepsESP()
+        {
+            if (!pastStepsHooked) EnablePastStepsESP();
+            for (int i = pastStepMarkers.Count - 1; i >= 0; i--)
+            {
+                PastStepMarker step = pastStepMarkers[i];
+                float age = Time.time - step.spawnTime;
+                if (age >= 3f || step.marker == null)
+                {
+                    if (step.marker != null) Object.Destroy(step.marker);
+                    pastStepMarkers.RemoveAt(i);
+                    continue;
+                }
+                if (step.renderer != null)
+                {
+                    Color color = step.baseColor;
+                    color.a *= Mathf.Clamp01(1f - age / 3f);
+                    step.renderer.material.color = color;
+                }
+            }
+        }
+
+        public static void DisablePastStepsESP()
+        {
+            if (pastStepsHooked)
+                HandTapPatch.OnHandTapWithHand -= OnPastStepTap;
+            pastStepsHooked = false;
+            foreach (PastStepMarker step in pastStepMarkers)
+            {
+                if (step.renderer != null) Object.Destroy(step.renderer.material);
+                if (step.marker != null) Object.Destroy(step.marker);
+            }
+            pastStepMarkers.Clear();
+            if (pastStepTexture != null) Object.Destroy(pastStepTexture);
+            pastStepTexture = null;
+        }
+
         private static void DrawLucyTransformBones(Transform parent, Color color, float width)
         {
             for (int i = 0; i < parent.childCount; i++)
