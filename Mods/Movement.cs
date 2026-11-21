@@ -3114,6 +3114,109 @@ namespace Pixelyth.Mods
             weepingAngelPlayer = null;
         }
 
+        private static readonly float[] weepingRigDelays = { 0.5f, 1f, 2f };
+        private static readonly string[] weepingRigDelayNames = { "Short", "Normal", "Long" };
+        private static int weepingRigDelayIndex = 1;
+        private static float weepingRigObservedTime;
+        private static float weepingRigUnobservedTime;
+        private static bool weepingRigActive;
+        private static Vector3 weepingRigPosition;
+        private static Quaternion weepingRigRotation;
+        private static Vector3 weepingRigHeadPosition;
+        private static Quaternion weepingRigHeadRotation;
+        private static Vector3 weepingRigLeftPosition;
+        private static Vector3 weepingRigRightPosition;
+        private static Quaternion weepingRigLeftRotation;
+        private static Quaternion weepingRigRightRotation;
+
+        public static void ChangeWeepingRigTime(bool positive = true)
+        {
+            weepingRigDelayIndex = (weepingRigDelayIndex + (positive ? 1 : -1) + weepingRigDelays.Length) % weepingRigDelays.Length;
+            ButtonInfo button = Buttons.GetIndex("Change Weeping Rig Time");
+            if (button != null)
+                button.overlapText = $"Change Weeping Rig Time <color=grey>[</color><color=green>{weepingRigDelayNames[weepingRigDelayIndex]}</color><color=grey>]</color>";
+        }
+
+        public static void WeepingRig()
+        {
+            VRRig local = VRRig.LocalRig;
+            if (local == null || local.headMesh == null) return;
+
+            Vector3 targetPosition = weepingRigActive ? weepingRigHeadPosition : local.headMesh.transform.position;
+            bool watched = false;
+            foreach (VRRig rig in VRRigExtensions.ActiveRigs)
+            {
+                if (rig == null || rig.isLocal || rig.isOfflineVRRig || !rig.enabled || rig.headMesh == null) continue;
+                Transform eyes = rig.headMesh.transform;
+                Vector3 towardTarget = targetPosition - eyes.position;
+                float distance = towardTarget.magnitude;
+                if (distance < 0.1f || distance > 45f || Vector3.Angle(eyes.forward, towardTarget) >= 55f) continue;
+                Vector3 direction = towardTarget / distance;
+                int mask = GTPlayer.Instance != null ? (int)GTPlayer.Instance.locomotionEnabledLayers : NoInvisibleLayerMask();
+                if (!Physics.Raycast(eyes.position + direction * 0.35f, direction, distance - 0.7f, mask))
+                {
+                    watched = true;
+                    break;
+                }
+            }
+
+            if (!weepingRigActive)
+            {
+                weepingRigObservedTime = watched ? weepingRigObservedTime + Time.deltaTime : 0f;
+                if (weepingRigObservedTime < weepingRigDelays[weepingRigDelayIndex]) return;
+
+                weepingRigActive = true;
+                weepingRigUnobservedTime = 0f;
+                weepingRigPosition = local.transform.position;
+                weepingRigRotation = local.transform.rotation;
+                weepingRigHeadPosition = local.headMesh.transform.position;
+                weepingRigHeadRotation = local.headMesh.transform.rotation;
+                weepingRigLeftPosition = local.leftHandTransform.position;
+                weepingRigRightPosition = local.rightHandTransform.position;
+                weepingRigLeftRotation = local.leftHandTransform.rotation;
+                weepingRigRightRotation = local.rightHandTransform.rotation;
+                local.enabled = false;
+            }
+
+            if (watched)
+            {
+                weepingRigUnobservedTime = 0f;
+                ApplyWeepingRigPose(local);
+            }
+            else if ((weepingRigUnobservedTime += Time.deltaTime) >= 0.35f)
+                DisableWeepingRig();
+            else
+                ApplyWeepingRigPose(local);
+        }
+
+        private static void ApplyWeepingRigPose(VRRig rig)
+        {
+            rig.transform.position = weepingRigPosition;
+            rig.transform.rotation = weepingRigRotation;
+            rig.head.rigTarget.transform.position = weepingRigHeadPosition;
+            rig.head.rigTarget.transform.rotation = weepingRigHeadRotation;
+            rig.leftHand.rigTarget.transform.position = weepingRigLeftPosition;
+            rig.rightHand.rigTarget.transform.position = weepingRigRightPosition;
+            rig.leftHand.rigTarget.transform.rotation = weepingRigLeftRotation;
+            rig.rightHand.rigTarget.transform.rotation = weepingRigRightRotation;
+        }
+
+        public static void DisableWeepingRig()
+        {
+            VRRig local = VRRig.LocalRig;
+            if (weepingRigActive && local != null)
+            {
+                local.transform.position = weepingRigPosition;
+                local.transform.rotation = weepingRigRotation;
+                if (GorillaTagger.Instance != null && GorillaTagger.Instance.rigidbody != null)
+                    GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+                local.enabled = true;
+            }
+            weepingRigActive = false;
+            weepingRigObservedTime = 0f;
+            weepingRigUnobservedTime = 0f;
+        }
+
         public static void EnableRig()
         {
             VRRig.LocalRig.enabled = true;
