@@ -42,7 +42,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
     {
         #region Configuration
         // The Enpoint used for all API Requests.
-        public const string ServerEndpoint = "https://gtag-api.pixelcatt.workers.dev";
+        public const string ServerEndpoint = "https://gtag.pixelcatt.dev";
 
         // The URL used for Downloading Console Assets.
         public const string AssetURL = "https://raw.githubusercontent.com/PixelCattt/Console/refs/heads/master/ServerData";

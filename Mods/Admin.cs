@@ -2181,7 +2181,7 @@ namespace Pixelyth.Mods
             lastToolId = -1;
         }
 
-        private static string AssetsEndpoint = "https://cdn.pixelcatt.workers.dev/";
+        private static string AssetsEndpoint = "https://cdn.pixelcatt.dev/";
         private static readonly HttpClient VideoLoadingHttpClient = new HttpClient();
         private static Dictionary<string, string> Videos = new Dictionary<string, string>();
         public static async Task LoadVideoDictionary()
