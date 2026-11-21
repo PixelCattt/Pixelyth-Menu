@@ -1337,6 +1337,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Rainbow Hoverboard", method = Fun.RainbowHoverboard, toolTip = "Changes your hoverboard's color to be rainbow."},
                 new ButtonInfo { buttonText = "Strobe Hoverboard", overlapText = "Flash Hoverboard", method = Fun.StrobeHoverboard, toolTip = "Changes your hoverboard's color to flash between black and white."},
                 new ButtonInfo { buttonText = "Random Hoverboard", overlapText = "Strobe Hoverboard", method = Fun.RandomHoverboard, toolTip = "Changes your hoverboard's color to flash random colors."},
+                new ButtonInfo { buttonText = "Global Hoverboard", method = Fun.GlobalHoverboard, disableMethod = Fun.DisableGlobalHoverboard, toolTip = "Enables the personal hoverboard outside the maps where it is normally available."},
 
                 new ButtonInfo { buttonText = "Black Screen Gun", method =() => Fun.HoverboardScreenGun(Color.black), toolTip = "Uses the hoverboards to blind whoever your hand desires."},
                 new ButtonInfo { buttonText = "Black Screen All", method =() => Fun.HoverboardScreenAll(Color.black), disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Uses the hoverboards to blind everyone in the room."},

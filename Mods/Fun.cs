@@ -2697,6 +2697,34 @@ Piece Name: {gunTarget.name}";
             GTPlayer.Instance.hoverTiltAdjustsForwardFactor = 0.2f;
         }
 
+        private static bool globalHoverboardGrabbed;
+        public static void GlobalHoverboard()
+        {
+            if (GTPlayer.Instance == null || VRRig.LocalRig == null) return;
+            if (!globalHoverboardGrabbed)
+            {
+                GTPlayer.Instance.GrabPersonalHoverboard(false, Vector3.zero, Quaternion.identity, Color.black, 0);
+                globalHoverboardGrabbed = true;
+            }
+
+            GTPlayer.Instance.SetHoverAllowed(true);
+            GTPlayer.Instance.SetHoverActive(true);
+            if (VRRig.LocalRig.hoverboardVisual != null)
+                VRRig.LocalRig.hoverboardVisual.gameObject.SetActive(true);
+        }
+
+        public static void DisableGlobalHoverboard()
+        {
+            globalHoverboardGrabbed = false;
+            if (GTPlayer.Instance != null)
+            {
+                GTPlayer.Instance.SetHoverAllowed(false);
+                GTPlayer.Instance.SetHoverActive(false);
+            }
+            if (VRRig.LocalRig != null && VRRig.LocalRig.hoverboardVisual != null)
+                VRRig.LocalRig.hoverboardVisual.gameObject.SetActive(false);
+        }
+
 
         public static Coroutine DisableHoverboardCoroutine;
         public static IEnumerator DisableHoverboard()
