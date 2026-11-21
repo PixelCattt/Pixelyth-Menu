@@ -1023,6 +1023,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Special Cosmetic Indicators", aliases = new[] { "Cosmetic ESP" }, method = Visuals.CosmeticIndicators, disableMethod = Visuals.DisableCosmeticIndicators, toolTip = "Shows icons above people's heads if they are a Finger Painter, Illustrator, Administrator, Stick, Forest Guide, or Another Axiom Creator."},
 
                 new ButtonInfo { buttonText = "Voice ESP", method = Visuals.VoiceESP, disableMethod = Visuals.DisableVoiceIndicators, toolTip = "Puts voice indicators above people's heads when they're talking."},
+                new ButtonInfo { buttonText = "Mic Volume Bars", enableMethod = Visuals.EnableMicVolumeBars, method = Visuals.MicVolumeBars, disableMethod = Visuals.DisableMicVolumeBars, toolTip = "Shows speaking players' microphone loudness as a vertical bar that fills upward."},
 
                 new ButtonInfo { buttonText = "Grabbable Indicators", method = Visuals.GripESP, disableMethod = Visuals.DisableGripESP, toolTip = "Puts indicators above people's heads when they can be grabbed."},
 

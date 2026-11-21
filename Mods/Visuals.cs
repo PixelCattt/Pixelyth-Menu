@@ -3976,6 +3976,73 @@ namespace Pixelyth.Mods
             voiceIndicators.Clear();
         }
 
+        private static readonly Dictionary<VRRig, GameObject> micVolumeBars = new Dictionary<VRRig, GameObject>();
+
+        public static void EnableMicVolumeBars()
+        {
+            DisableMicVolumeBars();
+        }
+
+        public static void DisableMicVolumeBars()
+        {
+            foreach (GameObject bar in micVolumeBars.Values)
+                Object.Destroy(bar);
+            micVolumeBars.Clear();
+        }
+
+        public static void MicVolumeBars()
+        {
+            foreach (var stale in micVolumeBars.Keys.Where(rig => rig == null || !VRRigExtensions.ActiveRigs.Contains(rig)).ToArray())
+            {
+                Object.Destroy(micVolumeBars[stale]);
+                micVolumeBars.Remove(stale);
+            }
+
+            foreach (VRRig rig in VRRigExtensions.ActiveRigs.Where(rig => rig != null && !rig.isLocal))
+            {
+                try
+                {
+                    float loudness = Mathf.Clamp01(rig.GetRecorderLoudness());
+                    if (loudness <= 0.001f && !micVolumeBars.ContainsKey(rig))
+                        continue;
+
+                    if (!micVolumeBars.TryGetValue(rig, out GameObject bar) || bar == null)
+                    {
+                        bar = new GameObject("Pixelyth_MicVolumeBar");
+                        GameObject background = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                        Object.Destroy(background.GetComponent<Collider>());
+                        background.name = "Background";
+                        background.transform.SetParent(bar.transform, false);
+                        background.transform.localScale = new Vector3(0.075f, 0.6f, 1f);
+                        background.GetComponent<Renderer>().material.shader = Shader.Find("GUI/Text Shader");
+                        background.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 0.6f);
+
+                        GameObject fill = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                        Object.Destroy(fill.GetComponent<Collider>());
+                        fill.name = "Fill";
+                        fill.transform.SetParent(bar.transform, false);
+                        fill.GetComponent<Renderer>().material.shader = Shader.Find("GUI/Text Shader");
+                        micVolumeBars[rig] = bar;
+                    }
+
+                    bar.SetActive(loudness > 0.001f);
+                    if (loudness <= 0.001f)
+                        continue;
+
+                    Transform fillTransform = bar.transform.Find("Fill");
+                    fillTransform.GetComponent<Renderer>().material.color = Color.Lerp(Color.green, Color.red, loudness);
+                    fillTransform.localScale = new Vector3(0.045f, 0.56f * loudness, 1f);
+                    fillTransform.localPosition = new Vector3(0f, -0.28f + 0.28f * loudness, -0.01f);
+
+                    bar.transform.localScale = Vector3.one * rig.scaleFactor;
+                    bar.transform.position = rig.headMesh.transform.position + Vector3.up * (0.5f * rig.scaleFactor);
+                    bar.transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
+                    bar.transform.Rotate(0f, 180f, 0f);
+                }
+                catch { }
+            }
+        }
+
         private static readonly Dictionary<VRRig, GameObject> gripIndicators = new Dictionary<VRRig, GameObject>();
         private static Material gripEspMat;
         private static Texture2D gripTxt;
