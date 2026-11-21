@@ -56,12 +56,37 @@ namespace Pixelyth.Mods
             public string Name;
             public SnowballThrowable ThrowableLeft;
             public SnowballThrowable ThrowableRight;
-            public SnowballThrowable Throwable => ThrowableRight;
-            public int ThrowableIndex => Throwable.throwableMakerIndex;
+            public SnowballThrowable Throwable => ThrowableRight ?? ThrowableLeft;
+            public int ThrowableIndex => Throwable != null ? Throwable.throwableMakerIndex : -1;
         }
 
         internal static List<ProjectileEntry> _cachedProjectileEntries;
         private static bool _isBuildingCache = false;
+        private static float nextProjectileCacheAttempt;
+        private static float nextProjectilePrepareAttempt;
+        private static float nextProjectileWarning;
+
+        private static bool EnsureProjectileSystem()
+        {
+            if (CosmeticsV2Spawner_Dirty.isPrepared) return true;
+            CosmeticsController controller = CosmeticsController.instance;
+            if (controller == null || !controller.v2_allCosmeticsInfoAssetRef_isLoaded ||
+                !GTPlayer.hasInstance || VRRig.LocalRig == null || VRRigCache.Instance == null ||
+                CosmeticsV2Spawner_Dirty._gVRRigDatas.Count > 0 || Time.unscaledTime < nextProjectilePrepareAttempt)
+                return false;
+
+            nextProjectilePrepareAttempt = Time.unscaledTime + 5f;
+            try
+            {
+                LogManager.LogWarning("Projectile cosmetics loader has not started; preparing it now.");
+                CosmeticsV2Spawner_Dirty.PrepareLoadOpInfos();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError($"Preparing projectile cosmetics failed: {ex}");
+            }
+            return CosmeticsV2Spawner_Dirty.isPrepared;
+        }
 
         public static void BuildProjectileCache(Action onComplete = null)
         {
@@ -70,12 +95,25 @@ namespace Pixelyth.Mods
                 onComplete?.Invoke();
                 return;
             }
-            if (_isBuildingCache || !CosmeticsV2Spawner_Dirty.isPrepared)
+            if (_isBuildingCache || Time.unscaledTime < nextProjectileCacheAttempt)
                 return;
 
-            var allCosmeticsArraySO = CosmeticsController.instance.v2_allCosmeticsInfoAssetRef.Asset as AllCosmeticsArraySO;
-            if (allCosmeticsArraySO == null)
+            CosmeticsController controller = CosmeticsController.instance;
+            if (controller == null || !EnsureProjectileSystem())
+            {
+                nextProjectileCacheAttempt = Time.unscaledTime + 1f;
                 return;
+            }
+
+            AllCosmeticsArraySO allCosmeticsArraySO = controller.v2_allCosmeticsInfoAssetRef.Asset as AllCosmeticsArraySO;
+            IEnumerable<CosmeticInfoV2> cosmetics = allCosmeticsArraySO != null && allCosmeticsArraySO.sturdyAssetRefs != null
+                ? allCosmeticsArraySO.sturdyAssetRefs.Where(item => item.obj != null).Select(item => item.obj.info)
+                : controller.v2_allCosmetics;
+            if (cosmetics == null)
+            {
+                nextProjectileCacheAttempt = Time.unscaledTime + 1f;
+                return;
+            }
 
             _isBuildingCache = true;
 
@@ -84,9 +122,8 @@ namespace Pixelyth.Mods
                 var entries = new List<ProjectileEntry>();
                 var pending = new List<(CosmeticInfoV2 info, string rightId, string leftId)>();
 
-                foreach (var cosmeticRef in allCosmeticsArraySO.sturdyAssetRefs)
+                foreach (CosmeticInfoV2 info in cosmetics)
                 {
-                    CosmeticInfoV2 info = cosmeticRef.obj.info;
                     if (!info.isThrowable)
                         continue;
                     if (pending.Exists(p => p.info.throwableIndex == info.throwableIndex))
@@ -103,7 +140,10 @@ namespace Pixelyth.Mods
                 int remaining = pending.Count;
                 if (remaining == 0)
                 {
-                    _cachedProjectileEntries = entries;
+                    if (entries.Count > 0)
+                        _cachedProjectileEntries = entries;
+                    else
+                        nextProjectileCacheAttempt = Time.unscaledTime + 1f;
                     _isBuildingCache = false;
                     onComplete?.Invoke();
                     return;
@@ -113,7 +153,13 @@ namespace Pixelyth.Mods
                 {
                     if (--remaining == 0)
                     {
-                        _cachedProjectileEntries = entries;
+                        if (entries.Count > 0)
+                        {
+                            _cachedProjectileEntries = entries;
+                            LogManager.Log($"Loaded {entries.Count} projectile choices.");
+                        }
+                        else
+                            nextProjectileCacheAttempt = Time.unscaledTime + 1f;
                         _isBuildingCache = false;
                         ButtonInfo projectileButton = Buttons.GetIndex("Change Projectile");
                         projectileButton?.onValueChanged?.Invoke();
@@ -127,16 +173,12 @@ namespace Pixelyth.Mods
                     {
                         string name = CleanProjectileName(item.info.displayName);
                         if (name.Equals("Firework Mortar"))
-                        {
-                            Finish();
                             return;
-                        }
 
                         var registry = VRRig.LocalRig?.cosmeticsObjectRegistry;
                         if (registry == null)
                         {
                             LogManager.LogError("CosmeticsItemRegistry on our rig is null??");
-                            Finish();
                             return;
                         }
 
@@ -192,12 +234,13 @@ namespace Pixelyth.Mods
             {
                 LogManager.LogError($"BuildProjectileCache failed: {ex}");
                 _isBuildingCache = false;
+                nextProjectileCacheAttempt = Time.unscaledTime + 5f;
             }
         }
 
         private static SnowballThrowable FindByThrowableIndex(SnowballMaker maker, int throwableIndex)
         {
-            if (maker == null)
+            if (maker == null || maker.snowballs == null)
                 return null;
             foreach (var sb in maker.snowballs)
             {
@@ -214,12 +257,19 @@ namespace Pixelyth.Mods
             return (IReadOnlyList<ProjectileEntry>)_cachedProjectileEntries ?? Array.Empty<ProjectileEntry>();
         }
 
-        public static ProjectileEntry GetPreferredProjectileEntry() =>
-            GetAll()[ProjectileMode];
+        public static ProjectileEntry GetPreferredProjectileEntry()
+        {
+            IReadOnlyList<ProjectileEntry> all = GetAll();
+            if (all.Count == 0) return null;
+            int index = ProjectileMode;
+            if (index < 0 || index >= all.Count)
+                _projMode = index = 0;
+            return all[index];
+        }
         public static ProjectileEntry GetGrowingSnowballProjectileEntry()
         {
             ProjectileEntry entry = GetPreferredProjectileEntry();
-            if (entry.Throwable is GrowingSnowballThrowable)
+            if (entry?.Throwable is GrowingSnowballThrowable)
                 return entry;
             return FindProjectile("Growing Snowball");
         }
@@ -388,6 +438,15 @@ namespace Pixelyth.Mods
         public static bool clientSided;
         public static void SendProjectile(ProjectileEntry projectile, Vector3 position, Vector3 velocity, Color? color = null, int growingSnowballSize = -1, RaiseEventOptions options = null, ThrowableHand hand = ThrowableHand.Dynamic, bool bypassTeleport = false)
         {
+            if (projectile?.Throwable == null || projectile.ThrowableIndex < 0)
+            {
+                if (Time.unscaledTime >= nextProjectileWarning)
+                {
+                    nextProjectileWarning = Time.unscaledTime + 3f;
+                    LogManager.LogWarning("Projectile could not be sent because its throwable is not loaded yet.");
+                }
+                return;
+            }
             try
             {
                 projectileFrameSent = Time.frameCount;
