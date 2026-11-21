@@ -4011,6 +4011,45 @@ namespace Pixelyth.Mods
             voiceIndicators.Clear();
         }
 
+        private static LineRenderer masterTracerLine;
+        public static void MasterTracer()
+        {
+            NetPlayer master = NetworkSystem.Instance?.MasterClient;
+            VRRig masterRig = master == null ? null : VRRigExtensions.ActiveRigs.FirstOrDefault(rig => rig != null && !rig.isLocal && rig.Creator != null && rig.Creator.ActorNumber == master.ActorNumber);
+            if (masterRig == null)
+            {
+                if (masterTracerLine != null) masterTracerLine.enabled = false;
+                return;
+            }
+
+            if (masterTracerLine == null)
+            {
+                GameObject lineObject = new GameObject("Pixelyth_MasterTracer");
+                masterTracerLine = lineObject.AddComponent<LineRenderer>();
+                masterTracerLine.positionCount = 2;
+                masterTracerLine.material = new Material(Shader.Find("GUI/Text Shader"));
+                masterTracerLine.useWorldSpace = true;
+            }
+
+            Color color = Buttons.GetIndex("Follow Menu Theme").enabled ? backgroundColor.GetCurrentColor() : new Color(1f, 0.8f, 0f);
+            if (Buttons.GetIndex("Transparent Theme").enabled) color.a = 0.5f;
+            float width = (Buttons.GetIndex("Thin Tracers").enabled ? 0.0075f : 0.025f) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f);
+            masterTracerLine.enabled = true;
+            masterTracerLine.startColor = color;
+            masterTracerLine.endColor = color;
+            masterTracerLine.startWidth = width;
+            masterTracerLine.endWidth = width;
+            masterTracerLine.SetPosition(0, GorillaTagger.Instance.rightHandTransform.position);
+            masterTracerLine.SetPosition(1, masterRig.headMesh.transform.position);
+        }
+
+        public static void DisableMasterTracer()
+        {
+            if (masterTracerLine != null)
+                Object.Destroy(masterTracerLine.gameObject);
+            masterTracerLine = null;
+        }
+
         private static readonly Dictionary<VRRig, GameObject> micVolumeBars = new Dictionary<VRRig, GameObject>();
 
         public static void EnableMicVolumeBars()
