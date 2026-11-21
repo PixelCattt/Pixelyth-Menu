@@ -1894,6 +1894,8 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Exit Master Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
                 new ButtonInfo { buttonText = "MasterLabel", overlapText = "You are not master client.", label = true},
+                new ButtonInfo { buttonText = "Fast Broomsticks", enableMethod = Master.FastBroomsticks, disableMethod = Master.ResetBroomsticks, toolTip = "Makes broomsticks move faster. Requires master client."},
+                new ButtonInfo { buttonText = "Slow Broomsticks", enableMethod = Master.SlowBroomsticks, disableMethod = Master.ResetBroomsticks, toolTip = "Makes broomsticks move slower. Requires master client."},
 
                 new ButtonInfo { buttonText = "VIM Kick Gun", method = Overpowered.VIMKickGun, toolTip = "Kicks whoever your hand desires if you created the room as a fan club subscriber." },
                 new ButtonInfo { buttonText = "VIM Kick All", method = Overpowered.VIMKickAll, isTogglable = false, toolTip = "Kicks everyone if you created the room as a fan club subscriber." },
