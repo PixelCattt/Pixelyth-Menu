@@ -2802,6 +2802,34 @@ namespace Pixelyth.Mods
                 GorillaTagger.Instance.rigidbody.linearVelocity = direction.normalized * 15f + Vector3.down;
         }
 
+        private static float cannonballForce;
+        private static float cannonballNextLaunch;
+        private static float cannonballNextIncrease;
+
+        public static void EnableCannonball()
+        {
+            cannonballForce = 10f;
+            cannonballNextLaunch = 0f;
+            cannonballNextIncrease = Time.time + 0.5f;
+        }
+
+        public static void Cannonball()
+        {
+            if (Time.time >= cannonballNextIncrease)
+            {
+                cannonballForce = Mathf.Min(cannonballForce + 2f, 80f);
+                cannonballNextIncrease = Time.time + 0.5f;
+            }
+
+            if (Time.time >= cannonballNextLaunch)
+            {
+                cannonballNextLaunch = Time.time + 0.1f;
+                GorillaTagger.Instance.rigidbody.linearVelocity = GorillaTagger.Instance.headCollider.transform.forward * cannonballForce;
+            }
+        }
+
+        public static void DisableCannonball() => cannonballForce = 0f;
+
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 

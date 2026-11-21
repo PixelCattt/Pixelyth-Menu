@@ -764,6 +764,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "World Scale", method = Movement.WorldScale, disableMethod = Movement.DisableWorldScale, toolTip = "Scales your player world from 0.1x to 3x. Set the amount in Movement Settings."},
                 new ButtonInfo { buttonText = "Time Rewind", enableMethod = Movement.EnableTimeRewind, method = Movement.TimeRewind, disableMethod = Movement.DisableTimeRewind, toolTip = "Records recent movement; press right grip to rewind along the last few seconds."},
                 new ButtonInfo { buttonText = "Always Zipline", enableMethod = Movement.EnableAlwaysZipline, method = Movement.AlwaysZipline, disableMethod = Movement.DisableAlwaysZipline, toolTip = "Pushes you forward while holding left grip."},
+                new ButtonInfo { buttonText = "Cannonball", enableMethod = Movement.EnableCannonball, method = Movement.Cannonball, disableMethod = Movement.DisableCannonball, toolTip = "Repeatedly propels you forward, increasing speed up to its cap."},
                 new ButtonInfo { buttonText = "Stick Long Arms", method = Movement.StickLongArms, toolTip = "Makes you look like you're using sticks."},
                 new ButtonInfo { buttonText = "Multiplied Long Arms", method = Movement.MultipliedLongArms, toolTip = "Gives you a weird version of long arms."},
                 new ButtonInfo { buttonText = "Vertical Long Arms", method = Movement.VerticalLongArms, toolTip = "Gives you a version of long arms to help you vertically."},
