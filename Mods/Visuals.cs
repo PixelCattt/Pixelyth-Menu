@@ -400,6 +400,73 @@ namespace Pixelyth.Mods
             NotificationManager.information["Lurker"] = $"{stateName} | {speed:F1}m/s | {lurker.targetPlayer?.NickName ?? "Nobody"}";
         }
 
+        private static GameObject scheduledEventLabel;
+        private static string scheduledEventText;
+        private static float nextScheduledEventRefresh;
+
+        public static void ScheduledEventESP()
+        {
+            if (Time.time >= nextScheduledEventRefresh)
+            {
+                nextScheduledEventRefresh = Time.time + 1f;
+                scheduledEventText = BuildScheduledEventText();
+            }
+
+            if (string.IsNullOrEmpty(scheduledEventText)) return;
+            if (GorillaComputer.instance == null || Camera.main == null)
+            {
+                NotificationManager.information["Scheduled Event"] = scheduledEventText.Replace("\n", " | ");
+                return;
+            }
+
+            NotificationManager.information.Remove("Scheduled Event");
+            if (scheduledEventLabel == null)
+            {
+                scheduledEventLabel = new GameObject("Pixelyth_ScheduledEventLabel");
+                TextMeshPro text = scheduledEventLabel.AddComponent<TextMeshPro>();
+                text.fontSize = 2.4f;
+                text.alignment = TextAlignmentOptions.Center;
+                text.color = Color.white;
+                text.SafeSetFontStyle(activeFontStyle);
+                text.SafeSetFont(activeFont);
+            }
+
+            bool hideOnCamera = Buttons.GetIndex("Hidden on Camera").enabled;
+            scheduledEventLabel.layer = hideOnCamera ? 19 : 0;
+            TextMeshPro label = scheduledEventLabel.GetComponent<TextMeshPro>();
+            label.SafeSetText(scheduledEventText);
+            scheduledEventLabel.transform.position = GorillaComputer.instance.transform.position + Vector3.up * 1.25f;
+            scheduledEventLabel.transform.LookAt(Camera.main.transform.position);
+            scheduledEventLabel.transform.Rotate(0f, 180f, 0f);
+        }
+
+        public static void DisableScheduledEventESP()
+        {
+            if (scheduledEventLabel != null) Object.Destroy(scheduledEventLabel);
+            scheduledEventLabel = null;
+            scheduledEventText = null;
+            nextScheduledEventRefresh = 0f;
+            NotificationManager.information.Remove("Scheduled Event");
+        }
+
+        private static string BuildScheduledEventText()
+        {
+            var manager = GorillaNetworking.ScheduledEvents.ScheduledEventManager.Instance;
+            if (manager == null) return "<color=yellow><b>Scheduled Event</b></color>\nManager unavailable";
+
+            string title = Traverse.Create(manager).Field("titleDataKey").GetValue<string>();
+            if (string.IsNullOrEmpty(title)) title = "Scheduled Event";
+            var phase = manager.CurrentPhase;
+            string status = !manager.IsResolved || !manager.DataReady
+                ? "Waiting for data..."
+                : phase == GorillaNetworking.ScheduledEvents.ScheduledEventPhase.During
+                    ? "Event in progress"
+                    : manager.HasEvent
+                        ? $"Starts in {manager.SecondsUntilEventStart:F0}s"
+                        : "No event scheduled";
+            return $"<color=yellow><b>{title}</b></color>\nPhase: {phase}\n{status}";
+        }
+
         public static void WanderingGhostOverlay()
         {
             WanderingGhost ghost = Overpowered.Wanderer;
