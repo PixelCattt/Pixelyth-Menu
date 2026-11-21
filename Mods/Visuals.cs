@@ -374,6 +374,62 @@ namespace Pixelyth.Mods
             NotificationManager.information["Lucy"] = $"{stateName} | {hgc.currentSpeed:F1}m/s | {hgc.targetPlayer?.NickName ?? "Nobody"} | {distance:F1}m";
         }
 
+        private static Color GetLucyVisualColor(HalloweenGhostChaser lucy)
+        {
+            Color color = lucy.isSummoned ? Color.red : Color.cyan;
+            if (Buttons.GetIndex("Follow Menu Theme").enabled) color = backgroundColor.GetCurrentColor();
+            if (Buttons.GetIndex("Transparent Theme").enabled) color.a = 0.5f;
+            return color;
+        }
+
+        private static float GetLucyTracerWidth() =>
+            (Buttons.GetIndex("Thin Tracers").enabled ? 0.0075f : 0.025f) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f);
+
+        public static void LucyTracer()
+        {
+            HalloweenGhostChaser lucy = Overpowered.Lucy;
+            if (lucy == null) return;
+            LineRenderer line = GetLineRender();
+            Color color = GetLucyVisualColor(lucy);
+            line.startColor = line.endColor = color;
+            line.startWidth = line.endWidth = GetLucyTracerWidth();
+            line.SetPosition(0, GorillaTagger.Instance.rightHandTransform.position);
+            line.SetPosition(1, lucy.skullTransform != null ? lucy.skullTransform.position : lucy.transform.position);
+        }
+
+        public static void LucyLookTracer()
+        {
+            HalloweenGhostChaser lucy = Overpowered.Lucy;
+            if (lucy?.skullTransform == null) return;
+            LineRenderer line = GetLineRender();
+            Color color = GetLucyVisualColor(lucy);
+            line.startColor = line.endColor = color;
+            line.startWidth = line.endWidth = GetLucyTracerWidth();
+            line.SetPosition(0, lucy.skullTransform.position);
+            line.SetPosition(1, lucy.skullTransform.position + lucy.skullTransform.forward * 5f);
+        }
+
+        public static void LucySkeletonESP()
+        {
+            HalloweenGhostChaser lucy = Overpowered.Lucy;
+            if (lucy?.ghostBody == null) return;
+            DrawLucyTransformBones(lucy.ghostBody.transform, GetLucyVisualColor(lucy), GetLucyTracerWidth());
+        }
+
+        private static void DrawLucyTransformBones(Transform parent, Color color, float width)
+        {
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                Transform child = parent.GetChild(i);
+                LineRenderer line = GetLineRender();
+                line.startColor = line.endColor = color;
+                line.startWidth = line.endWidth = width;
+                line.SetPosition(0, parent.position);
+                line.SetPosition(1, child.position);
+                DrawLucyTransformBones(child, color, width);
+            }
+        }
+
         public static void LurkerOverlay()
         {
             LurkerGhost lurker = Overpowered.Lurker;

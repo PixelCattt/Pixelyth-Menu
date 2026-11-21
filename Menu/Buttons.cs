@@ -945,6 +945,9 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Enemy ESP", method = Visuals.EnemyESP, toolTip = "Puts dots on your screen at where all of the cores in the ghost reactor map are."},
                 new ButtonInfo { buttonText = "Resource ESP", method = Visuals.ResourceESP, toolTip = "Puts dots on your screen at where all of the resources are in the Super Infection gamemode."},
                 new ButtonInfo { buttonText = "Lucy ESP", method = Visuals.LucyESP, toolTip = "Puts a dot on your screen at Lucy's current position, even when she's hiding underground."},
+                new ButtonInfo { buttonText = "Lucy Tracer", method = Visuals.LucyTracer, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a tracer from your right hand to Lucy."},
+                new ButtonInfo { buttonText = "Lucy Look Tracer", method = Visuals.LucyLookTracer, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a line in the direction Lucy is looking."},
+                new ButtonInfo { buttonText = "Lucy Skeleton ESP", method = Visuals.LucySkeletonESP, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws lines connecting Lucy's body joints."},
                 new ButtonInfo { buttonText = "Lurker ESP", method = Visuals.LurkerESP, toolTip = "Puts a dot on your screen at the Lurker's current position."},
                 new ButtonInfo { buttonText = "Wanderer ESP", method = Visuals.WanderingGhostESP, toolTip = "Puts a dot on your screen at the Wanderer's current position."},
 
