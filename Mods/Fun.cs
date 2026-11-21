@@ -2623,7 +2623,7 @@ namespace Pixelyth.Mods
                     speakerHijackTarget = null;
                     if (Time.time < speakerHijackNextScan) return;
                     speakerHijackNextScan = Time.time + 2f;
-                    speakerHijackTarget = UnityEngine.Object.FindObjectsOfType<GorillaSpeakerLoudness>()
+                    speakerHijackTarget = UnityEngine.Object.FindObjectsByType<GorillaSpeakerLoudness>(FindObjectsSortMode.None)
                         .FirstOrDefault(s => s != null && s.GetComponent<VRRig>() == null && s.speaker != null);
                     if (speakerHijackTarget == null) return;
                 }
