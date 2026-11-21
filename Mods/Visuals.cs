@@ -4117,6 +4117,103 @@ namespace Pixelyth.Mods
             masterTracerLine = null;
         }
 
+        private static readonly List<Transform> beeTracerTargets = new List<Transform>();
+        private static readonly List<LineRenderer> beeTracerLines = new List<LineRenderer>();
+        private static readonly List<GameObject> beeTracerLabels = new List<GameObject>();
+        private static float nextBeeTracerScan;
+
+        public static void BeeTracer()
+        {
+            if (Time.time >= nextBeeTracerScan)
+            {
+                nextBeeTracerScan = Time.time + 0.5f;
+                beeTracerTargets.Clear();
+                foreach (BeeSwarmManager manager in GetAllType<BeeSwarmManager>())
+                {
+                    List<AnimatedBee> bees = Traverse.Create(manager).Field("bees").GetValue<List<AnimatedBee>>();
+                    if (bees == null) continue;
+                    foreach (AnimatedBee bee in bees)
+                        if (bee?.visual != null) beeTracerTargets.Add(bee.visual.transform);
+                }
+
+                while (beeTracerLines.Count > beeTracerTargets.Count)
+                {
+                    int last = beeTracerLines.Count - 1;
+                    if (beeTracerLines[last] != null) Object.Destroy(beeTracerLines[last].gameObject);
+                    Object.Destroy(beeTracerLabels[last]);
+                    beeTracerLines.RemoveAt(last);
+                    beeTracerLabels.RemoveAt(last);
+                }
+
+                while (beeTracerLines.Count < beeTracerTargets.Count)
+                {
+                    GameObject lineObject = new GameObject("Pixelyth_BeeTracer");
+                    LineRenderer line = lineObject.AddComponent<LineRenderer>();
+                    line.material = new Material(Shader.Find("GUI/Text Shader"));
+                    line.positionCount = 2;
+                    line.useWorldSpace = true;
+                    line.startWidth = line.endWidth = 0.01f;
+                    beeTracerLines.Add(line);
+
+                    GameObject label = new GameObject("Pixelyth_BeeLabel");
+                    label.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+                    TextMeshPro text = label.AddComponent<TextMeshPro>();
+                    text.fontSize = 2.4f;
+                    text.alignment = TextAlignmentOptions.Center;
+                    text.color = Color.yellow;
+                    text.SafeSetText("BEE");
+                    text.SafeSetFontStyle(activeFontStyle);
+                    text.SafeSetFont(activeFont);
+                    beeTracerLabels.Add(label);
+                }
+            }
+
+            bool hideOnCamera = Buttons.GetIndex("Hidden on Camera").enabled;
+            Color color = Color.yellow;
+            if (Buttons.GetIndex("Transparent Theme").enabled) color.a = 0.5f;
+            Vector3 origin = GorillaTagger.Instance.headCollider.transform.position;
+            for (int i = 0; i < beeTracerTargets.Count; i++)
+            {
+                Transform target = beeTracerTargets[i];
+                LineRenderer line = beeTracerLines[i];
+                GameObject label = beeTracerLabels[i];
+                if (target == null || line == null || label == null)
+                {
+                    if (line != null) line.enabled = false;
+                    if (label != null) label.SetActive(false);
+                    continue;
+                }
+
+                line.enabled = true;
+                line.gameObject.layer = hideOnCamera ? 19 : 0;
+                line.startColor = line.endColor = color;
+                float width = (Buttons.GetIndex("Thin Tracers").enabled ? 0.0075f : 0.01f) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f);
+                line.startWidth = line.endWidth = width;
+                line.SetPosition(0, origin);
+                line.SetPosition(1, target.position);
+                label.SetActive(true);
+                label.layer = hideOnCamera ? 19 : 0;
+                label.transform.position = target.position + Vector3.up * 0.25f;
+                if (Camera.main != null)
+                {
+                    label.transform.LookAt(Camera.main.transform.position);
+                    label.transform.Rotate(0f, 180f, 0f);
+                }
+            }
+        }
+
+        public static void DisableBeeTracer()
+        {
+            foreach (LineRenderer line in beeTracerLines)
+                if (line != null) Object.Destroy(line.gameObject);
+            foreach (GameObject label in beeTracerLabels)
+                if (label != null) Object.Destroy(label);
+            beeTracerTargets.Clear();
+            beeTracerLines.Clear();
+            beeTracerLabels.Clear();
+            nextBeeTracerScan = 0f;
+        }
+
         private static readonly Dictionary<VRRig, GameObject> micVolumeBars = new Dictionary<VRRig, GameObject>();
 
         public static void EnableMicVolumeBars()

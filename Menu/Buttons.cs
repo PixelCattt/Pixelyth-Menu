@@ -1050,6 +1050,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Automatic Tracers", method =() => Visuals.AutomaticESP(Visuals.InfectionTracers, Visuals.HuntTracers, Visuals.CasualTracers), disableMethod =() => {Visuals.isLineRenderQueued = true;}, toolTip = "Puts tracers on your right hand. Shows targets for the current gamemode."},
                 new ButtonInfo { buttonText = "Nearest Tracer", method = Visuals.NearestTracer, disableMethod =() => {Visuals.isLineRenderQueued = true;}, toolTip = "Puts tracers on your right hand. Shows the nearest player."},
                 new ButtonInfo { buttonText = "Master Tracer", method = Visuals.MasterTracer, disableMethod = Visuals.DisableMasterTracer, toolTip = "Draws a tracer from your right hand to the master client."},
+                new ButtonInfo { buttonText = "Bee Tracer", method = Visuals.BeeTracer, disableMethod = Visuals.DisableBeeTracer, toolTip = "Draws lines from your head to bees and labels them."},
 
                 new ButtonInfo { buttonText = "Casual Box ESP", method = Visuals.CasualBoxESP, disableMethod = Visuals.DisableBoxESP, toolTip = "Puts boxes over players. Shows everyone."},
                 new ButtonInfo { buttonText = "Infection Box ESP", method = Visuals.InfectionBoxESP, disableMethod = Visuals.DisableBoxESP, toolTip = "Puts boxes over players. Shows untagged when tagged, vice versa."},
