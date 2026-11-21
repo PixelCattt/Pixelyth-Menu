@@ -4346,6 +4346,77 @@ namespace Pixelyth.Mods
             proximityAlertTexture = null;
         }
 
+        private static readonly Dictionary<int, Queue<Vector3>> ghostTrailHistory = new Dictionary<int, Queue<Vector3>>();
+        private static readonly List<GameObject> ghostTrailMarkers = new List<GameObject>();
+        private static Material ghostTrailMaterial;
+        private static float nextGhostTrailRecord;
+
+        public static void EnableGhostTrail()
+        {
+            if (ghostTrailMarkers.Count > 0) DisableGhostTrail();
+        }
+
+        public static void GhostTrail()
+        {
+            ghostTrailMarkers.RemoveAll(marker => marker == null);
+            if (Time.time >= nextGhostTrailRecord)
+            {
+                nextGhostTrailRecord = Time.time + 0.5f;
+                foreach (VRRig rig in VRRigExtensions.ActiveRigs)
+                {
+                    if (rig == null || rig.isLocal) continue;
+                    int id = rig.GetInstanceID();
+                    if (!ghostTrailHistory.TryGetValue(id, out Queue<Vector3> history))
+                        ghostTrailHistory[id] = history = new Queue<Vector3>();
+                    history.Enqueue(rig.transform.position);
+                    while (history.Count > 30) history.Dequeue();
+                }
+            }
+
+            if (ghostTrailMaterial == null)
+            {
+                ghostTrailMaterial = new Material(Shader.Find("GUI/Text Shader"));
+                ghostTrailMaterial.color = new Color(1f, 1f, 1f, 0.15f);
+            }
+
+            bool hideOnCamera = Buttons.GetIndex("Hidden on Camera").enabled;
+            int used = 0;
+            foreach (VRRig rig in VRRigExtensions.ActiveRigs)
+            {
+                if (rig == null || rig.isLocal || used >= 60) continue;
+                if (!ghostTrailHistory.TryGetValue(rig.GetInstanceID(), out Queue<Vector3> history) || history.Count < 7) continue;
+
+                Vector3 delayedPosition = history.ToArray()[history.Count - 7];
+                if (used >= ghostTrailMarkers.Count)
+                {
+                    GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    Object.Destroy(marker.GetComponent<Collider>());
+                    marker.GetComponent<Renderer>().material = ghostTrailMaterial;
+                    ghostTrailMarkers.Add(marker);
+                }
+
+                GameObject sphere = ghostTrailMarkers[used++];
+                sphere.SetActive(true);
+                sphere.transform.position = delayedPosition;
+                sphere.transform.localScale = Vector3.one * (0.25f * rig.scaleFactor);
+                sphere.layer = hideOnCamera ? 19 : 0;
+            }
+
+            for (int i = used; i < ghostTrailMarkers.Count; i++)
+                if (ghostTrailMarkers[i] != null) ghostTrailMarkers[i].SetActive(false);
+        }
+
+        public static void DisableGhostTrail()
+        {
+            foreach (GameObject marker in ghostTrailMarkers)
+                if (marker != null) Object.Destroy(marker);
+            ghostTrailMarkers.Clear();
+            ghostTrailHistory.Clear();
+            if (ghostTrailMaterial != null) Object.Destroy(ghostTrailMaterial);
+            ghostTrailMaterial = null;
+            nextGhostTrailRecord = 0f;
+        }
+
         private static readonly Dictionary<VRRig, GameObject> micVolumeBars = new Dictionary<VRRig, GameObject>();
 
         public static void EnableMicVolumeBars()
