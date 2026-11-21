@@ -64,7 +64,11 @@ namespace Pixelyth.Mods
         public static readonly string[] PlatformTypeNames = {
             "Normal", "Invisible", "Rainbow", "Random Color", "Noclip", "Glass", "Projectile"
         };
-        public static void ApplyPlatformType(int index) => platformMode = index;
+        public static void ApplyPlatformType(int index)
+        {
+            DisablePlatforms();
+            platformMode = index;
+        }
 
         public static int platformShape;
         public static readonly string[] PlatformShapeNames = {
@@ -112,7 +116,6 @@ namespace Pixelyth.Mods
                     platformRenderer.enabled = false;
                     break;
                 case 4:
-                    UpdateClipColliders(false);
                     break;
                 case 5:
                     platform.AddComponent<GorillaSurfaceOverride>().overrideIndex = 29;
@@ -151,6 +154,11 @@ namespace Pixelyth.Mods
                 ColorChanger outlineColorChanger = gameObject.AddComponent<ColorChanger>();
                 outlineColorChanger.colors = buttonColors[0];
             }
+
+            int platformLayer = LayerMask.NameToLayer("BuilderProp");
+            if (platformLayer >= 0)
+                foreach (Collider collider in platform.GetComponentsInChildren<Collider>(true))
+                    collider.gameObject.layer = platformLayer;
             return platform;
         }
 
@@ -164,7 +172,7 @@ namespace Pixelyth.Mods
             if (Buttons.GetIndex("Non-Sticky Platforms").enabled)
                 platform.transform.position += right * ((left ? 1f : -1f) * ((0.025f + platform.transform.localScale.x / 2f) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f)));
 
-            FriendManager.PlatformSpawned(true, platform.transform.position, platform.transform.rotation, platform.transform.localScale, GetPlatformPrimitiveType());
+            FriendManager.PlatformSpawned(left, platform.transform.position, platform.transform.rotation, platform.transform.localScale, GetPlatformPrimitiveType());
         }
 
         public static int flySpeedCycle = 1;
@@ -206,20 +214,18 @@ namespace Pixelyth.Mods
                         if (Buttons.GetIndex("Platform Gravity").enabled)
                         {
                             platform.AddComponent(typeof(Rigidbody));
-                            Object.Destroy(platform.GetComponent<Collider>());
+                            foreach (Collider collider in platform.GetComponentsInChildren<Collider>(true))
+                                collider.enabled = false;
                             Object.Destroy(platform, 2f);
                         }
                         else
-                            Object.Destroy(platform);
+                            DestroyPlatform(platform);
 
                         if (left)
                             leftplat = null;
                         else
                             rightplat = null;
-                        if (platformMode == 4 && rightplat == null)
-                            UpdateClipColliders(true);
-
-                        FriendManager.PlatformDespawned(true);
+                        FriendManager.PlatformDespawned(left);
                         break;
                     }
             }
@@ -232,6 +238,77 @@ namespace Pixelyth.Mods
 
             ProcessPlatform(true, left ?? leftGrab);
             ProcessPlatform(false, right ?? rightGrab);
+            UpdateClipColliders(!(platformMode == 4 && (leftplat != null || rightplat != null)), "Platforms");
+        }
+
+        private static int PlatformLayer => LayerMask.NameToLayer("BuilderProp");
+        private static readonly HashSet<string> clipOwners = new HashSet<string>();
+        private static GTPlayer clipPlayer;
+        private static LayerMask clipLayers;
+        private static Collider clipBodyCollider;
+        private static Collider clipHeadCollider;
+        private static bool clipBodyWasTrigger;
+        private static bool clipHeadWasTrigger;
+
+        public static void UpdateClipColliders(bool enabled, string owner = "Noclip")
+        {
+            if (enabled)
+            {
+                clipOwners.Remove(owner);
+                if (clipOwners.Count > 0 || clipPlayer == null) return;
+                clipPlayer.locomotionEnabledLayers = clipLayers;
+                if (clipBodyCollider != null) clipBodyCollider.isTrigger = clipBodyWasTrigger;
+                if (clipHeadCollider != null) clipHeadCollider.isTrigger = clipHeadWasTrigger;
+                clipPlayer = null;
+                clipBodyCollider = null;
+                clipHeadCollider = null;
+                return;
+            }
+
+            clipOwners.Add(owner);
+            if (clipPlayer != null || GTPlayer.Instance == null) return;
+            if (PlatformLayer < 0)
+            {
+                clipOwners.Remove(owner);
+                LogManager.LogError("BuilderProp layer is missing; platform collision filtering was not enabled.");
+                return;
+            }
+
+            clipPlayer = GTPlayer.Instance;
+            clipLayers = clipPlayer.locomotionEnabledLayers;
+            clipBodyCollider = clipPlayer.bodyCollider;
+            clipHeadCollider = clipPlayer.headCollider;
+            if (clipBodyCollider != null)
+            {
+                clipBodyWasTrigger = clipBodyCollider.isTrigger;
+                clipBodyCollider.isTrigger = true;
+            }
+            if (clipHeadCollider != null)
+            {
+                clipHeadWasTrigger = clipHeadCollider.isTrigger;
+                clipHeadCollider.isTrigger = true;
+            }
+            clipPlayer.locomotionEnabledLayers = 1 << PlatformLayer;
+        }
+
+        private static void DestroyPlatform(GameObject platform)
+        {
+            if (platform == null) return;
+            platform.SetActive(false);
+            Object.Destroy(platform);
+        }
+
+        public static void DisablePlatforms()
+        {
+            bool hadLeft = leftplat != null;
+            bool hadRight = rightplat != null;
+            DestroyPlatform(leftplat);
+            DestroyPlatform(rightplat);
+            leftplat = null;
+            rightplat = null;
+            UpdateClipColliders(true, "Platforms");
+            if (hadLeft) FriendManager.PlatformDespawned(true);
+            if (hadRight) FriendManager.PlatformDespawned(false);
         }
 
         private static readonly Dictionary<bool, List<GameObject>> frozonicPlatforms = new Dictionary<bool, List<GameObject>>();
@@ -257,6 +334,8 @@ namespace Pixelyth.Mods
                 else
                 {
                     platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    if (PlatformLayer >= 0)
+                        platform.layer = PlatformLayer;
                     platform.GetComponent<Renderer>().material.color = backgroundColor.GetCurrentColor();
                     platform.transform.localScale = new Vector3(0.025f, 0.3f, 0.4f) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f);
                     platform.AddComponent<GorillaSurfaceOverride>().overrideIndex = 61;
@@ -277,7 +356,7 @@ namespace Pixelyth.Mods
             {
                 int platformIndex = frozonicPlatformList.Count - 1;
 
-                Object.Destroy(frozonicPlatformList[platformIndex]);
+                DestroyPlatform(frozonicPlatformList[platformIndex]);
                 frozonicPlatformList.RemoveAt(platformIndex);
             }
         }
@@ -298,9 +377,13 @@ namespace Pixelyth.Mods
                     frozoneBodyWasEnabled = frozoneBodyCollider.enabled;
                 }
                 frozoneBodyCollider.enabled = false;
+                UpdateClipColliders(false, "Frozone");
             }
             else
+            {
+                UpdateClipColliders(true, "Frozone");
                 RestoreFrozoneBodyCollider();
+            }
         }
 
         private static void RestoreFrozoneBodyCollider()
@@ -315,11 +398,11 @@ namespace Pixelyth.Mods
         {
             foreach (List<GameObject> platforms in frozonicPlatforms.Values)
                 foreach (GameObject platform in platforms)
-                    if (platform != null)
-                        Object.Destroy(platform);
+                    DestroyPlatform(platform);
 
             frozonicPlatforms.Clear();
             platformIndex.Clear();
+            UpdateClipColliders(true, "Frozone");
             RestoreFrozoneBodyCollider();
         }
 
@@ -398,26 +481,33 @@ namespace Pixelyth.Mods
         }
 
         public static bool noclip;
+        public static bool noclipFly;
         public static void NoclipFly()
         {
             if (rightPrimary)
             {
                 GTPlayer.Instance.transform.position += GorillaTagger.Instance.headCollider.transform.forward * (Time.deltaTime * FlySpeed);
                 GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
-                if (!noclip)
+                if (!noclipFly)
                 {
-                    noclip = true;
-                    UpdateClipColliders(false);
+                    noclipFly = true;
+                    UpdateClipColliders(false, "Noclip Fly");
                 }
             }
             else
             {
-                if (noclip)
+                if (noclipFly)
                 {
-                    noclip = false;
-                    UpdateClipColliders(true);
+                    noclipFly = false;
+                    UpdateClipColliders(true, "Noclip Fly");
                 }
             }
+        }
+
+        public static void DisableNoclipFly()
+        {
+            noclipFly = false;
+            UpdateClipColliders(true, "Noclip Fly");
         }
 
         public static void JoystickFly()
@@ -1619,14 +1709,25 @@ namespace Pixelyth.Mods
             switch (isOnBranch)
             {
                 case true when !lastOnBranch:
-                    UpdateClipColliders(false);
+                    UpdateClipColliders(false, "Auto Branch");
                     break;
                 case false when lastOnBranch:
-                    UpdateClipColliders(true);
+                    UpdateClipColliders(true, "Auto Branch");
                     break;
             }
 
             lastOnBranch = isOnBranch;
+        }
+
+        public static void DisableAutoBranch()
+        {
+            lastOnBranch = false;
+            UpdateClipColliders(true, "Auto Branch");
+            if (GorillaTagger.Instance != null)
+            {
+                leftPos = GorillaTagger.Instance.leftHandTransform.position;
+                rightPos = GorillaTagger.Instance.rightHandTransform.position;
+            }
         }
 
         public static void ForceTagFreeze() =>
@@ -2907,12 +3008,6 @@ namespace Pixelyth.Mods
                 zone.enabled = enabled;
         }
 
-        public static void UpdateClipColliders(bool enabled)
-        {
-            foreach (MeshCollider v in Resources.FindObjectsOfTypeAll<MeshCollider>())
-                v.enabled = enabled;
-        }
-
         public static void Noclip()
         {
             bool gripNoclip = Buttons.GetIndex("Grip Noclip").enabled;
@@ -2921,7 +3016,7 @@ namespace Pixelyth.Mods
                 if (!noclip)
                 {
                     noclip = true;
-                    UpdateClipColliders(false);
+                    UpdateClipColliders(false, "Noclip");
                 }
             }
             else
@@ -2929,9 +3024,15 @@ namespace Pixelyth.Mods
                 if (noclip)
                 {
                     noclip = false;
-                    UpdateClipColliders(true);
+                    UpdateClipColliders(true, "Noclip");
                 }
             }
+        }
+
+        public static void DisableNoclip()
+        {
+            noclip = false;
+            UpdateClipColliders(true, "Noclip");
         }
 
         public static readonly List<GameObject> forestColliders = new List<GameObject>();
