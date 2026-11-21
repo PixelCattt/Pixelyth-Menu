@@ -1156,6 +1156,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Water Spray Can", method = Fun.WaterSprayCan, disableMethod = Fun.DisableWaterSprayCan, toolTip = "Aims your equipped Spray Can cosmetic at the point your right-hand gun targets and sprays while trigger is held."},
                 new ButtonInfo { buttonText = "Confetti Popper", method = Fun.ConfettiPopper, toolTip = "Repeatedly activates your held throwable cosmetic popper for everyone in the room."},
                 new ButtonInfo { buttonText = "Sport Ball Spammer", method = Fun.SportBallSpam, toolTip = "Spawns a sport ball at your hand every quarter second; requires the sports map and master client for room objects."},
+                new ButtonInfo { buttonText = "Spectator Drone", method = Fun.SpectatorDrone, disableMethod = Fun.DisableSpectatorDrone, toolTip = "Adds a movable spectator camera: left joystick/WASD moves, right joystick or Q/E turns, and vertical input/Space/Ctrl changes height."},
 
                 new ButtonInfo { buttonText = "Confuse Player Gun", method = Movement.ConfusePlayerGun, toolTip = "Makes whoever your hand desires look like they're going crazy by splashing water on their screen."},
                 new ButtonInfo { buttonText = "Confuse All Players", enableMethod = Movement.ConfuseAllPlayers, method = Movement.ConfuseAllPlayersSplash, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Splashes water on everyone's screens, making them look like they're going crazy."},
