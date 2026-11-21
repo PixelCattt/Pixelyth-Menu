@@ -2830,6 +2830,35 @@ namespace Pixelyth.Mods
 
         public static void DisableCannonball() => cannonballForce = 0f;
 
+        private static float ladderSavedMaxJumpSpeed;
+        private static bool ladderMaxJumpSpeedSaved;
+
+        public static void EnableLadderAnywhere()
+        {
+            if (GTPlayer.Instance == null) return;
+            ladderSavedMaxJumpSpeed = GTPlayer.Instance.maxJumpSpeed;
+            ladderMaxJumpSpeedSaved = true;
+            GTPlayer.Instance.maxJumpSpeed = 0f;
+        }
+
+        public static void LadderAnywhere()
+        {
+            if (GTPlayer.Instance == null || !(leftGrab || rightGrab)) return;
+            Vector3 leftVelocity = GTPlayer.Instance.LeftHand.velocityTracker.GetAverageVelocity(true, 0);
+            Vector3 rightVelocity = GTPlayer.Instance.RightHand.velocityTracker.GetAverageVelocity(true, 0);
+            ZeroGravity();
+            GorillaTagger.Instance.rigidbody.linearVelocity = (leftVelocity + rightVelocity) / 2f;
+        }
+
+        public static void DisableLadderAnywhere()
+        {
+            if (GTPlayer.Instance != null && ladderMaxJumpSpeedSaved)
+            {
+                GTPlayer.Instance.maxJumpSpeed = ladderSavedMaxJumpSpeed;
+                ladderMaxJumpSpeedSaved = false;
+            }
+        }
+
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 
