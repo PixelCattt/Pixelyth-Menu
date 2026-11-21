@@ -3183,7 +3183,7 @@ Piece Name: {gunTarget.name}";
             int spraying = 0;
             foreach (SprayCanCosmeticNetworked can in GetAllType<SprayCanCosmeticNetworked>())
             {
-                if (can == null || can.ownerRig != VRRig.LocalRig) continue;
+                if (can == null) continue;
                 can.transform.position = handPosition;
                 can.transform.rotation = Quaternion.LookRotation(ray.point - handPosition);
                 can.OnShakeStart();

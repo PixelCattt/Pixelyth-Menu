@@ -4551,7 +4551,7 @@ namespace Pixelyth.Mods
                     List<AnimatedBee> bees = Traverse.Create(manager).Field("bees").GetValue<List<AnimatedBee>>();
                     if (bees == null) continue;
                     foreach (AnimatedBee bee in bees)
-                        if (bee?.visual != null) beeTracerTargets.Add(bee.visual.transform);
+                        if (bee.visual != null) beeTracerTargets.Add(bee.visual.transform);
                 }
 
                 while (beeTracerLines.Count > beeTracerTargets.Count)
