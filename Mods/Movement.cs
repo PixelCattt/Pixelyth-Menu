@@ -3152,8 +3152,7 @@ namespace Pixelyth.Mods
                 float distance = towardTarget.magnitude;
                 if (distance < 0.1f || distance > 45f || Vector3.Angle(eyes.forward, towardTarget) >= 55f) continue;
                 Vector3 direction = towardTarget / distance;
-                int mask = GTPlayer.LocomotionEnabledLayers;
-                if (!Physics.Raycast(eyes.position + direction * 0.35f, direction, distance - 0.7f, mask))
+                if (!Physics.Raycast(eyes.position + direction * 0.35f, direction, distance - 0.7f, NoInvisibleLayersMask()))
                 {
                     watched = true;
                     break;
