@@ -2859,6 +2859,45 @@ namespace Pixelyth.Mods
             }
         }
 
+        private static bool handcuffActive;
+        private static VRRig handcuffTarget;
+
+        public static void EnableHandcuff() => handcuffActive = true;
+
+        public static void Handcuff()
+        {
+            if (!handcuffActive) return;
+            if (handcuffTarget == null)
+            {
+                if (!GetGunInput(false)) return;
+                var gunData = RenderGun();
+                if (!GetGunInput(true) || gunData.Ray.collider == null) return;
+
+                VRRig target = gunData.Ray.collider.GetComponentInParent<VRRig>();
+                if (target == null || target.IsLocal()) return;
+                handcuffTarget = target;
+                gunLockedPlayer = target;
+                return;
+            }
+
+            Vector3 localPosition = GorillaTagger.Instance.bodyCollider.transform.position;
+            Vector3 targetPosition = handcuffTarget.transform.position;
+            Vector3 offset = targetPosition - localPosition;
+            float distance = offset.magnitude;
+            if (distance > 3f)
+            {
+                GorillaTagger.Instance.rigidbody.linearVelocity = offset.normalized * (distance * 2f);
+                handcuffTarget.transform.position = localPosition + offset.normalized * 3f;
+            }
+        }
+
+        public static void DisableHandcuff()
+        {
+            handcuffActive = false;
+            handcuffTarget = null;
+            gunLockedPlayer = null;
+        }
+
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 
