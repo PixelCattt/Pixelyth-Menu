@@ -953,6 +953,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Lucy Tracer", method = Visuals.LucyTracer, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a tracer from your right hand to Lucy."},
                 new ButtonInfo { buttonText = "Lucy Look Tracer", method = Visuals.LucyLookTracer, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a line in the direction Lucy is looking."},
                 new ButtonInfo { buttonText = "Lucy Skeleton ESP", method = Visuals.LucySkeletonESP, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws lines connecting Lucy's body joints."},
+                new ButtonInfo { buttonText = "FOV Cone ESP", method = Visuals.FOVConeESP, disableMethod =() => Visuals.isLineRenderQueued = true, toolTip = "Draws a cone in front of each player; it turns red when you are in their view."},
                 new ButtonInfo { buttonText = "Lurker ESP", method = Visuals.LurkerESP, toolTip = "Puts a dot on your screen at the Lurker's current position."},
                 new ButtonInfo { buttonText = "Wanderer ESP", method = Visuals.WanderingGhostESP, toolTip = "Puts a dot on your screen at the Wanderer's current position."},
 

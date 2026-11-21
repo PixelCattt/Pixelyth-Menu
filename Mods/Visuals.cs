@@ -416,6 +416,44 @@ namespace Pixelyth.Mods
             DrawLucyTransformBones(lucy.ghostBody.transform, GetLucyVisualColor(lucy), GetLucyTracerWidth());
         }
 
+        public static void FOVConeESP()
+        {
+            VRRig localRig = VRRig.LocalRig;
+            if (localRig == null) return;
+
+            Vector3 localPosition = GorillaTagger.Instance.headCollider.transform.position;
+            foreach (VRRig rig in VRRigExtensions.ActiveRigs)
+            {
+                if (rig == null || rig.isLocal || rig.headMesh == null) continue;
+
+                Transform head = rig.headMesh.transform;
+                Vector3 origin = head.position;
+                Vector3 toLocal = localPosition - origin;
+                bool localInView = toLocal.sqrMagnitude < 15f * 15f && Vector3.Angle(head.forward, toLocal) <= 35f;
+                Color color = localInView ? Color.red : Color.yellow;
+                float width = Buttons.GetIndex("Thin Tracers").enabled ? 0.0075f : 0.02f;
+
+                Vector3 previous = origin + Quaternion.AngleAxis(-35f, head.up) * head.forward * 8f;
+                DrawVisualLine(origin, previous, color, width);
+                for (int angle = -25; angle <= 35; angle += 10)
+                {
+                    Vector3 next = origin + Quaternion.AngleAxis(angle, head.up) * head.forward * 8f;
+                    DrawVisualLine(previous, next, color, width);
+                    previous = next;
+                }
+                DrawVisualLine(origin, previous, color, width);
+            }
+        }
+
+        private static void DrawVisualLine(Vector3 start, Vector3 end, Color color, float width)
+        {
+            LineRenderer line = GetLineRender();
+            line.startColor = line.endColor = color;
+            line.startWidth = line.endWidth = width;
+            line.SetPosition(0, start);
+            line.SetPosition(1, end);
+        }
+
         private static void DrawLucyTransformBones(Transform parent, Color color, float width)
         {
             for (int i = 0; i < parent.childCount; i++)
