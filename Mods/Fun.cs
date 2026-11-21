@@ -2781,6 +2781,71 @@ Piece Name: {gunTarget.name}";
 
         public static void DisableWaterSprayCan() => waterSprayWarned = false;
 
+        private static string sportBallPrefabName;
+        private static bool sportBallRoomObject;
+        private static bool sportBallWarned;
+        private static float sportBallSpawnDelay;
+        public static void SportBallSpam()
+        {
+            if (!PhotonNetwork.InRoom || Time.time < sportBallSpawnDelay || GorillaTagger.Instance == null)
+                return;
+            sportBallSpawnDelay = Time.time + 0.25f;
+
+            PhotonPrefabPool prefabPool = VRRigCache.Instance != null ? VRRigCache.Instance.GetComponent<PhotonPrefabPool>() : null;
+            if (prefabPool == null)
+            {
+                if (!sportBallWarned)
+                {
+                    sportBallWarned = true;
+                    NotificationManager.SendNotification("<color=grey>[</color><color=red>SPORT BALL</color><color=grey>]</color> Requires the sports minigame map to be active.");
+                }
+                return;
+            }
+
+            if (sportBallPrefabName != null && !prefabPool.networkPrefabs.ContainsKey(sportBallPrefabName))
+                sportBallPrefabName = null;
+            if (sportBallPrefabName == null)
+            {
+                foreach (var entry in prefabPool.networkPrefabs)
+                {
+                    if (entry.Value.prefab != null && entry.Value.prefab.GetComponentInChildren<GorillaTag.Sports.SportBall>(true) != null)
+                    {
+                        sportBallPrefabName = entry.Key;
+                        sportBallRoomObject = entry.Value.roomObject;
+                        break;
+                    }
+                }
+            }
+
+            if (sportBallPrefabName == null)
+            {
+                if (!sportBallWarned)
+                {
+                    sportBallWarned = true;
+                    NotificationManager.SendNotification("<color=grey>[</color><color=red>SPORT BALL</color><color=grey>]</color> No sport ball prefab was found in this map.");
+                }
+                return;
+            }
+            if (sportBallRoomObject && !NetworkSystem.Instance.IsMasterClient)
+            {
+                if (!sportBallWarned)
+                {
+                    sportBallWarned = true;
+                    NotificationManager.SendNotification("<color=grey>[</color><color=red>SPORT BALL</color><color=grey>]</color> Room-object spawning requires master client authority.");
+                }
+                return;
+            }
+
+            sportBallWarned = false;
+            Vector3 spawnPosition = GorillaTagger.Instance.rightHandTransform.position;
+            GameObject ball = sportBallRoomObject
+                ? PhotonNetwork.InstantiateRoomObject(sportBallPrefabName, spawnPosition, RandomQuaternion())
+                : PhotonNetwork.Instantiate(sportBallPrefabName, spawnPosition, RandomQuaternion());
+            Rigidbody body = ball != null ? ball.GetComponentInChildren<Rigidbody>() : null;
+            if (body != null) body.linearVelocity = RandomVector3(2f);
+            RPCProtection();
+        }
+
 
         public static Coroutine DisableHoverboardCoroutine;
         public static IEnumerator DisableHoverboard()
