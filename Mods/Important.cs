@@ -117,6 +117,30 @@ namespace Pixelyth.Mods
             NotificationManager.SendNotification("World state written to the BepInEx log.");
         }
 
+        public static void EnableUnlockGamemodes()
+        {
+            UnlockGamemodesPatch.enabled = true;
+            RefreshGameModes();
+        }
+
+        public static void DisableUnlockGamemodes()
+        {
+            UnlockGamemodesPatch.enabled = false;
+            RefreshGameModes();
+        }
+
+        private static void RefreshGameModes()
+        {
+            foreach (GameModeSelectorButtonLayout layout in Resources.FindObjectsOfTypeAll<GameModeSelectorButtonLayout>())
+            {
+                if (layout != null && layout.gameObject.activeSelf)
+                {
+                    layout.gameObject.SetActive(false);
+                    layout.gameObject.SetActive(true);
+                }
+            }
+        }
+
         public static void RoomCreator()
         {
             CustomRoomConfig room = new CustomRoomConfig();

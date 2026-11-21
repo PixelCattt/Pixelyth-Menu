@@ -94,6 +94,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Room Settings", method =() => CurrentCategoryName = "Room Settings", isTogglable = false, toolTip = "Opens the settings for the room mods."},
                 new ButtonInfo { buttonText = "Fix Audio Stutter", method = Important.FixAudioStutter, isTogglable = false, toolTip = "Resets Unity's audio engine using a larger DSP buffer to try to fix broken or stuttering audio."},
                 new ButtonInfo { buttonText = "Dump World State", method = Important.DumpWorldState, isTogglable = false, toolTip = "Writes loaded scene and root object information to the BepInEx log for map troubleshooting."},
+                new ButtonInfo { buttonText = "Unlock Gamemodes", enableMethod = Important.EnableUnlockGamemodes, disableMethod = Important.DisableUnlockGamemodes, toolTip = "Adds extra modes to the local game-mode selector. This does not grant server-side access to modes."},
                 new ButtonInfo { buttonText = "Safety Settings", method =() => CurrentCategoryName = "Safety Settings", isTogglable = false, toolTip = "Opens the settings for the safety mods."},
                 new ButtonInfo { buttonText = "Movement Settings", method =() => CurrentCategoryName = "Movement Settings", isTogglable = false, toolTip = "Opens the settings for the movement mods."},
                 new ButtonInfo { buttonText = "Advantage Settings", method =() => CurrentCategoryName = "Advantage Settings", isTogglable = false, toolTip = "Opens the settings for the advantage mods."},
