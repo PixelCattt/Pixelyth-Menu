@@ -1499,6 +1499,19 @@ namespace Pixelyth.Mods
         public static Vector3 leftPos = Vector3.zero;
         public static Vector3 rightPos = Vector3.zero;
         public static bool lastOnBranch;
+        private static readonly float[] autoBranchSpeeds = { 5f, 10f, 15f, 20f, 30f };
+        private static readonly string[] autoBranchSpeedNames = { "Slow", "Normal", "Fast", "Faster", "Extreme" };
+        public static int autoBranchSpeedIndex = 1;
+        public static float autoBranchSpeed = autoBranchSpeeds[autoBranchSpeedIndex];
+
+        public static void ChangeAutoBranchSpeed(bool positive = true)
+        {
+            autoBranchSpeedIndex = (autoBranchSpeedIndex + (positive ? 1 : -1) + autoBranchSpeeds.Length) % autoBranchSpeeds.Length;
+            autoBranchSpeed = autoBranchSpeeds[autoBranchSpeedIndex];
+            Buttons.GetIndex("Change Auto Branch Speed").overlapText =
+                $"Change Auto Branch Speed <color=grey>[</color><color=green>{autoBranchSpeedNames[autoBranchSpeedIndex]}</color><color=grey>]</color>";
+        }
+
         public static void AutoBranch()
         {
             bool isOnBranch = false;
@@ -1567,7 +1580,7 @@ namespace Pixelyth.Mods
             }
 
             if (isOnBranch)
-                GorillaTagger.Instance.rigidbody.linearVelocity = GTPlayer.Instance.headCollider.transform.forward * 10f;
+                GorillaTagger.Instance.rigidbody.linearVelocity = GTPlayer.Instance.headCollider.transform.forward * autoBranchSpeed;
 
             switch (isOnBranch)
             {
