@@ -2505,7 +2505,6 @@ namespace Pixelyth.Mods
             TTLog($"EnsureTransmit: Transmit {transmitWas} -> {mic.TransmitEnabled}, IsRecording={mic.IsRecording}");
         }
         
-        public static bool talkThroughKeepTarget;
         private static float talkThroughAutoDelay;
 
         private static readonly Dictionary<int, float> talkThroughRigFirstSeen = new Dictionary<int, float>();
