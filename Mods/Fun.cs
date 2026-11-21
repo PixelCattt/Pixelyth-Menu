@@ -2219,6 +2219,84 @@ namespace Pixelyth.Mods
             NetworkSystem.Instance.VoiceConnection.PrimaryRecorder.DebugEchoMode = false;
         }
 
+        private static Transform speakerHijackOriginalParent;
+        private static GorillaSpeakerLoudness speakerHijackTarget;
+        private static GorillaSpeakerLoudness speakerHijackLocal;
+        private static bool speakerHijackMoved;
+        private static bool speakerHijackEnabled;
+        private static float speakerHijackNextScan;
+
+        public static void EnableSpeakerHijack()
+        {
+            speakerHijackEnabled = true;
+            speakerHijackNextScan = 0f;
+        }
+
+        public static void SpeakerHijack()
+        {
+            if (!speakerHijackEnabled) return;
+
+            try
+            {
+                if (speakerHijackLocal == null && VRRig.LocalRig != null)
+                    speakerHijackLocal = VRRig.LocalRig.GetComponent<GorillaSpeakerLoudness>();
+
+                if (speakerHijackLocal?.speaker == null) return;
+
+                if (speakerHijackTarget == null || speakerHijackTarget.speaker == null)
+                {
+                    speakerHijackTarget = null;
+                    if (Time.time < speakerHijackNextScan) return;
+                    speakerHijackNextScan = Time.time + 2f;
+                    speakerHijackTarget = UnityEngine.Object.FindObjectsOfType<GorillaSpeakerLoudness>()
+                        .FirstOrDefault(s => s != null && s.GetComponent<VRRig>() == null && s.speaker != null);
+                    if (speakerHijackTarget == null) return;
+                }
+
+                Transform micTransform = speakerHijackLocal.speaker.transform;
+                if (!speakerHijackMoved || speakerHijackOriginalParent == null)
+                {
+                    speakerHijackOriginalParent = micTransform.parent;
+                    speakerHijackMoved = true;
+                }
+
+                if (micTransform.parent != speakerHijackTarget.speaker.transform)
+                {
+                    micTransform.SetParent(speakerHijackTarget.speaker.transform, true);
+                    micTransform.localPosition = Vector3.zero;
+                    micTransform.localRotation = Quaternion.identity;
+                }
+            }
+            catch (Exception exception)
+            {
+                LogManager.LogError($"Speaker Hijack failed: {exception.Message}");
+            }
+        }
+
+        public static void DisableSpeakerHijack()
+        {
+            speakerHijackEnabled = false;
+            try
+            {
+                if (speakerHijackMoved && speakerHijackLocal?.speaker != null && speakerHijackOriginalParent != null)
+                {
+                    Transform micTransform = speakerHijackLocal.speaker.transform;
+                    micTransform.SetParent(speakerHijackOriginalParent, true);
+                    micTransform.localPosition = Vector3.zero;
+                    micTransform.localRotation = Quaternion.identity;
+                }
+            }
+            catch (Exception exception)
+            {
+                LogManager.LogError($"Speaker Hijack restore failed: {exception.Message}");
+            }
+
+            speakerHijackMoved = false;
+            speakerHijackOriginalParent = null;
+            speakerHijackTarget = null;
+            speakerHijackLocal = null;
+        }
+
         public static void SaveNarration(string text)
         {
             string path = $"{PluginInfo.BaseDirectory}/Sounds/Narrations";

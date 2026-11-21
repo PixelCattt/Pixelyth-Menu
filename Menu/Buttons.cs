@@ -1233,6 +1233,7 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Microphone Feedback", method =() => Fun.SetDebugEchoMode(true), disableMethod =() => Fun.SetDebugEchoMode(false), toolTip = "Plays sound coming through your microphone back to your speakers."},
                 new ButtonInfo { buttonText = "Copy Voice Gun", method = Fun.CopyVoiceGun, disableMethod = Fun.DisableCopyVoice, toolTip = "Copies the voice of whoever your hand desires."},
+                new ButtonInfo { buttonText = "Speaker Hijack", enableMethod = Fun.EnableSpeakerHijack, postMethod = Fun.SpeakerHijack, disableMethod = Fun.DisableSpeakerHijack, toolTip = "Routes your microphone audio through an in-world speaker."},
 
                 new ButtonInfo { buttonText = "Narrate Text", aliases = new[] { "Text to Speech", "Speech Text" }, method =() => PromptText("What would you like to be narrated?", () => SpeakText(keyboardInput), null, "Done", "Cancel"), isTogglable = false, toolTip = "Narrates the text of your desire."},
                 new ButtonInfo { buttonText = "Save Narration", method =() => PromptText("What would you like the narration to say?", () => Fun.SaveNarration(keyboardInput)), isTogglable = false, toolTip = "Saves whatever you want to narrate to your soundboard."},
