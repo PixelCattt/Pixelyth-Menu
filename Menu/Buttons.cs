@@ -941,6 +941,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Night Time", method =() => BetterDayNightManager.instance.SetTimeOfDay(0), toolTip = "Sets your time of day to night."},
                 new ButtonInfo { buttonText = "Fullbright", method =() => Visuals.SetFullbrightStatus(true), disableMethod =() => Visuals.SetFullbrightStatus(false), toolTip = "Disables the dynamic lighting in maps that use it."},
                 new ButtonInfo { buttonText = "Monke Light", method = Visuals.MonkeLight, disableMethod = Visuals.DisableMonkeLight, toolTip = "Adds a forward facing spotlight to your head."},
+                new ButtonInfo { buttonText = "Minimap", method = Visuals.Minimap, disableMethod = Visuals.DisableMinimap, toolTip = "Shows a small live overhead camera view in front of your headset."},
 
                 new ButtonInfo { buttonText = "Remove Blindfold", method = Visuals.RemoveBlindfold, toolTip = "Disables the blindfold in the prop hunt map."},
 

@@ -763,6 +763,92 @@ namespace Pixelyth.Mods
             monkeLight = null;
         }
 
+        private static GameObject minimapCanvasObject;
+        private static GameObject minimapCameraObject;
+        private static Camera minimapCamera;
+        private static RenderTexture minimapTexture;
+
+        public static void Minimap()
+        {
+            Camera playerCamera = Camera.main;
+            if (playerCamera == null || GorillaTagger.Instance == null || GorillaTagger.Instance.headCollider == null)
+                return;
+
+            if (minimapCamera == null || minimapCanvasObject == null)
+                CreateMinimap(playerCamera);
+
+            Transform head = GorillaTagger.Instance.headCollider.transform;
+            Vector3 forward = Vector3.ProjectOnPlane(playerCamera.transform.forward, Vector3.up).normalized;
+            if (forward.sqrMagnitude < 0.001f) forward = Vector3.forward;
+
+            minimapCanvasObject.transform.position = playerCamera.transform.TransformPoint(new Vector3(0.42f, 0.30f, 1.25f));
+            minimapCanvasObject.transform.rotation = playerCamera.transform.rotation;
+            minimapCanvasObject.layer = Buttons.GetIndex("Hidden on Camera").enabled ? 19 : 5;
+            if (minimapCanvasObject.transform.childCount > 0)
+                minimapCanvasObject.transform.GetChild(0).gameObject.layer = minimapCanvasObject.layer;
+            minimapCameraObject.transform.position = head.position + Vector3.up * 5f;
+            minimapCameraObject.transform.rotation = Quaternion.LookRotation(Vector3.Lerp(Vector3.down, forward, 0.12f).normalized, forward);
+        }
+
+        private static void CreateMinimap(Camera playerCamera)
+        {
+            ReleaseMinimap();
+            minimapTexture = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+            minimapTexture.name = "Pixelyth_MinimapTexture";
+            minimapTexture.Create();
+
+            minimapCameraObject = new GameObject("Pixelyth_MinimapCamera");
+            minimapCamera = minimapCameraObject.AddComponent<Camera>();
+            minimapCamera.CopyFrom(playerCamera);
+            minimapCamera.targetTexture = minimapTexture;
+            minimapCamera.stereoTargetEye = StereoTargetEyeMask.None;
+            minimapCamera.depth = playerCamera.depth - 1f;
+            minimapCamera.nearClipPlane = 0.1f;
+            minimapCamera.farClipPlane = 60f;
+            minimapCamera.fieldOfView = 80f;
+            minimapCamera.cullingMask = playerCamera.cullingMask & ~(1 << 5) & ~(1 << 19);
+            minimapCamera.clearFlags = CameraClearFlags.SolidColor;
+            minimapCamera.backgroundColor = new Color(0.08f, 0.10f, 0.14f, 1f);
+
+            minimapCanvasObject = new GameObject("Pixelyth_Minimap");
+            minimapCanvasObject.layer = 5;
+            Canvas canvas = minimapCanvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.worldCamera = playerCamera;
+            RectTransform root = minimapCanvasObject.GetComponent<RectTransform>();
+            root.sizeDelta = new Vector2(256f, 256f);
+            minimapCanvasObject.transform.localScale = Vector3.one * 0.0012f;
+
+            GameObject imageObject = new GameObject("Minimap Image");
+            imageObject.transform.SetParent(minimapCanvasObject.transform, false);
+            imageObject.layer = minimapCanvasObject.layer;
+            RectTransform imageRect = imageObject.AddComponent<RectTransform>();
+            imageRect.anchorMin = Vector2.zero;
+            imageRect.anchorMax = Vector2.one;
+            imageRect.offsetMin = Vector2.zero;
+            imageRect.offsetMax = Vector2.zero;
+            RawImage image = imageObject.AddComponent<RawImage>();
+            image.texture = minimapTexture;
+            image.color = Color.white;
+        }
+
+        public static void DisableMinimap() => ReleaseMinimap();
+
+        private static void ReleaseMinimap()
+        {
+            if (minimapCanvasObject != null) Object.Destroy(minimapCanvasObject);
+            if (minimapCameraObject != null) Object.Destroy(minimapCameraObject);
+            if (minimapTexture != null)
+            {
+                minimapTexture.Release();
+                Object.Destroy(minimapTexture);
+            }
+            minimapCanvasObject = null;
+            minimapCameraObject = null;
+            minimapCamera = null;
+            minimapTexture = null;
+        }
+
         private static float removeBlindfoldDelay;
         public static void RemoveBlindfold()
         {
