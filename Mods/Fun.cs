@@ -2725,6 +2725,62 @@ Piece Name: {gunTarget.name}";
                 VRRig.LocalRig.hoverboardVisual.gameObject.SetActive(false);
         }
 
+        private static float confettiPopDelay;
+        private static float confettiNotifyDelay;
+        public static void ConfettiPopper()
+        {
+            if (!PhotonNetwork.InRoom || Time.time < confettiPopDelay || VRRig.LocalRig == null) return;
+            confettiPopDelay = Time.time + 0.3f;
+            int popped = 0;
+            foreach (ThrowableHoldableCosmetic popper in GetAllType<ThrowableHoldableCosmetic>())
+            {
+                if (popper == null || popper.ownerRig != VRRig.LocalRig || popper._events?.Activate == null) continue;
+                Vector3 position = popper.transform.position + Vector3.up * 0.1f;
+                Quaternion rotation = popper.transform.rotation;
+                Vector3 velocity = Vector3.up * 2f;
+                popper._events.Activate.RaiseOthers(position, rotation, velocity, GTPlayer.Instance.scale);
+                popper.OnThrowLocal(position, rotation, velocity, popper.ownerRig);
+                popped++;
+            }
+
+            if (popped > 0 && Time.time >= confettiNotifyDelay)
+            {
+                confettiNotifyDelay = Time.time + 5f;
+                NotificationManager.SendNotification($"<color=grey>[</color><color=green>CONFETTI</color><color=grey>]</color> Activated {popped} held popper(s).");
+            }
+        }
+
+        private static float waterSprayDelay;
+        private static bool waterSprayWarned;
+        public static void WaterSprayCan()
+        {
+            if (!GetGunInput(false) || !GetGunInput(true) || Time.time < waterSprayDelay || VRRig.LocalRig == null)
+                return;
+
+            waterSprayDelay = Time.time + 0.12f;
+            RaycastHit ray = RenderGun().Ray;
+            Vector3 handPosition = GorillaTagger.Instance.rightHandTransform.position;
+            int spraying = 0;
+            foreach (SprayCanCosmeticNetworked can in GetAllType<SprayCanCosmeticNetworked>())
+            {
+                if (can == null || can.ownerRig != VRRig.LocalRig) continue;
+                can.transform.position = handPosition;
+                can.transform.rotation = Quaternion.LookRotation(ray.point - handPosition);
+                can.OnShakeStart();
+                spraying++;
+            }
+
+            if (spraying == 0 && !waterSprayWarned)
+            {
+                waterSprayWarned = true;
+                NotificationManager.SendNotification("<color=grey>[</color><color=red>WATER SPRAY CAN</color><color=grey>]</color> Equip and spawn your Spray Can cosmetic first.");
+            }
+            else if (spraying > 0)
+                waterSprayWarned = false;
+        }
+
+        public static void DisableWaterSprayCan() => waterSprayWarned = false;
+
 
         public static Coroutine DisableHoverboardCoroutine;
         public static IEnumerator DisableHoverboard()
