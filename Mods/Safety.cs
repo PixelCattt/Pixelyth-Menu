@@ -75,6 +75,41 @@ namespace Pixelyth.Mods
             NotificationManager.SendNotification("<color=grey>[</color><color=red>PANIC</color><color=grey>]</color> Previous mod state restored.");
         }
 
+        private static bool moduleHistoryLogEnabled;
+        private static string ModuleHistoryPath => Path.Combine(PluginInfo.BaseDirectory, "ModuleHistory.log");
+
+        public static void LogModuleEvent(string action, string modName)
+        {
+            if (!moduleHistoryLogEnabled) return;
+            try
+            {
+                Directory.CreateDirectory(PluginInfo.BaseDirectory);
+                string room = PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom != null
+                    ? PhotonNetwork.CurrentRoom.Name
+                    : "Not In Room";
+                File.AppendAllText(ModuleHistoryPath,
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{action}] {modName} | Room: {room}{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError($"Could not write module history: {ex.Message}");
+            }
+        }
+
+        public static void ModuleHistoryLog()
+        {
+            moduleHistoryLogEnabled = true;
+            LogModuleEvent("LOGGING_STARTED", "Module History Log");
+            NotificationManager.SendNotification("<color=grey>[</color><color=green>MODULE HISTORY</color><color=grey>]</color> Logging enabled.");
+        }
+
+        public static void DisableModuleHistoryLog()
+        {
+            LogModuleEvent("LOGGING_STOPPED", "Module History Log");
+            moduleHistoryLogEnabled = false;
+            NotificationManager.SendNotification("<color=grey>[</color><color=red>MODULE HISTORY</color><color=grey>]</color> Logging disabled.");
+        }
+
         private static bool antiOculusReportHooked;
         public static void GeneralSafety()
         {

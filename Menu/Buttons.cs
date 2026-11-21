@@ -577,6 +577,8 @@ namespace Pixelyth.Menu
             new[] { // Safety Mods [8]
                 new ButtonInfo { buttonText = "Exit Safety Mods", method =() => CurrentCategoryName = "Main", isTogglable = false, toolTip = "Returns you back to the main page."},
 
+                new ButtonInfo { buttonText = "Module History Log", enableMethod = Safety.ModuleHistoryLog, disableMethod = Safety.DisableModuleHistoryLog, toolTip = "Records mod enable and disable actions with timestamps and the current room to ModuleHistory.log."},
+
                 new ButtonInfo { buttonText = "No Finger Movement", aliases = new[] { "Disable Fingers" }, postMethod = Safety.NoFinger, toolTip = "Makes your fingers not move, so you can use wall walk without getting called out." },
 
                 new ButtonInfo { buttonText = "Fake Oculus Menu <color=grey>[</color><color=green>X</color><color=grey>]</color>", method = Safety.FakeOculusMenu, toolTip = "Imitates opening your Oculus menu when holding <color=green>X</color>."},

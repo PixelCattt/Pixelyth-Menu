@@ -6087,6 +6087,7 @@ namespace Pixelyth.Menu
                                         if (target.isTogglable)
                                         {
                                             target.enabled = !target.enabled;
+                                            Safety.LogModuleEvent(target.enabled ? "ENABLED" : "DISABLED", target.buttonText);
                                             if (target.enabled)
                                             {
                                                 if (fromMenu)
