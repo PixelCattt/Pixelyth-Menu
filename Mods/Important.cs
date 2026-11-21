@@ -42,6 +42,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
@@ -78,6 +79,42 @@ namespace Pixelyth.Mods
                 NotificationManager.SendNotification("<color=grey>[</color><color=green>AUDIO</color><color=grey>]</color> Audio engine reset with a larger DSP buffer.");
             else
                 NotificationManager.SendNotification("<color=grey>[</color><color=red>AUDIO</color><color=grey>]</color> Audio engine reset failed.");
+        }
+
+        public static void DumpWorldState()
+        {
+            StringBuilder dump = new StringBuilder();
+            dump.AppendLine($"World state dump | {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            dump.AppendLine($"Active scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            dump.AppendLine($"Network state: {(NetworkSystem.Instance != null ? NetworkSystem.Instance.netState.ToString() : "unavailable")}");
+            dump.AppendLine($"Room: {(NetworkSystem.Instance != null && NetworkSystem.Instance.InRoom ? NetworkSystem.Instance.RoomName : "Not in room")}");
+
+            for (int sceneIndex = 0; sceneIndex < UnityEngine.SceneManagement.SceneManager.sceneCount; sceneIndex++)
+            {
+                var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(sceneIndex);
+                try
+                {
+                    GameObject[] roots = scene.GetRootGameObjects();
+                    dump.Append($"Scene {scene.name} (loaded={scene.isLoaded}, roots={roots.Length}): ");
+                    int count = Math.Min(roots.Length, 40);
+                    for (int rootIndex = 0; rootIndex < count; rootIndex++)
+                    {
+                        GameObject root = roots[rootIndex];
+                        if (root == null) continue;
+                        if (rootIndex > 0) dump.Append(", ");
+                        dump.Append(root.activeSelf ? root.name : $"{root.name}(inactive)");
+                    }
+                    if (roots.Length > count) dump.Append($", ... {roots.Length - count} more");
+                    dump.AppendLine();
+                }
+                catch (Exception ex)
+                {
+                    dump.AppendLine($"Scene {scene.name}: failed to enumerate roots ({ex.Message})");
+                }
+            }
+
+            LogManager.Log(dump.ToString());
+            NotificationManager.SendNotification("World state written to the BepInEx log.");
         }
 
         public static void RoomCreator()
