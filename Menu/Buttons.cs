@@ -330,7 +330,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Save Preferences", method = Preferences.Save, isTogglable = false, toolTip = "Saves your preferences to a file."},
                 new ButtonInfo { buttonText = "Load Preferences", method = Preferences.Load, isTogglable = false, toolTip = "Loads your preferences from a file."},
                 new ButtonInfo { buttonText = "Disable Autosave", enableMethod = () => Preferences.DisableAutoSave = true, disableMethod = () => Preferences.DisableAutoSave = false, toolTip = "Disables the auto save mechanism."},
-                new ButtonInfo { buttonText = "Panic", method = Settings.Panic, isTogglable = false, toolTip = "Disables every single active mod."},
+                new ButtonInfo { buttonText = "Panic", method = Safety.PanicButton, isTogglable = false, toolTip = "Disables active mods, applies RPC protection, and restores the previous mod state when tapped again."},
             },
 
             new[] { // Room Settings [3]

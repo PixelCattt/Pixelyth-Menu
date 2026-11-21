@@ -47,6 +47,34 @@ namespace Pixelyth.Mods
     public static class Safety
     {
         private static bool antiOculusReportHooked;
+        private static readonly List<ButtonInfo> panicSavedButtons = new List<ButtonInfo>();
+        private static bool panicRestoreReady;
+
+        public static void PanicButton()
+        {
+            if (!panicRestoreReady)
+            {
+                panicSavedButtons.Clear();
+                panicSavedButtons.AddRange(Buttons.buttons.SelectMany(category => category)
+                    .Where(button => button.enabled && button.isTogglable));
+
+                foreach (ButtonInfo button in panicSavedButtons.ToArray())
+                    Toggle(button.buttonText);
+
+                RPCProtection();
+                panicRestoreReady = true;
+                NotificationManager.SendNotification("<color=grey>[</color><color=red>PANIC</color><color=grey>]</color> Active toggles disabled and RPC protection applied. Tap again to restore.");
+                return;
+            }
+
+            foreach (ButtonInfo button in panicSavedButtons.ToArray())
+                Toggle(button.buttonText);
+
+            panicSavedButtons.Clear();
+            panicRestoreReady = false;
+            NotificationManager.SendNotification("<color=grey>[</color><color=red>PANIC</color><color=grey>]</color> Previous mod state restored.");
+        }
+
         public static void GeneralSafety()
         {
             if (!Buttons.GetIndex("Anti Report <color=grey>[</color><color=green>Disconnect</color><color=grey>]</color>").enabled) AntiReportDisconnect();
