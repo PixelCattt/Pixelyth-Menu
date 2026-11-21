@@ -69,6 +69,17 @@ namespace Pixelyth.Mods
             public bool isPublic;
             public byte size;
         }
+
+        public static void FixAudioStutter()
+        {
+            AudioConfiguration configuration = AudioSettings.GetConfiguration();
+            configuration.dspBufferSize = 1024;
+            if (AudioSettings.Reset(configuration))
+                NotificationManager.SendNotification("<color=grey>[</color><color=green>AUDIO</color><color=grey>]</color> Audio engine reset with a larger DSP buffer.");
+            else
+                NotificationManager.SendNotification("<color=grey>[</color><color=red>AUDIO</color><color=grey>]</color> Audio engine reset failed.");
+        }
+
         public static void RoomCreator()
         {
             CustomRoomConfig room = new CustomRoomConfig();
