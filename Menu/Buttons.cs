@@ -358,6 +358,7 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Both Hands Wall Walk", method =() => Movement.bothWallWalk = true, disableMethod =() => Movement.bothWallWalk = false, toolTip = "Allows you to use wall walk with both of your hands."},
 
                 ButtonHelper.Create("Change Fly Speed", () => Movement.FlySpeedNames, Movement.flySpeedCycle, Movement.ApplyFlySpeed, "Changes the speed of the fly mods, such as Iron Man."),
+                ButtonHelper.Create("Change Weeping Angel Mode", () => Movement.WeepingAngelModeNames, Movement.weepingAngelMode, Movement.ApplyWeepingAngelMode, "Chooses whether a specific player or anyone can trigger Weeping Angel."),
                 ButtonHelper.Create("Change Playspace Abuse Speed", () => Movement.PlayspaceAbuseNames, Movement.playspaceAbuseIndex, Movement.ApplyPlayspaceAbuseSpeed, "Changes the speed of the playspace abuse mods."),
                 ButtonHelper.Create("Change Arm Length", () => Movement.ArmLengthNames, Movement.longarmCycle, Movement.ApplyArmLength, "Changes the length of the long arm mods."),
                 ButtonHelper.Create("Change Speed Boost Amount", () => Movement.SpeedBoostNames, Movement.speedboostCycle, Movement.ApplySpeedBoostAmount, "Changes the speed of the speed boost mod."),
@@ -696,6 +697,8 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Disable Space Gravity", method =() => Movement.ToggleSpaceGravity(false), disableMethod =() => Movement.ToggleSpaceGravity(true), toolTip = "Disables the main gravity zone on the space map."},
                 new ButtonInfo { buttonText = "Disable Planet Zones", method =() => Movement.TogglePlanetZones(false), disableMethod =() => Movement.TogglePlanetZones(true), toolTip = "Disables the rotating and velocity-changing zones on the space map."},
                 new ButtonInfo { buttonText = "Reverse Gravity", aliases = new[] { "Flip Gravity" }, enableMethod = Movement.ReverseGravity, disableMethod = Movement.UnflipCharacter, toolTip = "Reverses gravity on your character."},
+                new ButtonInfo { buttonText = "Weeping Angel", method = Movement.WeepingAngel, disableMethod = Movement.DisableWeepingAngel, toolTip = "Freezes your rig while the selected player, or anyone, is looking at you."},
+                new ButtonInfo { buttonText = "Weeping Angel Chase", method = Movement.WeepingAngel, toolTip = "Moves toward the selected or nearest player when nobody is looking at you. Uses half your fly speed."},
 
                 new ButtonInfo { buttonText = "Rewind <color=grey>[</color><color=green>T</color><color=grey>]</color>", aliases = new[] { "Reverse" }, method = Movement.Rewind, disableMethod = Movement.ClearRewind, toolTip = "Brings you back in time when holding <color=green>trigger</color>."},
                 new ButtonInfo { buttonText = "Macros", method =() => CurrentCategoryName = "Macros", isTogglable = false, toolTip = "Opens a category to manage your macros."},
