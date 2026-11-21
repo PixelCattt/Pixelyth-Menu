@@ -574,6 +574,34 @@ namespace Pixelyth.Mods
             }
         }
 
+        private static GameObject monkeLight;
+        public static void MonkeLight()
+        {
+            if (GorillaTagger.Instance == null || GorillaTagger.Instance.headCollider == null)
+                return;
+
+            if (monkeLight == null)
+            {
+                monkeLight = new GameObject("Pixelyth_MonkeLight");
+                monkeLight.transform.SetParent(GorillaTagger.Instance.headCollider.transform, false);
+                monkeLight.transform.localPosition = Vector3.forward * 0.25f;
+                Light spotlight = monkeLight.AddComponent<Light>();
+                spotlight.type = LightType.Spot;
+                spotlight.range = 50f;
+                spotlight.intensity = 40f;
+                spotlight.spotAngle = 75f;
+                spotlight.renderMode = LightRenderMode.ForcePixel;
+                spotlight.shadows = LightShadows.None;
+            }
+        }
+
+        public static void DisableMonkeLight()
+        {
+            if (monkeLight != null)
+                Object.Destroy(monkeLight);
+            monkeLight = null;
+        }
+
         private static float removeBlindfoldDelay;
         public static void RemoveBlindfold()
         {
