@@ -26,6 +26,7 @@ using GorillaLocomotion;
 using GorillaLocomotion.Climbing;
 using GorillaLocomotion.Swimming;
 using GorillaNetworking;
+using GorillaTag.Gravity;
 using Photon.Pun;
 using Photon.Realtime;
 using Pixelyth.Classes.Menu;
@@ -2696,6 +2697,15 @@ namespace Pixelyth.Mods
         {
             playspace = GetAllType<Playspace>().FirstOrDefault();
             playspace.enabled = false;
+        }
+
+        public static void ToggleSpaceGravity(bool enabled) =>
+            GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
+
+        public static void TogglePlanetZones(bool enabled)
+        {
+            foreach (PlanetZone zone in GetAllType<PlanetZone>())
+                zone.enabled = enabled;
         }
 
         public static void UpdateClipColliders(bool enabled)

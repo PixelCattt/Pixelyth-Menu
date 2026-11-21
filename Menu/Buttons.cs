@@ -693,6 +693,8 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Low Gravity", aliases = new[] { "Moon Gravity" }, postMethod = Movement.LowGravity, toolTip = "Makes gravity lower on your character."},
                 new ButtonInfo { buttonText = "Zero Gravity", aliases = new[] { "No Gravity" }, postMethod = Movement.ZeroGravity, toolTip = "Disables gravity on your character."},
                 new ButtonInfo { buttonText = "High Gravity", aliases = new[] { "Mars Gravity" }, postMethod = Movement.HighGravity, toolTip = "Makes gravity higher on your character."},
+                new ButtonInfo { buttonText = "Disable Space Gravity", method =() => Movement.ToggleSpaceGravity(false), disableMethod =() => Movement.ToggleSpaceGravity(true), toolTip = "Disables the main gravity zone on the space map."},
+                new ButtonInfo { buttonText = "Disable Planet Zones", method =() => Movement.TogglePlanetZones(false), disableMethod =() => Movement.TogglePlanetZones(true), toolTip = "Disables the rotating and velocity-changing zones on the space map."},
                 new ButtonInfo { buttonText = "Reverse Gravity", aliases = new[] { "Flip Gravity" }, enableMethod = Movement.ReverseGravity, disableMethod = Movement.UnflipCharacter, toolTip = "Reverses gravity on your character."},
 
                 new ButtonInfo { buttonText = "Rewind <color=grey>[</color><color=green>T</color><color=grey>]</color>", aliases = new[] { "Reverse" }, method = Movement.Rewind, disableMethod = Movement.ClearRewind, toolTip = "Brings you back in time when holding <color=green>trigger</color>."},
