@@ -923,6 +923,90 @@ namespace Pixelyth.Mods
             }
         }
 
+        public static void RoomInfoOverlay(bool? overlayEnabled = null)
+        {
+            if (overlayEnabled == false)
+            {
+                foreach (string key in new[] { "In Code", "Map", "Players", "Gamemode", "Queue", "Code" })
+                    NotificationManager.information.Remove(key);
+                return;
+            }
+
+            if (!NetworkSystem.Instance.InRoom)
+            {
+                NotificationManager.information["In Code"] = NetworkSystem.Instance.netState == NetSystemState.Connecting ? "Maybe" : "No-left";
+                foreach (string key in new[] { "Map", "Players", "Gamemode", "Queue", "Code" })
+                    NotificationManager.information.Remove(key);
+                return;
+            }
+
+            var currentRoom = PhotonNetwork.CurrentRoom;
+            NotificationManager.information["Code"] = currentRoom.Name.StartsWith("C@", StringComparison.Ordinal) ? currentRoom.Name.Substring(1) : currentRoom.Name;
+            NotificationManager.information["Players"] = $"{currentRoom.PlayerCount}/{currentRoom.MaxPlayers}";
+            NotificationManager.information["In Code"] = "Yes";
+
+            string zone = null;
+            string gameMode = "Unknown";
+            string queue = "Unknown";
+            if (currentRoom.CustomProperties.TryGetValue("gameMode", out object gameModeValue) && gameModeValue is string gameModeString)
+            {
+                string[] parts = gameModeString.Split(';');
+                if (parts.Length > 0 && !string.IsNullOrEmpty(parts[0])) zone = parts[0];
+                if (parts.Length > 1 && !string.IsNullOrEmpty(parts[1])) queue = FormatRoomQueue(parts[1]);
+                if (parts.Length > 2 && !string.IsNullOrEmpty(parts[2])) gameMode = FormatRoomGameMode(parts[2]);
+            }
+
+            if (queue == "Unknown" && currentRoom.CustomProperties.TryGetValue("queueName", out object queueValue) && !string.IsNullOrEmpty(queueValue?.ToString()))
+                queue = FormatRoomQueue(queueValue.ToString());
+
+            NotificationManager.information["Map"] = FormatRoomZone(zone);
+            NotificationManager.information["Gamemode"] = gameMode;
+            NotificationManager.information["Queue"] = queue;
+        }
+
+        private static string FormatRoomZone(string zone)
+        {
+            if (string.IsNullOrEmpty(zone)) return "Unknown";
+            switch (zone.ToLowerInvariant())
+            {
+                case "mountain": return "Mountains";
+                case "beach": return "Beach";
+                case "canyon": return "Canyons";
+                case "cave": return "Caves";
+                case "skyjungle": return "Clouds";
+                case "hoverboard": return "Skate Park";
+                case "spacemap": return "Space";
+                case "ghostreactor": return "Ghost Reactor";
+                default: return zone;
+            }
+        }
+
+        private static string FormatRoomGameMode(string gameMode)
+        {
+            switch (gameMode.ToLowerInvariant())
+            {
+                case "infectioncompetitive": return "Infection Competitive";
+                case "superinfect": return "Super Infect";
+                case "supercasual": return "Super Casual";
+                case "huntdown": return "Hunt Down";
+                case "paintbrawl": return "Paintbrawl";
+                case "freezetag": return "Freeze Tag";
+                case "prophunt": return "Prop Hunt";
+                default: return gameMode;
+            }
+        }
+
+        private static string FormatRoomQueue(string queue)
+        {
+            switch (queue.ToLowerInvariant())
+            {
+                case "minigames": return "Minigames";
+                case "competitive": return "Competitive";
+                case "private": return "Private";
+                default: return queue;
+            }
+        }
+
         public static void VelocityLabel()
         {
             if (DoPerformanceCheck())
