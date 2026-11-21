@@ -27,6 +27,7 @@ using GorillaLocomotion;
 using GorillaLocomotion.Gameplay;
 using GorillaNetworking;
 using GorillaTagScripts;
+using HarmonyLib;
 using Ionic.Zlib;
 using Photon.Pun;
 using Photon.Realtime;
@@ -60,6 +61,40 @@ namespace Pixelyth.Mods
     public static class Overpowered
     {
         private const string NotMasterClientError = "<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not master client.";
+        private static float mapForceUnloadDelay;
+
+        public static void MapForceUnload()
+        {
+            if (NetworkSystem.Instance == null || !NetworkSystem.Instance.InRoom || !PhotonNetwork.IsMasterClient)
+            {
+                NotificationManager.SendNotification("<color=grey>[</color><color=red>MAP</color><color=grey>]</color> This requires master client authority in a room.");
+                return;
+            }
+            if (Time.time < mapForceUnloadDelay) return;
+            mapForceUnloadDelay = Time.time + 5f;
+
+            Type serializerType = AccessTools.TypeByName("VirtualStumpSerializer");
+            if (serializerType == null)
+            {
+                NotificationManager.SendNotification("<color=grey>[</color><color=red>MAP</color><color=grey>]</color> No custom map serializer is loaded in this room.");
+                return;
+            }
+
+            int sent = 0;
+            foreach (Object item in Resources.FindObjectsOfTypeAll(serializerType))
+            {
+                Component serializer = item as Component;
+                if (serializer == null || !serializer.gameObject.scene.IsValid() || !serializer.gameObject.scene.isLoaded) continue;
+                PhotonView view = serializer.GetComponent<PhotonView>();
+                if (view == null) continue;
+                view.RPC("SetRoomMap_RPC", RpcTarget.Others, 999999999L);
+                sent++;
+            }
+
+            NotificationManager.SendNotification(sent > 0
+                ? "<color=grey>[</color><color=green>MAP</color><color=grey>]</color> Custom map unload request sent to other players."
+                : "<color=grey>[</color><color=red>MAP</color><color=grey>]</color> No live custom map serializer was found.");
+        }
 
         public static void VIMKickGun()
         {
