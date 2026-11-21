@@ -50,6 +50,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -139,6 +140,179 @@ namespace Pixelyth.Mods
                     layout.gameObject.SetActive(true);
                 }
             }
+        }
+
+        public static bool BetterOptimizationEnabled;
+        private static float nextOptimizationCheck;
+        private static GTZone lastOptimizedZone = GTZone.none;
+        private static int oldParticleRaycastBudget;
+        private static int oldVSyncCount;
+        private static float oldFarClipPlane;
+
+        public static void EnableBetterOptimization()
+        {
+            if (ZoneManagement.instance == null)
+            {
+                NotificationManager.SendNotification("<color=grey>[</color><color=red>OPTIMIZATION</color><color=grey>]</color> Zone system is not ready yet.");
+                return;
+            }
+            if (!BetterOptimizationEnabled)
+            {
+                oldParticleRaycastBudget = QualitySettings.particleRaycastBudget;
+                oldVSyncCount = QualitySettings.vSyncCount;
+                oldFarClipPlane = Camera.main != null ? Camera.main.farClipPlane : -1f;
+            }
+            BetterOptimizationEnabled = true;
+            ZoneOptimizationPatch.enabled = true;
+            lastOptimizedZone = GetCurrentZone();
+            UnloadInactiveMaps(lastOptimizedZone);
+            RunOptimizationCleanup();
+        }
+
+        public static void DisableBetterOptimization()
+        {
+            BetterOptimizationEnabled = false;
+            ZoneOptimizationPatch.enabled = false;
+            try
+            {
+                ZoneManagement.AddSceneToForceStayLoaded("City");
+                ZoneManagement.SetActiveZone(GetCurrentZone());
+            }
+            catch { }
+            QualitySettings.particleRaycastBudget = oldParticleRaycastBudget;
+            QualitySettings.vSyncCount = oldVSyncCount;
+            if (oldFarClipPlane > 0f && Camera.main != null)
+                Camera.main.farClipPlane = oldFarClipPlane;
+            lastOptimizedZone = GTZone.none;
+        }
+
+        public static void BetterOptimizationUpdate()
+        {
+            if (!BetterOptimizationEnabled || Time.time < nextOptimizationCheck) return;
+            nextOptimizationCheck = Time.time + 1f;
+            try
+            {
+                ZoneManagement.RemoveSceneFromForceStayLoaded("City");
+                GTZone current = GetCurrentZone();
+                if (current != lastOptimizedZone || (ZoneManagement.instance != null && ZoneManagement.instance.activeZones.Count > 1))
+                {
+                    lastOptimizedZone = current;
+                    UnloadInactiveMaps(current);
+                    RunOptimizationCleanup();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError($"Map optimization update failed: {ex.Message}");
+            }
+        }
+
+        public static void OnOptimizationZoneTrigger(GorillaNetworkJoinTrigger trigger)
+        {
+            if (!BetterOptimizationEnabled || trigger == null) return;
+            try
+            {
+                GTZone destination = trigger.zone;
+                if (destination == GTZone.none && trigger.primaryTriggerForMyZone != null)
+                    destination = trigger.primaryTriggerForMyZone.zone;
+                if (destination == GTZone.none && !string.IsNullOrEmpty(trigger.networkZone))
+                    Enum.TryParse(trigger.networkZone, true, out destination);
+                if (destination == GTZone.none) return;
+
+                lastOptimizedZone = destination;
+                UnloadInactiveMaps(destination);
+                if (trigger.makeSureThisIsDisabled != null)
+                    foreach (GameObject obj in trigger.makeSureThisIsDisabled)
+                        if (obj != null && obj.activeSelf) obj.SetActive(false);
+                if (trigger.makeSureThisIsEnabled != null)
+                    foreach (GameObject obj in trigger.makeSureThisIsEnabled)
+                        if (obj != null && !obj.activeSelf) obj.SetActive(true);
+                RunOptimizationCleanup();
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogError($"Map optimization trigger failed: {ex.Message}");
+            }
+        }
+
+        private static void UnloadInactiveMaps(GTZone keepZone)
+        {
+            if (ZoneManagement.instance == null) return;
+            ZoneManagement.RemoveSceneFromForceStayLoaded("City");
+
+            string keepSceneName = null;
+            try
+            {
+                var keepData = ZoneManagement.instance.GetZoneData(keepZone);
+                if (keepData != null)
+                {
+                    keepData.active = true;
+                    keepSceneName = keepData.sceneName;
+                    if (keepData.rootGameObjects != null)
+                        foreach (GameObject root in keepData.rootGameObjects)
+                            if (root != null && !root.activeSelf) root.SetActive(true);
+                    if (!string.IsNullOrEmpty(keepSceneName) && !SceneManager.GetSceneByName(keepSceneName).isLoaded)
+                        SceneManager.LoadSceneAsync(keepSceneName, LoadSceneMode.Additive);
+                }
+            }
+            catch (Exception ex) { LogManager.LogError($"Could not retain active map: {ex.Message}"); }
+
+            foreach (GTZone zone in Enum.GetValues(typeof(GTZone)))
+            {
+                if (zone == keepZone || zone == GTZone.none) continue;
+                try
+                {
+                    var data = ZoneManagement.instance.GetZoneData(zone);
+                    if (data == null) continue;
+                    data.active = false;
+                    if (data.rootGameObjects != null)
+                        foreach (GameObject root in data.rootGameObjects)
+                            if (root != null && root.activeSelf) root.SetActive(false);
+                }
+                catch { }
+            }
+
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                Scene scene = SceneManager.GetSceneAt(i);
+                if (!scene.isLoaded || scene.name == "GorillaTag" || (!string.IsNullOrEmpty(keepSceneName) && scene.name == keepSceneName)) continue;
+                try
+                {
+                    ZoneManagement.RemoveSceneFromForceStayLoaded(scene.name);
+                    SceneManager.UnloadSceneAsync(scene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+                }
+                catch { }
+            }
+            try { ZoneManagement.SetActiveZone(keepZone); } catch { }
+        }
+
+        private static void RunOptimizationCleanup()
+        {
+            try
+            {
+                Resources.UnloadUnusedAssets();
+                GC.Collect();
+                if (Camera.main != null && Camera.main.farClipPlane > 200f)
+                    Camera.main.farClipPlane = 200f;
+                QualitySettings.particleRaycastBudget = 64;
+                QualitySettings.vSyncCount = 0;
+            }
+            catch { }
+        }
+
+        private static GTZone GetCurrentZone()
+        {
+            try
+            {
+                if (VRRig.LocalRig != null && VRRig.LocalRig.zoneEntity != null && VRRig.LocalRig.zoneEntity.currentZone != GTZone.none)
+                    return VRRig.LocalRig.zoneEntity.currentZone;
+                if (PhotonNetworkController.Instance != null && PhotonNetworkController.Instance.currentJoinTrigger != null && PhotonNetworkController.Instance.currentJoinTrigger.zone != GTZone.none)
+                    return PhotonNetworkController.Instance.currentJoinTrigger.zone;
+                if (ZoneManagement.instance != null && ZoneManagement.instance.activeZones != null && ZoneManagement.instance.activeZones.Count > 0)
+                    return ZoneManagement.instance.activeZones[ZoneManagement.instance.activeZones.Count - 1];
+            }
+            catch { }
+            return GTZone.forest;
         }
 
         public static void RoomCreator()
