@@ -2630,6 +2630,26 @@ namespace Pixelyth.Mods
         };
 
         private static readonly Dictionary<VRRig, GameObject> modNameTags = new Dictionary<VRRig, GameObject>();
+        private static readonly HashSet<string> vanillaPlayerPropertyKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static bool hasVanillaPlayerPropertyBaseline;
+
+        public static void CaptureVanillaProps()
+        {
+            if (!PhotonNetwork.InRoom || PhotonNetwork.LocalPlayer == null)
+            {
+                NotificationManager.SendNotification("Join a room before capturing the vanilla player-property baseline.");
+                return;
+            }
+
+            vanillaPlayerPropertyKeys.Clear();
+            foreach (object key in PhotonNetwork.LocalPlayer.CustomProperties.Keys)
+                if (key != null)
+                    vanillaPlayerPropertyKeys.Add(key.ToString());
+
+            hasVanillaPlayerPropertyBaseline = true;
+            NotificationManager.SendNotification($"Captured {vanillaPlayerPropertyKeys.Count} player-property keys. Mod Name Tags can now mark unrecognized keys.");
+        }
+
         public static void ModTags()
         {
             List<KeyValuePair<VRRig, GameObject>> nametagsCopy = modNameTags.ToList();
@@ -2676,6 +2696,18 @@ namespace Pixelyth.Mods
                                         specialMods = mod.Value + ", " + specialMods;
                                     else
                                         specialMods += " & " + mod.Value;
+                                }
+                            }
+
+                            if (hasVanillaPlayerPropertyBaseline)
+                            {
+                                string[] unknownProps = customProps.Keys
+                                    .Where(key => !vanillaPlayerPropertyKeys.Contains(key))
+                                    .ToArray();
+                                if (unknownProps.Length > 0)
+                                {
+                                    string label = "Unknown props: " + string.Join(", ", unknownProps);
+                                    specialMods = string.IsNullOrEmpty(specialMods) ? label : specialMods + "\n" + label;
                                 }
                             }
 
