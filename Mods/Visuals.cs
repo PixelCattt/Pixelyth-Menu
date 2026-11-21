@@ -368,7 +368,10 @@ namespace Pixelyth.Mods
                 _ => "Unknown"
             };
 
-            NotificationManager.information["Lucy"] = $"{stateName} | {hgc.currentSpeed:F1}m/s | {hgc.targetPlayer?.NickName ?? "Nobody"}";
+            float distance = hgc.skullTransform == null
+                ? 0f
+                : Vector3.Distance(GorillaTagger.Instance.headCollider.transform.position, hgc.skullTransform.position);
+            NotificationManager.information["Lucy"] = $"{stateName} | {hgc.currentSpeed:F1}m/s | {hgc.targetPlayer?.NickName ?? "Nobody"} | {distance:F1}m";
         }
 
         public static void LurkerOverlay()
