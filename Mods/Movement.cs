@@ -281,12 +281,45 @@ namespace Pixelyth.Mods
             }
         }
 
+        private static Collider frozoneBodyCollider;
+        private static bool frozoneBodyWasEnabled;
+
         public static void Frozone()
         {
             HandleFrozone(true);
             HandleFrozone(false);
 
-            GorillaTagger.Instance.bodyCollider.enabled = !(leftGrab || rightGrab);
+            if (leftGrab || rightGrab)
+            {
+                if (frozoneBodyCollider == null)
+                {
+                    frozoneBodyCollider = GorillaTagger.Instance.bodyCollider;
+                    frozoneBodyWasEnabled = frozoneBodyCollider.enabled;
+                }
+                frozoneBodyCollider.enabled = false;
+            }
+            else
+                RestoreFrozoneBodyCollider();
+        }
+
+        private static void RestoreFrozoneBodyCollider()
+        {
+            if (frozoneBodyCollider != null)
+                frozoneBodyCollider.enabled = frozoneBodyWasEnabled;
+
+            frozoneBodyCollider = null;
+        }
+
+        public static void DisableFrozone()
+        {
+            foreach (List<GameObject> platforms in frozonicPlatforms.Values)
+                foreach (GameObject platform in platforms)
+                    if (platform != null)
+                        Object.Destroy(platform);
+
+            frozonicPlatforms.Clear();
+            platformIndex.Clear();
+            RestoreFrozoneBodyCollider();
         }
 
         public static readonly float[] SpeedBoostAmounts = { 2f, 7.5f, 8f, 9f, 200f };
