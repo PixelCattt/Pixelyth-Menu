@@ -2725,6 +2725,68 @@ namespace Pixelyth.Mods
                 button.overlapText = $"Change World Scale <color=grey>[</color><color=green>{worldScaleNames[worldScaleCycle]}</color><color=grey>]</color>";
         }
 
+        private static readonly Queue<(Vector3 position, Quaternion rotation, Vector3 velocity)> timeRewindBuffer = new Queue<(Vector3, Quaternion, Vector3)>();
+        private static List<(Vector3 position, Quaternion rotation, Vector3 velocity)> timeRewindReplay;
+        private static int timeRewindReplayIndex = -1;
+        private static bool timeRewindReplaying;
+        private static bool timeRewindWasGrabbing;
+        private static float timeRewindDelay;
+
+        public static void EnableTimeRewind()
+        {
+            timeRewindBuffer.Clear();
+            timeRewindReplay = null;
+            timeRewindReplayIndex = -1;
+            timeRewindReplaying = false;
+            timeRewindWasGrabbing = false;
+        }
+
+        public static void TimeRewind()
+        {
+            if (GorillaTagger.Instance == null || GorillaTagger.Instance.rigidbody == null) return;
+            Rigidbody body = GorillaTagger.Instance.rigidbody;
+            if (timeRewindReplaying)
+            {
+                for (int i = 0; i < 10 && timeRewindReplayIndex >= 0; i++)
+                {
+                    var sample = timeRewindReplay[timeRewindReplayIndex--];
+                    body.position = sample.position;
+                    body.rotation = sample.rotation;
+                    body.linearVelocity = Vector3.zero;
+                }
+
+                if (timeRewindReplayIndex < 0)
+                {
+                    timeRewindReplaying = false;
+                    timeRewindDelay = Time.time + 0.3f;
+                    timeRewindBuffer.Clear();
+                    timeRewindReplay = null;
+                }
+                return;
+            }
+
+            timeRewindBuffer.Enqueue((body.position, body.rotation, body.linearVelocity));
+            while (timeRewindBuffer.Count > 90) timeRewindBuffer.Dequeue();
+            bool pressed = rightGrab && !timeRewindWasGrabbing;
+            timeRewindWasGrabbing = rightGrab;
+            if (pressed && timeRewindBuffer.Count >= 10 && Time.time > timeRewindDelay)
+            {
+                timeRewindReplay = timeRewindBuffer.ToList();
+                timeRewindReplayIndex = timeRewindReplay.Count - 1;
+                timeRewindBuffer.Clear();
+                timeRewindReplaying = true;
+            }
+        }
+
+        public static void DisableTimeRewind()
+        {
+            timeRewindBuffer.Clear();
+            timeRewindReplay = null;
+            timeRewindReplayIndex = -1;
+            timeRewindReplaying = false;
+            timeRewindWasGrabbing = false;
+        }
+
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 
