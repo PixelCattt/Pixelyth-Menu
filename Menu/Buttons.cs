@@ -362,6 +362,7 @@ namespace Pixelyth.Menu
                 ButtonHelper.Create("Change Playspace Abuse Speed", () => Movement.PlayspaceAbuseNames, Movement.playspaceAbuseIndex, Movement.ApplyPlayspaceAbuseSpeed, "Changes the speed of the playspace abuse mods."),
                 ButtonHelper.Create("Change Arm Length", () => Movement.ArmLengthNames, Movement.longarmCycle, Movement.ApplyArmLength, "Changes the length of the long arm mods."),
                 ButtonHelper.Create("Change Speed Boost Amount", () => Movement.SpeedBoostNames, Movement.speedboostCycle, Movement.ApplySpeedBoostAmount, "Changes the speed of the speed boost mod."),
+                new ButtonInfo { buttonText = "Change World Scale", overlapText = "Change World Scale <color=grey>[</color><color=green>1.0x</color><color=grey>]</color>", method =() => Movement.ChangeWorldScale(), enableMethod =() => Movement.ChangeWorldScale(), disableMethod =() => Movement.ChangeWorldScale(false), incremental = true, isTogglable = false, toolTip = "Changes the custom world scale from 0.1x to 3x."},
                 ButtonHelper.Create("Change Wall Walk Strength", () => Movement.WallWalkStrengthNames, Movement.wallWalkStrengthIndex, Movement.ApplyWallWalkStrength, "Changes the strength of the wall walk mod."),
                 ButtonHelper.Create("Change Pull Mod Power", () => Movement.PullModPowerNames, Movement.pullPowerInt, Movement.ApplyPullModPower, "Changes the power of the pull mod."),
                 ButtonHelper.Create("Change Prediction Amount", () => Movement.PredictionAmountNames, Movement.predInt, Movement.ApplyPredictionAmount, "Changes the power of the predictions."),
@@ -760,6 +761,7 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Uncap Arm Length", aliases = new[] { "Armmax" }, method =() => { GTPlayer.Instance.leftHand.maxArmLength = float.MaxValue; GTPlayer.Instance.rightHand.maxArmLength = float.MaxValue; }, disableMethod =() => { GTPlayer.Instance.leftHand.maxArmLength = 1; GTPlayer.Instance.rightHand.maxArmLength = 1; }, toolTip = "Removes the arm distance limit."},
                 new ButtonInfo { buttonText = "Steam Long Arms", method = Movement.EnableSteamLongArms, disableMethod = Movement.DisableSteamLongArms, toolTip = "Gives you long arms similar to override world scale."},
+                new ButtonInfo { buttonText = "World Scale", method = Movement.WorldScale, disableMethod = Movement.DisableWorldScale, toolTip = "Scales your player world from 0.1x to 3x. Set the amount in Movement Settings."},
                 new ButtonInfo { buttonText = "Stick Long Arms", method = Movement.StickLongArms, toolTip = "Makes you look like you're using sticks."},
                 new ButtonInfo { buttonText = "Multiplied Long Arms", method = Movement.MultipliedLongArms, toolTip = "Gives you a weird version of long arms."},
                 new ButtonInfo { buttonText = "Vertical Long Arms", method = Movement.VerticalLongArms, toolTip = "Gives you a version of long arms to help you vertically."},

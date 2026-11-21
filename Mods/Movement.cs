@@ -2699,6 +2699,32 @@ namespace Pixelyth.Mods
             playspace.enabled = false;
         }
 
+        public static float worldScale = 1f;
+        private static int worldScaleCycle = 4;
+        private static readonly float[] worldScaleAmounts = { 0.1f, 0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 2f, 2.5f, 3f };
+        private static readonly string[] worldScaleNames = { "0.1x", "0.25x", "0.5x", "0.75x", "1.0x", "1.25x", "1.5x", "2.0x", "2.5x", "3.0x" };
+
+        public static void WorldScale()
+        {
+            if (GTPlayer.Instance != null && VRRig.LocalRig != null)
+                GTPlayer.Instance.transform.localScale = Vector3.one * (VRRig.LocalRig.NativeScale * worldScale);
+        }
+
+        public static void DisableWorldScale()
+        {
+            if (GTPlayer.Instance != null && VRRig.LocalRig != null)
+                GTPlayer.Instance.transform.localScale = Vector3.one * VRRig.LocalRig.NativeScale;
+        }
+
+        public static void ChangeWorldScale(bool positive = true)
+        {
+            worldScaleCycle = (worldScaleCycle + (positive ? 1 : -1) + worldScaleAmounts.Length) % worldScaleAmounts.Length;
+            worldScale = worldScaleAmounts[worldScaleCycle];
+            ButtonInfo button = Buttons.GetIndex("Change World Scale");
+            if (button != null)
+                button.overlapText = $"Change World Scale <color=grey>[</color><color=green>{worldScaleNames[worldScaleCycle]}</color><color=grey>]</color>";
+        }
+
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 
