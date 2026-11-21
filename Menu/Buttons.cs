@@ -589,6 +589,8 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Flush RPCs", method = RPCProtection, isTogglable = false, toolTip = "Flushes all RPC calls, good after you stop spamming." },
                 new ButtonInfo { buttonText = "Anti Crash", overlapText = "Exploit Guard", aliases = new[] { "Anti Crash" }, enableMethod =() => AntiCrashPatches.enabled = true, disableMethod =() => AntiCrashPatches.enabled = false, toolTip = "Prevents crashers from completely annihilating your computer."},
+                new ButtonInfo { buttonText = "Anti Ghost", enableMethod =() => AntiGhostPatch.Enabled = true, disableMethod =() => AntiGhostPatch.Enabled = false, toolTip = "Blocks unauthorized ghost and isolate events."},
+                new ButtonInfo { buttonText = "Anti Ghost Notify", enableMethod =() => AntiGhostPatch.Notify = true, disableMethod =() => AntiGhostPatch.Notify = false, toolTip = "Notifies you when an unauthorized ghost or isolate event is blocked."},
                 new ButtonInfo { buttonText = "Anti Ban Crash", enableMethod =() => BanPatches.AntiBanCrash1.enabled = true, disableMethod =() => BanPatches.AntiBanCrash1.enabled = false, toolTip = "Prevents your game from crashing when you are banned."},
                 new ButtonInfo { buttonText = "Anti Kick", enableMethod = Experimental.OnlySerializeNecessary, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Only networks the necessities to prevent getting kicked."},
                 new ButtonInfo { buttonText = "Anti Name Ban", enableMethod =() => BanPatches.enabled = true, method = Safety.AntiNameBan, disableMethod =() => BanPatches.enabled = false, toolTip = "Prevents you from getting banned for setting your name to bad things."},
