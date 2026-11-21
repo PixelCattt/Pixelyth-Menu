@@ -111,6 +111,7 @@ namespace Pixelyth.Mods
         }
 
         private static bool micMutedByGate;
+        private static bool micGatePreviousMuted;
         private static float micGateThreatTime;
         private static readonly float[] micGateHoldTimes = { 0f, 0.5f, 1f, 2f };
         private static readonly string[] micGateHoldNames = { "Instant", "Short", "Normal", "Long" };
@@ -148,22 +149,36 @@ namespace Pixelyth.Mods
 
             if (threat && !micMutedByGate)
             {
+                micGatePreviousMuted = RecorderPatch.enabled
+                    ? VoiceManager.Get().MuteMicrophone
+                    : !mic.IsRecording;
                 micMutedByGate = true;
-                mic.IsRecording = false;
+                SetMicGateMuted(true, mic);
                 NotificationManager.SendNotification("<color=grey>[</color><color=purple>MIC GATE</color><color=grey>]</color> Someone is near your report button — microphone muted.");
             }
             else if (!threat && micMutedByGate && Time.time > micGateThreatTime + micGateHoldTimes[micGateHoldIndex])
             {
                 micMutedByGate = false;
-                mic.IsRecording = true;
-                NotificationManager.SendNotification("<color=grey>[</color><color=purple>MIC GATE</color><color=grey>]</color> Area clear — microphone restored.");
+                SetMicGateMuted(micGatePreviousMuted, mic);
+                NotificationManager.SendNotification("<color=grey>[</color><color=purple>MIC GATE</color><color=grey>]</color> Area clear — previous microphone state restored.");
             }
+        }
+
+        private static void SetMicGateMuted(bool muted, Recorder recorder)
+        {
+            if (RecorderPatch.enabled)
+                VoiceManager.Get().MuteMicrophone = muted;
+            else if (recorder != null)
+                recorder.IsRecording = !muted;
         }
 
         public static void DisableMicSafetyGate()
         {
-            if (micMutedByGate && GorillaTagger.Instance != null && GorillaTagger.Instance.myRecorder != null)
-                GorillaTagger.Instance.myRecorder.IsRecording = true;
+            if (micMutedByGate)
+            {
+                Recorder recorder = GorillaTagger.Instance != null ? GorillaTagger.Instance.myRecorder : null;
+                SetMicGateMuted(micGatePreviousMuted, recorder);
+            }
             micMutedByGate = false;
         }
 
