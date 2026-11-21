@@ -471,13 +471,24 @@ namespace Pixelyth.Mods
             }
         }
 
+        private static bool triggerFlyActive;
         public static void TriggerFly()
         {
             if (rightTrigger > 0.5f)
             {
                 GTPlayer.Instance.transform.position += GorillaTagger.Instance.headCollider.transform.forward * (Time.deltaTime * FlySpeed);
                 GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+                triggerFlyActive = true;
             }
+            else if (triggerFlyActive)
+                DisableTriggerFly();
+        }
+
+        public static void DisableTriggerFly()
+        {
+            if (triggerFlyActive && GorillaTagger.Instance != null)
+                GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+            triggerFlyActive = false;
         }
 
         public static bool noclip;
@@ -499,6 +510,8 @@ namespace Pixelyth.Mods
                 if (noclipFly)
                 {
                     noclipFly = false;
+                    if (GorillaTagger.Instance != null)
+                        GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
                     UpdateClipColliders(true, "Noclip Fly");
                 }
             }
@@ -506,10 +519,13 @@ namespace Pixelyth.Mods
 
         public static void DisableNoclipFly()
         {
+            if (noclipFly && GorillaTagger.Instance != null)
+                GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
             noclipFly = false;
             UpdateClipColliders(true, "Noclip Fly");
         }
 
+        private static bool joystickFlyActive;
         public static void JoystickFly()
         {
             Vector2 joy = leftJoystick;
@@ -518,7 +534,17 @@ namespace Pixelyth.Mods
             {
                 GTPlayer.Instance.transform.position += GorillaTagger.Instance.headCollider.transform.forward * (Time.deltaTime * (joy.y * FlySpeed)) + GorillaTagger.Instance.headCollider.transform.right * (Time.deltaTime * (joy.x * FlySpeed));
                 GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+                joystickFlyActive = true;
             }
+            else if (joystickFlyActive)
+                DisableJoystickFly();
+        }
+
+        public static void DisableJoystickFly()
+        {
+            if (joystickFlyActive && GorillaTagger.Instance != null)
+                GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+            joystickFlyActive = false;
         }
 
         public static void BarkFly()
@@ -542,13 +568,24 @@ namespace Pixelyth.Mods
                 BarkFly();
         }
 
+        private static bool handFlyActive;
         public static void HandFly()
         {
             if (rightPrimary)
             {
                 GTPlayer.Instance.transform.position += ControllerUtilities.GetTrueRightHand().forward * (Time.deltaTime * FlySpeed);
                 GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+                handFlyActive = true;
             }
+            else if (handFlyActive)
+                DisableHandFly();
+        }
+
+        public static void DisableHandFly()
+        {
+            if (handFlyActive && GorillaTagger.Instance != null)
+                GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+            handFlyActive = false;
         }
 
         public static void FlyTowardsGun()
