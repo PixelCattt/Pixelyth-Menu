@@ -416,7 +416,7 @@ namespace Pixelyth.Mods
             DrawLucyTransformBones(lucy.ghostBody.transform, GetLucyVisualColor(lucy), GetLucyTracerWidth());
         }
 
-        public static void FOVConeESP()
+        public static void FOVFrustumESP()
         {
             VRRig localRig = VRRig.LocalRig;
             if (localRig == null) return;
@@ -428,20 +428,26 @@ namespace Pixelyth.Mods
 
                 Transform head = rig.headMesh.transform;
                 Vector3 origin = head.position;
-                Vector3 toLocal = localPosition - origin;
-                bool localInView = toLocal.sqrMagnitude < 15f * 15f && Vector3.Angle(head.forward, toLocal) <= 35f;
+                Vector3 localTarget = head.InverseTransformPoint(localPosition);
+                bool localInView = localTarget.z > 0f && localTarget.z <= 10f &&
+                    Mathf.Abs(Mathf.Atan2(localTarget.x, localTarget.z) * Mathf.Rad2Deg) <= 35f &&
+                    Mathf.Abs(Mathf.Atan2(localTarget.y, localTarget.z) * Mathf.Rad2Deg) <= 25f;
                 Color color = localInView ? Color.red : Color.yellow;
                 float width = Buttons.GetIndex("Thin Tracers").enabled ? 0.0075f : 0.02f;
 
-                Vector3 previous = origin + Quaternion.AngleAxis(-35f, head.up) * head.forward * 8f;
-                DrawVisualLine(origin, previous, color, width);
-                for (int angle = -25; angle <= 35; angle += 10)
+                Vector3[] corners =
                 {
-                    Vector3 next = origin + Quaternion.AngleAxis(angle, head.up) * head.forward * 8f;
-                    DrawVisualLine(previous, next, color, width);
-                    previous = next;
+                    head.TransformPoint(new Vector3(-Mathf.Tan(35f * Mathf.Deg2Rad) * 10f, -Mathf.Tan(25f * Mathf.Deg2Rad) * 10f, 10f)),
+                    head.TransformPoint(new Vector3(Mathf.Tan(35f * Mathf.Deg2Rad) * 10f, -Mathf.Tan(25f * Mathf.Deg2Rad) * 10f, 10f)),
+                    head.TransformPoint(new Vector3(Mathf.Tan(35f * Mathf.Deg2Rad) * 10f, Mathf.Tan(25f * Mathf.Deg2Rad) * 10f, 10f)),
+                    head.TransformPoint(new Vector3(-Mathf.Tan(35f * Mathf.Deg2Rad) * 10f, Mathf.Tan(25f * Mathf.Deg2Rad) * 10f, 10f))
+                };
+
+                for (int corner = 0; corner < corners.Length; corner++)
+                {
+                    DrawVisualLine(origin, corners[corner], color, width);
+                    DrawVisualLine(corners[corner], corners[(corner + 1) % corners.Length], color, width);
                 }
-                DrawVisualLine(origin, previous, color, width);
             }
         }
 
