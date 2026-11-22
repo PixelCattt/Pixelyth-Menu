@@ -361,37 +361,10 @@ namespace Pixelyth.Mods
             }
         }
 
-        private static Collider frozoneBodyCollider;
-        private static bool frozoneBodyWasEnabled;
-
         public static void Frozone()
         {
             HandleFrozone(true);
             HandleFrozone(false);
-
-            if (leftGrab || rightGrab)
-            {
-                if (frozoneBodyCollider == null)
-                {
-                    frozoneBodyCollider = GorillaTagger.Instance.bodyCollider;
-                    frozoneBodyWasEnabled = frozoneBodyCollider.enabled;
-                }
-                frozoneBodyCollider.enabled = false;
-                UpdateClipColliders(false, "Frozone");
-            }
-            else
-            {
-                UpdateClipColliders(true, "Frozone");
-                RestoreFrozoneBodyCollider();
-            }
-        }
-
-        private static void RestoreFrozoneBodyCollider()
-        {
-            if (frozoneBodyCollider != null)
-                frozoneBodyCollider.enabled = frozoneBodyWasEnabled;
-
-            frozoneBodyCollider = null;
         }
 
         public static void DisableFrozone()
@@ -402,8 +375,6 @@ namespace Pixelyth.Mods
 
             frozonicPlatforms.Clear();
             platformIndex.Clear();
-            UpdateClipColliders(true, "Frozone");
-            RestoreFrozoneBodyCollider();
         }
 
         public static readonly float[] SpeedBoostAmounts = { 2f, 7.5f, 8f, 9f, 200f };
@@ -2863,138 +2834,97 @@ namespace Pixelyth.Mods
                 button.overlapText = $"Change World Scale <color=grey>[</color><color=green>{worldScaleNames[worldScaleCycle]}</color><color=grey>]</color>";
         }
 
-        private static readonly Queue<(Vector3 position, Quaternion rotation, Vector3 velocity)> timeRewindBuffer = new Queue<(Vector3, Quaternion, Vector3)>();
-        private static List<(Vector3 position, Quaternion rotation, Vector3 velocity)> timeRewindReplay;
-        private static int timeRewindReplayIndex = -1;
-        private static bool timeRewindReplaying;
-        private static bool timeRewindWasGrabbing;
-        private static float timeRewindDelay;
+        private static readonly LinkedList<(Vector3 position, Quaternion rotation, float timestamp)> timeRewindBuffer = new LinkedList<(Vector3, Quaternion, float)>();
 
-        public static void EnableTimeRewind()
-        {
-            timeRewindBuffer.Clear();
-            timeRewindReplay = null;
-            timeRewindReplayIndex = -1;
-            timeRewindReplaying = false;
-            timeRewindWasGrabbing = false;
-        }
+        public static void EnableTimeRewind() => timeRewindBuffer.Clear();
 
         public static void TimeRewind()
         {
             if (GorillaTagger.Instance == null || GorillaTagger.Instance.rigidbody == null) return;
             Rigidbody body = GorillaTagger.Instance.rigidbody;
-            if (timeRewindReplaying)
+
+            if (leftGrab || rightGrab)
             {
-                for (int i = 0; i < 10 && timeRewindReplayIndex >= 0; i++)
+                if (timeRewindBuffer.Last != null)
                 {
-                    var sample = timeRewindReplay[timeRewindReplayIndex--];
+                    var sample = timeRewindBuffer.Last.Value;
+                    timeRewindBuffer.RemoveLast();
                     body.position = sample.position;
                     body.rotation = sample.rotation;
                     body.linearVelocity = Vector3.zero;
                 }
-
-                if (timeRewindReplayIndex < 0)
-                {
-                    timeRewindReplaying = false;
-                    timeRewindDelay = Time.time + 0.3f;
-                    timeRewindBuffer.Clear();
-                    timeRewindReplay = null;
-                }
                 return;
             }
 
-            timeRewindBuffer.Enqueue((body.position, body.rotation, body.linearVelocity));
-            while (timeRewindBuffer.Count > 90) timeRewindBuffer.Dequeue();
-            bool pressed = rightGrab && !timeRewindWasGrabbing;
-            timeRewindWasGrabbing = rightGrab;
-            if (pressed && timeRewindBuffer.Count >= 10 && Time.time > timeRewindDelay)
-            {
-                timeRewindReplay = timeRewindBuffer.ToList();
-                timeRewindReplayIndex = timeRewindReplay.Count - 1;
-                timeRewindBuffer.Clear();
-                timeRewindReplaying = true;
-            }
+            timeRewindBuffer.AddLast((body.position, body.rotation, Time.time));
+            while (timeRewindBuffer.First != null && Time.time - timeRewindBuffer.First.Value.timestamp > 30f)
+                timeRewindBuffer.RemoveFirst();
         }
 
-        public static void DisableTimeRewind()
+        public static void DisableTimeRewind() => timeRewindBuffer.Clear();
+
+        private static Vector3? leftHandFlyOrigin;
+        private static Vector3? rightHandFlyOrigin;
+        private static bool handDirectionFlyWasActive;
+
+        public static void EnableHandDirectionFly()
         {
-            timeRewindBuffer.Clear();
-            timeRewindReplay = null;
-            timeRewindReplayIndex = -1;
-            timeRewindReplaying = false;
-            timeRewindWasGrabbing = false;
+            leftHandFlyOrigin = null;
+            rightHandFlyOrigin = null;
+            handDirectionFlyWasActive = false;
         }
 
-        private static bool alwaysZiplineActive;
-        public static void EnableAlwaysZipline() => alwaysZiplineActive = true;
-        public static void DisableAlwaysZipline() => alwaysZiplineActive = false;
-
-        public static void AlwaysZipline()
+        public static void HandDirectionFly()
         {
-            if (!alwaysZiplineActive || GTPlayer.Instance == null || !leftGrab)
+            if (GorillaTagger.Instance == null || GorillaTagger.Instance.rigidbody == null || GorillaTagger.Instance.headCollider == null)
                 return;
 
-            Vector3 direction = GorillaTagger.Instance.headCollider.transform.forward;
-            direction.y = 0f;
-            if (direction.sqrMagnitude > 0.001f)
-                GorillaTagger.Instance.rigidbody.linearVelocity = direction.normalized * 15f + Vector3.down;
-        }
+            Transform leftHand = GorillaTagger.Instance.leftHandTransform;
+            Transform rightHand = GorillaTagger.Instance.rightHandTransform;
+            Transform head = GorillaTagger.Instance.headCollider.transform;
+            if (leftGrab && leftHand != null && !leftHandFlyOrigin.HasValue)
+                leftHandFlyOrigin = head.InverseTransformPoint(leftHand.position);
+            if (rightGrab && rightHand != null && !rightHandFlyOrigin.HasValue)
+                rightHandFlyOrigin = head.InverseTransformPoint(rightHand.position);
 
-        private static float cannonballForce;
-        private static float cannonballNextLaunch;
-        private static float cannonballNextIncrease;
+            if (!leftGrab) leftHandFlyOrigin = null;
+            if (!rightGrab) rightHandFlyOrigin = null;
 
-        public static void EnableCannonball()
-        {
-            cannonballForce = 10f;
-            cannonballNextLaunch = 0f;
-            cannonballNextIncrease = Time.time + 0.5f;
-        }
-
-        public static void Cannonball()
-        {
-            if (Time.time >= cannonballNextIncrease)
+            if (!leftGrab && !rightGrab)
             {
-                cannonballForce = Mathf.Min(cannonballForce + 2f, 80f);
-                cannonballNextIncrease = Time.time + 0.5f;
+                if (handDirectionFlyWasActive)
+                    GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+                handDirectionFlyWasActive = false;
+                return;
             }
 
-            if (Time.time >= cannonballNextLaunch)
+            Vector3 handMovement = Vector3.zero;
+            int activeHands = 0;
+            if (leftGrab && leftHandFlyOrigin.HasValue && leftHand != null)
             {
-                cannonballNextLaunch = Time.time + 0.1f;
-                GorillaTagger.Instance.rigidbody.linearVelocity = GorillaTagger.Instance.headCollider.transform.forward * cannonballForce;
+                handMovement += head.InverseTransformPoint(leftHand.position) - leftHandFlyOrigin.Value;
+                activeHands++;
+            }
+            if (rightGrab && rightHandFlyOrigin.HasValue && rightHand != null)
+            {
+                handMovement += head.InverseTransformPoint(rightHand.position) - rightHandFlyOrigin.Value;
+                activeHands++;
+            }
+
+            if (activeHands > 0)
+            {
+                handDirectionFlyWasActive = true;
+                GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.ClampMagnitude(head.TransformDirection(handMovement / activeHands) * 12f, 12f);
             }
         }
 
-        public static void DisableCannonball() => cannonballForce = 0f;
-
-        private static float ladderSavedMaxJumpSpeed;
-        private static bool ladderMaxJumpSpeedSaved;
-
-        public static void EnableLadderAnywhere()
+        public static void DisableHandDirectionFly()
         {
-            if (GTPlayer.Instance == null) return;
-            ladderSavedMaxJumpSpeed = GTPlayer.Instance.maxJumpSpeed;
-            ladderMaxJumpSpeedSaved = true;
-            GTPlayer.Instance.maxJumpSpeed = 0f;
-        }
-
-        public static void LadderAnywhere()
-        {
-            if (GTPlayer.Instance == null || !(leftGrab || rightGrab)) return;
-            Vector3 leftVelocity = GTPlayer.Instance.LeftHand.velocityTracker.GetAverageVelocity(true, 0);
-            Vector3 rightVelocity = GTPlayer.Instance.RightHand.velocityTracker.GetAverageVelocity(true, 0);
-            ZeroGravity();
-            GorillaTagger.Instance.rigidbody.linearVelocity = (leftVelocity + rightVelocity) / 2f;
-        }
-
-        public static void DisableLadderAnywhere()
-        {
-            if (GTPlayer.Instance != null && ladderMaxJumpSpeedSaved)
-            {
-                GTPlayer.Instance.maxJumpSpeed = ladderSavedMaxJumpSpeed;
-                ladderMaxJumpSpeedSaved = false;
-            }
+            if (handDirectionFlyWasActive && GorillaTagger.Instance != null && GorillaTagger.Instance.rigidbody != null)
+                GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
+            leftHandFlyOrigin = null;
+            rightHandFlyOrigin = null;
+            handDirectionFlyWasActive = false;
         }
 
         private static bool handcuffActive;
@@ -3039,10 +2969,33 @@ namespace Pixelyth.Mods
         public static void ToggleSpaceGravity(bool enabled) =>
             GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
 
+        private static readonly Dictionary<GameObject, bool> planetZoneActiveStates = new Dictionary<GameObject, bool>();
+
         public static void TogglePlanetZones(bool enabled)
         {
-            foreach (PlanetZone zone in GetAllType<PlanetZone>())
-                zone.enabled = enabled;
+            if (!enabled)
+            {
+                foreach (PlanetZone zone in Object.FindObjectsOfType<PlanetZone>(true))
+                {
+                    if (zone == null || zone.gameObject == null)
+                        continue;
+
+                    GameObject zoneObject = zone.gameObject;
+                    if (!planetZoneActiveStates.ContainsKey(zoneObject))
+                        planetZoneActiveStates.Add(zoneObject, zoneObject.activeSelf);
+
+                    if (zoneObject.activeSelf)
+                        zoneObject.SetActive(false);
+                }
+
+                return;
+            }
+
+            foreach (KeyValuePair<GameObject, bool> zoneState in planetZoneActiveStates)
+                if (zoneState.Key != null)
+                    zoneState.Key.SetActive(zoneState.Value);
+
+            planetZoneActiveStates.Clear();
         }
 
         public static void Noclip()
@@ -3250,108 +3203,6 @@ namespace Pixelyth.Mods
                 EnableRig();
             weepingAngelFrozen = false;
             weepingAngelPlayer = null;
-        }
-
-        private static readonly float[] weepingRigDelays = { 0.5f, 1f, 2f };
-        private static readonly string[] weepingRigDelayNames = { "Short", "Normal", "Long" };
-        private static int weepingRigDelayIndex = 1;
-        private static float weepingRigObservedTime;
-        private static float weepingRigUnobservedTime;
-        private static bool weepingRigActive;
-        private static Vector3 weepingRigPosition;
-        private static Quaternion weepingRigRotation;
-        private static Vector3 weepingRigHeadPosition;
-        private static Quaternion weepingRigHeadRotation;
-        private static Vector3 weepingRigLeftPosition;
-        private static Vector3 weepingRigRightPosition;
-        private static Quaternion weepingRigLeftRotation;
-        private static Quaternion weepingRigRightRotation;
-
-        public static void ChangeWeepingRigTime(bool positive = true)
-        {
-            weepingRigDelayIndex = (weepingRigDelayIndex + (positive ? 1 : -1) + weepingRigDelays.Length) % weepingRigDelays.Length;
-            ButtonInfo button = Buttons.GetIndex("Change Weeping Rig Time");
-            if (button != null)
-                button.overlapText = $"Change Weeping Rig Time <color=grey>[</color><color=green>{weepingRigDelayNames[weepingRigDelayIndex]}</color><color=grey>]</color>";
-        }
-
-        public static void WeepingRig()
-        {
-            VRRig local = VRRig.LocalRig;
-            if (local == null || local.headMesh == null) return;
-
-            Vector3 targetPosition = weepingRigActive ? weepingRigHeadPosition : local.headMesh.transform.position;
-            bool watched = false;
-            foreach (VRRig rig in VRRigExtensions.ActiveRigs)
-            {
-                if (rig == null || rig.isLocal || rig.isOfflineVRRig || !rig.enabled || rig.headMesh == null) continue;
-                Transform eyes = rig.headMesh.transform;
-                Vector3 towardTarget = targetPosition - eyes.position;
-                float distance = towardTarget.magnitude;
-                if (distance < 0.1f || distance > 45f || Vector3.Angle(eyes.forward, towardTarget) >= 55f) continue;
-                Vector3 direction = towardTarget / distance;
-                if (!Physics.Raycast(eyes.position + direction * 0.35f, direction, distance - 0.7f, NoInvisibleLayersMask()))
-                {
-                    watched = true;
-                    break;
-                }
-            }
-
-            if (!weepingRigActive)
-            {
-                weepingRigObservedTime = watched ? weepingRigObservedTime + Time.deltaTime : 0f;
-                if (weepingRigObservedTime < weepingRigDelays[weepingRigDelayIndex]) return;
-
-                weepingRigActive = true;
-                weepingRigUnobservedTime = 0f;
-                weepingRigPosition = local.transform.position;
-                weepingRigRotation = local.transform.rotation;
-                weepingRigHeadPosition = local.headMesh.transform.position;
-                weepingRigHeadRotation = local.headMesh.transform.rotation;
-                weepingRigLeftPosition = local.leftHandTransform.position;
-                weepingRigRightPosition = local.rightHandTransform.position;
-                weepingRigLeftRotation = local.leftHandTransform.rotation;
-                weepingRigRightRotation = local.rightHandTransform.rotation;
-                local.enabled = false;
-            }
-
-            if (watched)
-            {
-                weepingRigUnobservedTime = 0f;
-                ApplyWeepingRigPose(local);
-            }
-            else if ((weepingRigUnobservedTime += Time.deltaTime) >= 0.35f)
-                DisableWeepingRig();
-            else
-                ApplyWeepingRigPose(local);
-        }
-
-        private static void ApplyWeepingRigPose(VRRig rig)
-        {
-            rig.transform.position = weepingRigPosition;
-            rig.transform.rotation = weepingRigRotation;
-            rig.head.rigTarget.transform.position = weepingRigHeadPosition;
-            rig.head.rigTarget.transform.rotation = weepingRigHeadRotation;
-            rig.leftHand.rigTarget.transform.position = weepingRigLeftPosition;
-            rig.rightHand.rigTarget.transform.position = weepingRigRightPosition;
-            rig.leftHand.rigTarget.transform.rotation = weepingRigLeftRotation;
-            rig.rightHand.rigTarget.transform.rotation = weepingRigRightRotation;
-        }
-
-        public static void DisableWeepingRig()
-        {
-            VRRig local = VRRig.LocalRig;
-            if (weepingRigActive && local != null)
-            {
-                local.transform.position = weepingRigPosition;
-                local.transform.rotation = weepingRigRotation;
-                if (GorillaTagger.Instance != null && GorillaTagger.Instance.rigidbody != null)
-                    GorillaTagger.Instance.rigidbody.linearVelocity = Vector3.zero;
-                local.enabled = true;
-            }
-            weepingRigActive = false;
-            weepingRigObservedTime = 0f;
-            weepingRigUnobservedTime = 0f;
         }
 
         public static void EnableRig()
