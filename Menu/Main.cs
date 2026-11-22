@@ -118,7 +118,7 @@ namespace Pixelyth.Menu
                 }
                 catch (Exception exception)
                 {
-                    LogManager.LogError($"Could not initialize info watch {i + 1}: {exception}");
+                    LogManager.LogError($"Could not initialize Info Watch {i + 1}: {exception}");
                 }
             }
 
@@ -574,17 +574,6 @@ namespace Pixelyth.Menu
                     }
                     else
                         adminTime = 0f;
-                }
-
-                if (watermarkImage != null)
-                {
-                    RectTransform watermarkTransform = watermarkImage.GetComponent<RectTransform>();
-                    watermarkTransform.localRotation = Quaternion.Euler(new Vector3(0f, 90f, 90f - (rockWatermark ? (Mathf.Sin(Time.time * 2f) * 10f) : 0f)));
-                    if (watermarkBackImage != null)
-                    {
-                        RectTransform backTransform = watermarkBackImage.GetComponent<RectTransform>();
-                        backTransform.localRotation = Quaternion.Euler(0f, 180f, 0f) * watermarkTransform.localRotation;
-                    }
                 }
 
                 if (animatedTitle && title != null)
@@ -1078,7 +1067,7 @@ namespace Pixelyth.Menu
                             toSortOf = enabledMods.ToArray();
                         }
 
-                        TextMeshProUGUI watchText = Watches[0].text;
+                        TMP_Text watchText = Watches[0].text;
 
                         string text = toSortOf[watchMenuIndex].buttonText;
 
@@ -2635,47 +2624,6 @@ namespace Pixelyth.Menu
                 modifiedByLabelComponent.rotation = Quaternion.Euler(new Vector3(0f, 90f, 90f));
 
                 FollowMenuSettings(modifiedByLabel);
-
-                if (!disableWatermark)
-                {
-                    watermarkImage = new GameObject
-                    {
-                        transform =
-                        {
-                            parent = canvasObj.transform
-                        }
-                    }.AddComponent<Image>();
-
-                    if (watermarkMat == null)
-                        watermarkMat = new Material(watermarkImage.material);
-
-                    watermarkImage.material = watermarkMat;
-                    watermarkImage.material.SetTexture("_MainTex", customWatermark ?? LoadTextureFromResource($"{PluginInfo.ClientResourcePath}.icon.png"));
-
-                    RectTransform imageTransform = watermarkImage.GetComponent<RectTransform>();
-                    imageTransform.localPosition = Vector3.zero;
-                    imageTransform.sizeDelta = new Vector2(.15f, .15f);
-
-                    imageTransform.localPosition = new Vector3(0.04f, 0f, 0f);
-
-                    FollowMenuSettings(watermarkImage);
-
-                    imageTransform.localRotation = Quaternion.Euler(new Vector3(0f, 90f, 90f - (rockWatermark ? (Mathf.Sin(Time.time * 2f) * 10f) : 0f)));
-
-                    if (customWatermark == null)
-                        watermarkImage.AddComponent<UIColorChanger>().colors = textColors[0];
-                    else
-                        watermarkImage.material.color = Color.white;
-
-                    watermarkBackImage = Instantiate(watermarkImage, canvasObj.transform);
-                    watermarkBackImage.gameObject.name = "PixelythWatermarkBack";
-                    watermarkBackMat = new Material(watermarkImage.material);
-                    watermarkBackImage.material = watermarkBackMat;
-                    RectTransform backTransform = watermarkBackImage.GetComponent<RectTransform>();
-                    backTransform.localPosition = new Vector3(-imageTransform.localPosition.x, imageTransform.localPosition.y, imageTransform.localPosition.z);
-                    backTransform.sizeDelta = imageTransform.sizeDelta;
-                    backTransform.localRotation = Quaternion.Euler(0f, 180f, 0f) * imageTransform.localRotation;
-                }
             }
 
             if (!disableFpsCounter)
@@ -5434,18 +5382,23 @@ namespace Pixelyth.Menu
             if (!Mathf.Approximately(tmp.characterSpacing, targetSpacing))
                 tmp.characterSpacing = targetSpacing;
 
-            if (outlineText)
+            Material fontMaterial = tmp.fontSharedMaterial;
+            bool supportsOutline = fontMaterial != null && fontMaterial.HasProperty("_OutlineWidth");
+            if (supportsOutline)
             {
-                const float outlineWidth = 0.2f;
+                if (outlineText)
+                {
+                    const float outlineWidth = 0.2f;
 
-                if (!Mathf.Approximately(tmp.outlineWidth, outlineWidth))
-                    tmp.outlineWidth = outlineWidth;
+                    if (!Mathf.Approximately(tmp.outlineWidth, outlineWidth))
+                        tmp.outlineWidth = outlineWidth;
 
-                if (tmp.outlineColor != Color.black)
-                    tmp.outlineColor = Color.black;
+                    if (tmp.outlineColor != Color.black)
+                        tmp.outlineColor = Color.black;
+                }
+                else if (!Mathf.Approximately(tmp.outlineWidth, 0f))
+                    tmp.outlineWidth = 0f;
             }
-            else if (!Mathf.Approximately(tmp.outlineWidth, 0f))
-                tmp.outlineWidth = 0f;
 
             FontStyles targetStyle = tmp.fontStyle;
 
@@ -6846,8 +6799,6 @@ jgs \_   _/ |Oo\
         public static bool legacyGhostview;
         public static bool checkMode;
         public static bool lastChecker;
-        public static bool rockWatermark = false;
-        public static bool disableWatermark;
         public static string CosmeticsOwned;
 
         public static Vector3 MidPosition;
@@ -6980,8 +6931,6 @@ jgs \_   _/ |Oo\
         public static SphereCollider buttonCollider;
         public static GameObject canvasObj;
         public static TextMeshPro fpsCount;
-        public static Image watermarkImage;
-        public static Image watermarkBackImage;
         private static float fpsAvgTime;
         private static float fpsAverageNumber;
         private static float? potatoTime = 0f;
@@ -7000,8 +6949,6 @@ jgs \_   _/ |Oo\
         public static Material searchMat;
         public static Material updateMat;
         public static Material promptMat;
-        public static Material watermarkMat;
-        public static Material watermarkBackMat;
         public static Material returnMat;
         public static Material debugMat;
 
@@ -7019,15 +6966,12 @@ jgs \_   _/ |Oo\
         public class WatchInfo
         {
             public GameObject gameObject;
-            public TextMeshProUGUI text;
+            public TMP_Text text;
             public GameObject shell;
             public Image indicator;
 
             public void Update()
             {
-                // Watches can outlive their UI objects when the wrist menu is rebuilt or a
-                // scene omits one of the optional watch elements. Skip incomplete entries
-                // instead of throwing every frame from the main menu prefix.
                 if (text == null || shell == null)
                     return;
 

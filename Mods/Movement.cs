@@ -115,10 +115,9 @@ namespace Pixelyth.Mods
                 case 6:
                     platformRenderer.enabled = false;
                     break;
-                case 4:
-                    break;
                 case 5:
                     platform.AddComponent<GorillaSurfaceOverride>().overrideIndex = 29;
+                    
                     if (glass == null)
                         glass = new Material(Shader.Find("GUI/Text Shader"));
 
@@ -2834,35 +2833,6 @@ namespace Pixelyth.Mods
                 button.overlapText = $"Change World Scale <color=grey>[</color><color=green>{worldScaleNames[worldScaleCycle]}</color><color=grey>]</color>";
         }
 
-        private static readonly LinkedList<(Vector3 position, Quaternion rotation, float timestamp)> timeRewindBuffer = new LinkedList<(Vector3, Quaternion, float)>();
-
-        public static void EnableTimeRewind() => timeRewindBuffer.Clear();
-
-        public static void TimeRewind()
-        {
-            if (GorillaTagger.Instance == null || GorillaTagger.Instance.rigidbody == null) return;
-            Rigidbody body = GorillaTagger.Instance.rigidbody;
-
-            if (leftGrab || rightGrab)
-            {
-                if (timeRewindBuffer.Last != null)
-                {
-                    var sample = timeRewindBuffer.Last.Value;
-                    timeRewindBuffer.RemoveLast();
-                    body.position = sample.position;
-                    body.rotation = sample.rotation;
-                    body.linearVelocity = Vector3.zero;
-                }
-                return;
-            }
-
-            timeRewindBuffer.AddLast((body.position, body.rotation, Time.time));
-            while (timeRewindBuffer.First != null && Time.time - timeRewindBuffer.First.Value.timestamp > 30f)
-                timeRewindBuffer.RemoveFirst();
-        }
-
-        public static void DisableTimeRewind() => timeRewindBuffer.Clear();
-
         private static Vector3? leftHandFlyOrigin;
         private static Vector3? rightHandFlyOrigin;
         private static bool handDirectionFlyWasActive;
@@ -2964,38 +2934,6 @@ namespace Pixelyth.Mods
             handcuffActive = false;
             handcuffTarget = null;
             gunLockedPlayer = null;
-        }
-
-        public static void ToggleSpaceGravity(bool enabled) =>
-            GetObject("SpaceMap/Space_Landing_V3/GravityZone_Spherical").SetActive(enabled);
-
-        private static readonly Dictionary<GameObject, bool> planetZoneActiveStates = new Dictionary<GameObject, bool>();
-
-        public static void TogglePlanetZones(bool enabled)
-        {
-            if (!enabled)
-            {
-                foreach (PlanetZone zone in Object.FindObjectsByType<PlanetZone>(FindObjectsSortMode.None))
-                {
-                    if (zone == null || zone.gameObject == null)
-                        continue;
-
-                    GameObject zoneObject = zone.gameObject;
-                    if (!planetZoneActiveStates.ContainsKey(zoneObject))
-                        planetZoneActiveStates.Add(zoneObject, zoneObject.activeSelf);
-
-                    if (zoneObject.activeSelf)
-                        zoneObject.SetActive(false);
-                }
-
-                return;
-            }
-
-            foreach (KeyValuePair<GameObject, bool> zoneState in planetZoneActiveStates)
-                if (zoneState.Key != null)
-                    zoneState.Key.SetActive(zoneState.Value);
-
-            planetZoneActiveStates.Clear();
         }
 
         public static void Noclip()

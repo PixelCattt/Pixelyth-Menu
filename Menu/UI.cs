@@ -54,7 +54,7 @@ namespace Pixelyth.Menu
             Transform canvas = uiPrefab.transform.Find("Canvas");
             if (canvas == null)
                 return;
-            
+
             versionLabel = canvas.Find("VersionLabel")?.GetComponent<TextMeshProUGUI>();
             roomStatus = canvas.Find("RoomStatus")?.GetComponent<TextMeshProUGUI>();
             arraylist = canvas.Find("Arraylist")?.GetComponent<TextMeshProUGUI>();
@@ -194,7 +194,7 @@ namespace Pixelyth.Menu
 
         private GameObject uiPrefab;
         private GameObject debugUI;
-        
+
         private TextMeshProUGUI versionLabel;
         private Vector2 versionLabelDefaultAnchorMin,
                         versionLabelDefaultAnchorMax,

@@ -75,6 +75,78 @@ namespace Pixelyth.Mods
             NotificationManager.SendNotification("<color=grey>[</color><color=red>PANIC</color><color=grey>]</color> Previous mod state restored.");
         }
 
+        #region Watchdog
+
+        private static readonly HashSet<string> watchlist = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static bool watchdogLoaded;
+        private static float watchdogNextCheck;
+        private static string WatchlistFilePath => Path.Combine(PluginInfo.BaseDirectory, "Watchlist.txt");
+
+        private static void EnsureWatchlistLoaded()
+        {
+            if (watchdogLoaded) return;
+            watchdogLoaded = true;
+            try
+            {
+                if (File.Exists(WatchlistFilePath))
+                    foreach (string raw in File.ReadAllLines(WatchlistFilePath))
+                    {
+                        string value = raw.Trim();
+                        if (value.Length > 0 && !value.StartsWith("#")) watchlist.Add(value);
+                    }
+            }
+            catch (Exception ex) { LogManager.LogError($"Failed to load Watchdog list: {ex.Message}"); }
+        }
+
+        private static void SaveWatchlist()
+        {
+            try { File.WriteAllLines(WatchlistFilePath, watchlist.OrderBy(value => value)); }
+            catch (Exception ex) { LogManager.LogError($"Failed to save Watchdog list: {ex.Message}"); }
+        }
+
+        public static void WatchdogMarkAll()
+        {
+            EnsureWatchlistLoaded();
+            if (!NetworkSystem.Instance.InRoom) return;
+            foreach (NetPlayer player in NetworkSystem.Instance.PlayerListOthers)
+            {
+                if (!string.IsNullOrWhiteSpace(player.UserId)) watchlist.Add(player.UserId);
+                else if (!string.IsNullOrWhiteSpace(player.NickName)) watchlist.Add(player.NickName);
+            }
+            SaveWatchlist();
+            NotificationManager.SendNotification($"[WATCHDOG] Added room players to watchlist. Total: {watchlist.Count}.");
+        }
+
+        public static void WatchdogClear()
+        {
+            EnsureWatchlistLoaded();
+            watchlist.Clear();
+            SaveWatchlist();
+            NotificationManager.SendNotification("[WATCHDOG] Watchlist cleared.");
+        }
+
+        public static void WatchdogAutoLeave()
+        {
+            EnsureWatchlistLoaded();
+            if (!NetworkSystem.Instance.InRoom || watchlist.Count == 0 || Time.time < watchdogNextCheck) return;
+            watchdogNextCheck = Time.time + 0.5f;
+
+            foreach (NetPlayer player in NetworkSystem.Instance.PlayerListOthers)
+            {
+                bool flagged = (!string.IsNullOrEmpty(player.UserId) && watchlist.Contains(player.UserId))
+                    || (!string.IsNullOrEmpty(player.NickName) && watchlist.Contains(player.NickName));
+                if (!flagged) continue;
+
+                string name = string.IsNullOrEmpty(player.NickName) ? player.UserId : player.NickName;
+                NetworkSystem.Instance.ReturnToSinglePlayer();
+                RPCProtection();
+                NotificationManager.SendNotification($"[WATCHDOG] {name} is on your watchlist; disconnected.");
+                return;
+            }
+        }
+
+        #endregion
+
         private static bool moduleHistoryLogEnabled;
         private static string ModuleHistoryPath => Path.Combine(PluginInfo.BaseDirectory, "ModuleHistory.log");
 

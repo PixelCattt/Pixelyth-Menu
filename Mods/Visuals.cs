@@ -828,35 +828,6 @@ namespace Pixelyth.Mods
             }
         }
 
-        private static GameObject monkeLight;
-        public static void MonkeLight()
-        {
-            if (GorillaTagger.Instance == null || GorillaTagger.Instance.headCollider == null)
-                return;
-
-            if (monkeLight == null)
-            {
-                monkeLight = new GameObject("Pixelyth_MonkeLight");
-                monkeLight.transform.SetParent(GorillaTagger.Instance.headCollider.transform, false);
-                monkeLight.transform.localPosition = Vector3.forward * 0.25f;
-                Light spotlight = monkeLight.AddComponent<Light>();
-                spotlight.type = LightType.Spot;
-                spotlight.range = 50f;
-                spotlight.intensity = 40f;
-                spotlight.spotAngle = 75f;
-                spotlight.shadows = LightShadows.None;
-                spotlight.cullingMask = ~0;
-                spotlight.enabled = true;
-            }
-        }
-
-        public static void DisableMonkeLight()
-        {
-            if (monkeLight != null)
-                Object.Destroy(monkeLight);
-            monkeLight = null;
-        }
-
         private static GameObject minimapCanvasObject;
         private static GameObject minimapCameraObject;
         private static Camera minimapCamera;
@@ -1093,7 +1064,7 @@ namespace Pixelyth.Mods
                 Transform child = anchor.Find(childName);
                 if (child != null)
                     child.gameObject.SetActive(false);
-                else
+                else if (childName != "Badge")
                     LogManager.LogWarning($"Info watch anchor has no optional '{childName}' child.");
             }
 
@@ -1119,7 +1090,10 @@ namespace Pixelyth.Mods
             if (legacyText != null)
                 Object.DestroyImmediate(legacyText);
 
-            TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
+            TMP_Text tmp = textObject.GetComponent<TMP_Text>();
+            if (tmp == null)
+                tmp = textObject.AddComponent<TextMeshProUGUI>();
+
             tmp.SafeSetFont(activeFont);
             tmp.SafeSetFontStyle(activeFontStyle);
             tmp.SafeSetFontSize(10);
@@ -1153,7 +1127,7 @@ namespace Pixelyth.Mods
             if (Watches.Count < 2 || Watches[1].text == null)
                 return;
 
-            TextMeshProUGUI tmp = Watches[1].text;
+            TMP_Text tmp = Watches[1].text;
 
             if (tmp)
             {

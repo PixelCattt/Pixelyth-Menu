@@ -3568,7 +3568,7 @@ namespace Pixelyth.Mods
         public static void CustomMenuBackground()
         {
             if (!File.Exists($"{PluginInfo.BaseDirectory}/CustomBackground.png"))
-                LoadTextureFromURL($"{PluginInfo.ServerResourcePath}/Images/CustomBackground.png", "CustomBackground.png"); // Do not move outside of its path
+                LoadTextureFromURL($"{PluginInfo.ServerResourcePath}/Images/CustomBackground.png", "CustomBackground.png"); // Do not move outside its path
 
             textureFileDirectory.Remove("CustomBackground.png");
 
@@ -3580,44 +3580,6 @@ namespace Pixelyth.Mods
         {
             customMenuBackgroundImage = null;
             doCustomMenuBackground = false;
-        }
-
-        public static void EnableWatermark()
-        {
-            bool enabled = Buttons.GetIndex("Custom Watermark").enabled;
-            if (enabled)
-            {
-                if (!File.Exists($"{PluginInfo.BaseDirectory}/CustomWatermark.png"))
-                    LoadTextureFromURL($"{PluginInfo.ServerResourcePath}/Images/CustomWatermark.png", "CustomWatermark.png"); // Do not move outside of its path
-
-                textureFileDirectory.Remove("CustomWatermark.png");
-                customWatermark = LoadTextureFromFile("CustomWatermark.png");
-            }
-            else
-            {
-                watermarkImage = new GameObject
-                {
-                    transform =
-                    {
-                        parent = canvasObj.transform
-                    }
-                }.AddComponent<Image>();
-
-                if (watermarkMat == null)
-                    watermarkMat = new Material(watermarkImage.material);
-
-                watermarkImage.material = watermarkMat;
-                watermarkImage.material.SetTexture("_MainTex", customWatermark ?? LoadTextureFromResource($"{PluginInfo.ClientResourcePath}.icon.png"));
-            }
-        }
-
-        public static void CustomWatermark()
-        {
-            if (!File.Exists($"{PluginInfo.BaseDirectory}/CustomWatermark.png"))
-                LoadTextureFromURL($"{PluginInfo.ServerResourcePath}/Images/CustomWatermark.png", "CustomWatermark.png"); // Do not move outside of its path
-
-            textureFileDirectory.Remove("CustomWatermark.png");
-            customWatermark = LoadTextureFromFile("CustomWatermark.png");
         }
 
         private static TMP_FontAsset chosenFont;
@@ -4352,8 +4314,6 @@ namespace Pixelyth.Mods
             canvasTransform.Find("Main/Sidebar").AddComponent<UIColorChanger>().colors = sidebarColor;
             canvasTransform.Find("Main/Separator").AddComponent<UIColorChanger>().colors = buttonColors[1];
 
-            canvasTransform.Find("Main/Sidebar/Watermark").localRotation = Quaternion.Euler(0f, 0f, rockWatermark ? Mathf.Sin(Time.time * 2f) * 10f : 0f);
-
             List<MaskableGraphic> toRecolor = new List<MaskableGraphic>();
             foreach (string partName in new[]
             {
@@ -4742,8 +4702,6 @@ namespace Pixelyth.Mods
             }
             else
             {
-                canvas.transform.Find("Main/Sidebar/Watermark").localRotation = Quaternion.Euler(0f, 0f, rockWatermark ? Mathf.Sin(Time.time * 2f) * 10f : 0f);
-
                 if (isSearching && Buttons.CurrentCategoryIndex != 0)
                 {
                     Transform searchBar = canvas.transform.Find("Main/ModuleTab/Search");

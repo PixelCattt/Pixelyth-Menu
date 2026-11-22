@@ -210,8 +210,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Custom Menu Theme", enableMethod = Settings.CustomMenuTheme, disableMethod = Settings.FixTheme, toolTip = "Changes the theme of the menu to a custom one."},
                 new ButtonInfo { buttonText = "Change Custom Menu Theme", method = Settings.ChangeCustomMenuTheme, isTogglable = false, toolTip = "Changes the theme of custom the menu."},
                 new ButtonInfo { buttonText = "Custom Menu Background", enableMethod = Settings.CustomMenuBackground, disableMethod = Settings.FixMenuBackground, toolTip = $"Changes the background of the menu to a custom image. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/CustomBackground.png)."},
-                new ButtonInfo { buttonText = "Custom Watermark", enableMethod = Settings.CustomWatermark, disableMethod =() => customWatermark = null, toolTip = $"Changes the watermark on the UI and the back of the menu to a custom image. You can change the photo inside of your Gorilla Tag files ({PluginInfo.BaseDirectory}/CustomWatermark.png)."},
-                new ButtonInfo { buttonText = "Disable Watermark", enableMethod =() => disableWatermark = true, disableMethod =() => disableWatermark = false, toolTip = "Disables the watermark on the UI and the back of the menu."},
                 ButtonHelper.CreateNumeric("Change Page Type", 1, 6, pageButtonType, Settings.ApplyPageType, toolTip: "Changes the type of page buttons."),
                 ButtonHelper.CreateNumeric("Change Arrow Type", 0, arrowTypes.Length - 1, arrowType, Settings.ApplyArrowType, toolTip: "Changes the type of arrows on the page buttons."),
                 ButtonHelper.CreateNumeric("Change Font Type", 0, 14, fontCycle, Settings.ApplyFontType, toolTip: "Changes the type of font."),
@@ -600,9 +598,9 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Anti Crash", overlapText = "Exploit Guard", aliases = new[] { "Anti Crash" }, enableMethod =() => AntiCrashPatches.enabled = true, disableMethod =() => AntiCrashPatches.enabled = false, toolTip = "Prevents crashers from completely annihilating your computer."},
                 new ButtonInfo { buttonText = "Anti Ghost", enableMethod =() => AntiGhostPatch.Enabled = true, disableMethod =() => AntiGhostPatch.Enabled = false, toolTip = "Blocks unauthorized ghost and isolate events."},
                 new ButtonInfo { buttonText = "Anti Ghost Notify", enableMethod =() => AntiGhostPatch.Notify = true, disableMethod =() => AntiGhostPatch.Notify = false, toolTip = "Notifies you when an unauthorized ghost or isolate event is blocked."},
-                new ButtonInfo { buttonText = "Watchdog Auto-Leave", method = Watchdog.WatchdogAutoLeave, toolTip = "Leaves the room when a player on your local Watchlist.txt file joins."},
-                new ButtonInfo { buttonText = "Watchdog Mark All", method = Watchdog.WatchdogMarkAll, isTogglable = false, toolTip = "Adds the other players currently in the room to your Watchdog list."},
-                new ButtonInfo { buttonText = "Watchdog Clear", method = Watchdog.WatchdogClear, isTogglable = false, toolTip = "Clears your local Watchdog list."},
+                new ButtonInfo { buttonText = "Watchdog Auto-Leave", method = Safety.WatchdogAutoLeave, toolTip = "Leaves the room when a player on your local Watchlist.txt file joins."},
+                new ButtonInfo { buttonText = "Watchdog Mark All", method = Safety.WatchdogMarkAll, isTogglable = false, toolTip = "Adds the other players currently in the room to your Watchdog list."},
+                new ButtonInfo { buttonText = "Watchdog Clear", method = Safety.WatchdogClear, isTogglable = false, toolTip = "Clears your local Watchdog list."},
                 new ButtonInfo { buttonText = "Anti Ban Crash", enableMethod =() => BanPatches.AntiBanCrash1.enabled = true, disableMethod =() => BanPatches.AntiBanCrash1.enabled = false, toolTip = "Prevents your game from crashing when you are banned."},
                 new ButtonInfo { buttonText = "Anti Kick", enableMethod = Experimental.OnlySerializeNecessary, disableMethod =() => SerializePatch.OverrideSerialization = null, toolTip = "Only networks the necessities to prevent getting kicked."},
                 new ButtonInfo { buttonText = "Anti Name Ban", enableMethod =() => BanPatches.enabled = true, method = Safety.AntiNameBan, disableMethod =() => BanPatches.enabled = false, toolTip = "Prevents you from getting banned for setting your name to bad things."},
@@ -708,8 +706,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Low Gravity", aliases = new[] { "Moon Gravity" }, postMethod = Movement.LowGravity, toolTip = "Makes gravity lower on your character."},
                 new ButtonInfo { buttonText = "Zero Gravity", aliases = new[] { "No Gravity" }, postMethod = Movement.ZeroGravity, toolTip = "Disables gravity on your character."},
                 new ButtonInfo { buttonText = "High Gravity", aliases = new[] { "Mars Gravity" }, postMethod = Movement.HighGravity, toolTip = "Makes gravity higher on your character."},
-                new ButtonInfo { buttonText = "Disable Space Gravity", method =() => Movement.ToggleSpaceGravity(false), disableMethod =() => Movement.ToggleSpaceGravity(true), toolTip = "Disables the main gravity zone on the space map."},
-                new ButtonInfo { buttonText = "Disable Planet Zones", method =() => Movement.TogglePlanetZones(false), disableMethod =() => Movement.TogglePlanetZones(true), toolTip = "Disables the rotating and velocity-changing zones on the space map."},
                 new ButtonInfo { buttonText = "Reverse Gravity", aliases = new[] { "Flip Gravity" }, enableMethod = Movement.ReverseGravity, disableMethod = Movement.UnflipCharacter, toolTip = "Reverses gravity on your character."},
                 new ButtonInfo { buttonText = "Weeping Angel", method = Movement.WeepingAngel, disableMethod = Movement.DisableWeepingAngel, toolTip = "Freezes your rig while the selected player, or anyone, is looking at you."},
                 new ButtonInfo { buttonText = "Weeping Angel Chase", method = Movement.WeepingAngel, disableMethod = Movement.DisableWeepingAngel, toolTip = "Moves toward the selected or nearest player when nobody is looking at you. Uses half your fly speed."},
@@ -770,7 +766,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Uncap Arm Length", aliases = new[] { "Armmax" }, method =() => { GTPlayer.Instance.leftHand.maxArmLength = float.MaxValue; GTPlayer.Instance.rightHand.maxArmLength = float.MaxValue; }, disableMethod =() => { GTPlayer.Instance.leftHand.maxArmLength = 1; GTPlayer.Instance.rightHand.maxArmLength = 1; }, toolTip = "Removes the arm distance limit."},
                 new ButtonInfo { buttonText = "Steam Long Arms", method = Movement.EnableSteamLongArms, disableMethod = Movement.DisableSteamLongArms, toolTip = "Gives you long arms similar to override world scale."},
                 new ButtonInfo { buttonText = "World Scale", method = Movement.WorldScale, disableMethod = Movement.DisableWorldScale, toolTip = "Scales your player world from 0.1x to 3x. Set the amount in Movement Settings."},
-                new ButtonInfo { buttonText = "Time Rewind", enableMethod = Movement.EnableTimeRewind, method = Movement.TimeRewind, disableMethod = Movement.DisableTimeRewind, toolTip = "Records your positions for up to 30 seconds; hold either grip to rewind in real time."},
                 new ButtonInfo { buttonText = "Hand Direction Fly", enableMethod = Movement.EnableHandDirectionFly, method = Movement.HandDirectionFly, disableMethod = Movement.DisableHandDirectionFly, toolTip = "Hold either grip, then move that hand in the direction you want to fly. Does not disable collisions."},
                 new ButtonInfo { buttonText = "Handcuff", enableMethod = Movement.EnableHandcuff, method = Movement.Handcuff, disableMethod = Movement.DisableHandcuff, toolTip = "Shoot a player to move your rig toward them. This locally tethers their displayed rig and does not control their authoritative movement."},
                 new ButtonInfo { buttonText = "Stick Long Arms", method = Movement.StickLongArms, toolTip = "Makes you look like you're using sticks."},
@@ -942,7 +937,6 @@ namespace Pixelyth.Menu
                 new ButtonInfo { buttonText = "Evening Time", method =() => BetterDayNightManager.instance.SetTimeOfDay(7), toolTip = "Sets your time of day to evening."},
                 new ButtonInfo { buttonText = "Night Time", method =() => BetterDayNightManager.instance.SetTimeOfDay(0), toolTip = "Sets your time of day to night."},
                 new ButtonInfo { buttonText = "Fullbright", method =() => Visuals.SetFullbrightStatus(true), disableMethod =() => Visuals.SetFullbrightStatus(false), toolTip = "Disables the dynamic lighting in maps that use it."},
-                new ButtonInfo { buttonText = "Monke Light", method = Visuals.MonkeLight, disableMethod = Visuals.DisableMonkeLight, toolTip = "Adds a forward facing spotlight to your head."},
                 new ButtonInfo { buttonText = "Minimap", method = Visuals.Minimap, disableMethod = Visuals.DisableMinimap, toolTip = "Shows a small live overhead camera view in front of your headset."},
 
                 new ButtonInfo { buttonText = "Remove Blindfold", method = Visuals.RemoveBlindfold, toolTip = "Disables the blindfold in the prop hunt map."},
@@ -2661,8 +2655,9 @@ namespace Pixelyth.Menu
 
                 new ButtonInfo { buttonText = "Better FPS Boost", enableMethod = Experimental.BetterFPSBoost, disableMethod = Experimental.DisableBetterFPSBoost, toolTip = "Makes everything one color, boosting your FPS."},
 
-                // new ButtonInfo { buttonText = "Replay Tutorial", method = Settings.ShowTutorial, isTogglable = false, toolTip = "Replays the tutorial video."},
                 new ButtonInfo { buttonText = "Disorganize Menu", method = Settings.DisorganizeMenu, isTogglable = false, toolTip = "Disorganizes the entire menu. This cannot be undone."},
+                
+                // new ButtonInfo { buttonText = "Replay Tutorial", method = Settings.ShowTutorial, isTogglable = false, toolTip = "Replays the tutorial video."},
             },
 
             new[] { // Safety Settings [28]
@@ -2674,7 +2669,7 @@ namespace Pixelyth.Menu
                 ButtonHelper.CreateNumeric("Change FPS Spoof Value", 1, 120, 90, v => GTPlayerStatsPatch.FPS = (short)v, toolTip: "Changes the target FPS for the FPS Spoof mod."),
                 ButtonHelper.CreateNumeric("Change Target FPS Spoof Value", 1, 120, 90, v => GTPlayerStatsPatch.TargetFPS = (short)v, toolTip: "Changes the target FPS used by the FPS Spoof mod."),
                 ButtonHelper.CreateNumeric("Change Ping Spoof Value", short.MinValue, short.MaxValue, 60, v => GTPlayerStatsPatch.Ping = (short)v, toolTip: "Changes the target ping for the Ping Spoof mod."),
-                
+
                 new ButtonInfo { buttonText = "Hide Anti Cheat Report Reasons", enableMethod =() => AntiCheatPatches.SendReportPatch.AntiCheatReasonHide = true, disableMethod =() => AntiCheatPatches.SendReportPatch.AntiCheatReasonHide = false, toolTip = "Hides the reason for Show Anti Cheat Reports."},
 
                 new ButtonInfo { buttonText = "Visualize Anti Report", method = Safety.VisualizeAntiReport, toolTip = "Visualizes the distance threshold for the anti report mods."},

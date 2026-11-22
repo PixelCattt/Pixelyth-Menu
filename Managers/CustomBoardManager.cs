@@ -35,13 +35,10 @@ namespace Pixelyth.Managers
     public class CustomBoardManager : MonoBehaviour
     {
         public static CustomBoardManager instance;
-        private string lastAppliedMotdBody;
-        private bool loggedFirstBoardUpdate;
         public void Awake()
         {
             instance = this;
             SceneManager.sceneLoaded += SceneLoaded;
-            LogManager.Log($"[MOTD Debug] CustomBoardManager.Awake on '{gameObject.name}' (active={gameObject.activeInHierarchy}, enabled={enabled}, scene='{gameObject.scene.name}'); templateLength={motdTemplate?.Length ?? 0}, dirty={motdTextDirty}.");
         }
 
         private static bool _customBoardColorsEnabled = true;
@@ -201,7 +198,6 @@ namespace Pixelyth.Managers
         public GameObject motdText;
 
         private TMP_FontAsset archiveGorillaTagFont;
-        private string lastMotdError;
 
         private string cachedMotdHeading;
         private string cachedMotdBody;
@@ -243,31 +239,21 @@ namespace Pixelyth.Managers
 
         private void RebuildMotdText()
         {
-            LogManager.Log($"[MOTD Debug] Rebuild started: templateLength={motdTemplate?.Length ?? 0}, version={PluginInfo.Version}, modCount={fullModAmount}, buildType={(PluginInfo.BetaBuild ? "BETA" : "RELEASE")}, timestamp={PluginInfo.BuildTimestamp}.");
             cachedMotdHeading = FollowMenuSettings($"Thank You for using {(doCustomName ? customMenuName : menuName)}!");
             try
             {
                 cachedMotdBody = FollowMenuSettings(string.Format(motdTemplate, PluginInfo.Version, fullModAmount, PluginInfo.BetaBuild ? "BETA" : "RELEASE", PluginInfo.BuildTimestamp));
-                LogManager.Log($"[MOTD Debug] Rebuild succeeded: heading='{cachedMotdHeading}', bodyLength={cachedMotdBody?.Length ?? 0}, body='{cachedMotdBody}'.");
             }
             catch (FormatException exception)
             {
-                Debug.LogError($"[Pixelyth] MOTD template formatting failed: {exception.Message}");
+                LogManager.LogError($"MOTD template formatting failed: {exception.Message}");
                 cachedMotdBody = FollowMenuSettings(motdTemplate);
-                LogManager.LogError($"[MOTD Debug] Rebuild fallback used unformatted template: bodyLength={cachedMotdBody?.Length ?? 0}, body='{cachedMotdBody}'.");
             }
             motdTextDirty = false;
-            LogManager.Log($"[MOTD Debug] Rebuild finished: dirty={motdTextDirty}, cachedBodyNull={cachedMotdBody == null}.");
         }
 
         public void Update()
         {
-            if (!loggedFirstBoardUpdate)
-            {
-                loggedFirstBoardUpdate = true;
-                LogManager.Log($"[MOTD Debug] First board Update: scene='{gameObject.scene.name}', active={gameObject.activeInHierarchy}, enabled={enabled}, templateLength={motdTemplate?.Length ?? 0}, dirty={motdTextDirty}.");
-            }
-
             if (!hasSetAllBoardColors)
             {
                 try
@@ -376,17 +362,18 @@ namespace Pixelyth.Managers
 
             try
             {
-                BoardMaterial.color = CustomBoardColorsEnabled ? backgroundColor.GetCurrentColor() : (Color)new Color32(0, 59, 4, 255);
+                BoardMaterial.color = CustomBoardColorsEnabled
+                    ? backgroundColor.GetCurrentColor()
+                    : (Color)new Color32(0, 59, 4, 255);
 
                 if (motdTitle == null)
                 {
-                    GameObject motdObject = GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/motdHeadingText");
-                    LogManager.Log($"[MOTD Debug] Heading source lookup: found={motdObject != null}, active={(motdObject != null && motdObject.activeInHierarchy)}.");
+                    GameObject motdObject =
+                        GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/motdHeadingText");
                     if (motdObject == null)
                         throw new MissingReferenceException("Could not find TreeRoom/motdHeadingText.");
                     motdTitle = Instantiate(motdObject, motdObject.transform.parent);
                     motdObject.SetActive(false);
-                    LogManager.Log($"[MOTD Debug] Heading clone created: name='{motdTitle.name}', TMP={motdTitle.GetComponent<TextMeshPro>() != null}.");
                 }
 
                 TextMeshPro motdHeadingText = motdTitle.GetComponent<TextMeshPro>();
@@ -410,7 +397,6 @@ namespace Pixelyth.Managers
                 if (motdText == null)
                 {
                     GameObject motdObject = GetObject("Environment Objects/LocalObjects_Prefab/TreeRoom/motdBodyText");
-                    LogManager.Log($"[MOTD Debug] Body source lookup: found={motdObject != null}, active={(motdObject != null && motdObject.activeInHierarchy)}.");
                     if (motdObject == null)
                         throw new MissingReferenceException("Could not find TreeRoom/motdBodyText.");
                     motdText = Instantiate(motdObject, motdObject.transform.parent);
@@ -419,7 +405,6 @@ namespace Pixelyth.Managers
                     PlayFabTitleDataTextDisplay titleDataDisplay = motdText.GetComponent<PlayFabTitleDataTextDisplay>();
                     if (titleDataDisplay != null)
                         titleDataDisplay.enabled = false;
-                    LogManager.Log($"[MOTD Debug] Body clone created: name='{motdText.name}', active={motdText.activeInHierarchy}, TMP={motdText.GetComponent<TextMeshPro>() != null}, PlayFabDisplayDisabled={titleDataDisplay != null}.");
                 }
 
                 TextMeshPro motdBodyText = motdText.GetComponent<TextMeshPro>();
@@ -435,21 +420,10 @@ namespace Pixelyth.Managers
 
                 if (motdTextDirty) RebuildMotdText();
                 motdBodyText.SafeSetText(cachedMotdBody);
-                if (lastAppliedMotdBody != cachedMotdBody)
-                {
-                    lastAppliedMotdBody = cachedMotdBody;
-                    LogManager.Log($"[MOTD Debug] Body text applied: object='{motdText.name}', active={motdText.activeInHierarchy}, TMP enabled={motdBodyText.enabled}, textLength={motdBodyText.text?.Length ?? 0}, text='{motdBodyText.text}'.");
-                }
-                lastMotdError = null;
             }
             catch (Exception exception)
             {
-                if (lastMotdError != exception.Message)
-                {
-                    Debug.LogError($"[Pixelyth] Failed to update the MOTD board: {exception}");
-                    LogManager.LogError($"[MOTD Debug] Board update failed: source={exception.Source}, type={exception.GetType().FullName}, message={exception.Message}, stack={exception.StackTrace}");
-                }
-                lastMotdError = exception.Message;
+                LogManager.LogError($"Failed to update the MOTD board: {exception}");
             }
 
             try
@@ -489,11 +463,10 @@ namespace Pixelyth.Managers
 
         public void SceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            LogManager.Log($"[MOTD Debug] SceneLoaded event: scene='{scene.name}', mode={mode}, customBoardColors={CustomBoardColorsEnabled}.");
             if (!CustomBoardColorsEnabled) return;
             if (!BoardInformations.TryGetValue(scene.name, out var config))
             {
-                LogManager.Log($"[MOTD Debug] No custom object-board configuration for scene '{scene.name}'.");
+                LogManager.Log($"No custom object-board configuration for Scene '{scene.name}'.");
                 return;
             }
 
