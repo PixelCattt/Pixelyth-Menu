@@ -7025,7 +7025,16 @@ jgs \_   _/ |Oo\
 
             public void Update()
             {
+                // Watches can outlive their UI objects when the wrist menu is rebuilt or a
+                // scene omits one of the optional watch elements. Skip incomplete entries
+                // instead of throwing every frame from the main menu prefix.
+                if (text == null || shell == null)
+                    return;
+
                 Renderer renderer = shell.GetComponent<Renderer>();
+                if (renderer == null)
+                    return;
+
                 if (text.font != activeFont)
                     text.SafeSetFont(activeFont);
                 if (text.fontStyle != activeFontStyle)
