@@ -67,6 +67,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
         public static bool OutdatedVersion;
 
         private static bool GivenAdminMods;
+        private static bool loggedWaitingForConnection;
 
         private static string LastPollAnswered;
 
@@ -78,6 +79,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
         {
             instance = this;
             DataLoadTime = Time.time + 5f;
+            DataDebug($"ServerData.Awake on '{gameObject.name}' (active={gameObject.activeInHierarchy}, enabled={enabled}); first request scheduled in 5 seconds. Endpoint={ServerEndpoint}.");
 
             NetworkSystem.Instance.OnJoinedRoomEvent += OnJoinRoom;
 
@@ -90,18 +92,28 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
 
         public void Update()
         {
-            if (DataLoadTime > 0f && Time.time > DataLoadTime && GorillaComputer.instance.isConnectedToMaster)
+            bool connectedToMaster = GorillaComputer.instance != null && GorillaComputer.instance.isConnectedToMaster;
+            if (DataLoadTime > 0f && Time.time > DataLoadTime && !connectedToMaster && !loggedWaitingForConnection)
+            {
+                loggedWaitingForConnection = true;
+                DataDebug($"Initial server-data request is waiting for GorillaComputer connection. connected={connectedToMaster}, time={Time.time:F1}, scheduled={DataLoadTime:F1}.");
+            }
+
+            if (DataLoadTime > 0f && Time.time > DataLoadTime && connectedToMaster)
             {
                 DataLoadTime = Time.time + 5f;
+                loggedWaitingForConnection = false;
 
                 LoadAttempts++;
                 if (LoadAttempts >= 3)
                 {
+                    DataDebug($"Initial refresh attempt limit reached at counter={LoadAttempts}; disabling initial retry timer. The 30-second refresh timer may still retry later.");
                     Console.Log("Server Data could not be loaded");
                     DataLoadTime = -1f;
                     return;
                 }
 
+                DataDebug($"Starting initial refresh attempt {LoadAttempts}/2 at t={Time.time:F1}.");
                 Console.Log("Attempting to load Web Data");
                 instance.StartCoroutine(RefreshServerData());
             }
@@ -111,6 +123,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 if (Time.time > ReloadTime)
                 {
                     ReloadTime = Time.time + 30f;
+                    DataDebug($"Starting scheduled 30-second refresh at t={Time.time:F1}.");
                     instance.StartCoroutine(RefreshServerData());
                 }
             }
@@ -132,10 +145,16 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
 
         private IEnumerator RefreshServerData()
         {
+            DataDebug("RefreshServerData entered.");
             yield return LoadServerData();
+            DataDebug("Server-data stage finished; starting report-data stage.");
             yield return LoadReportData();
+            DataDebug("Report-data stage finished; starting poll-data stage.");
             yield return LoadPollData();
+            DataDebug("RefreshServerData completed all stages.");
         }
+
+        private static void DataDebug(string message) => LogManager.Log($"[ServerData Debug] {message}");
 
         public static void OnJoinRoom()
         {
@@ -289,10 +308,15 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
         {
             using (UnityWebRequest request = UnityWebRequest.Get($"{ServerEndpoint}/serverdata"))
             {
+                request.timeout = 15;
+                float requestStartedAt = Time.realtimeSinceStartup;
+                DataDebug($"GET /serverdata starting (timeout={request.timeout}s).");
                 yield return request.SendWebRequest();
+                DataDebug($"GET /serverdata completed after {Time.realtimeSinceStartup - requestStartedAt:F2}s: result={request.result}, status={request.responseCode}, error='{request.error}', bytes={request.downloadedBytes}.");
 
                 if (request.result != UnityWebRequest.Result.Success)
                 {
+                    DataDebug($"GET /serverdata failed. Response body length={request.downloadHandler?.text?.Length ?? 0}.");
                     Console.Log($"Failed to load server data:\nError: {request.error}\nResult: {request.result}\nResponse Code: {request.responseCode}\nBody (if any): {request.downloadHandler?.text}");
                     if (CustomBoardManager.motdTemplate == "\n\n<align=\"center\"><b>Loading...</b></align>")
                     {
@@ -303,15 +327,18 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 }
 
                 string json = request.downloadHandler.text;
+                DataDebug($"GET /serverdata returned a body with {json?.Length ?? 0} characters.");
                 DataLoadTime = -1f;
 
                 JObject data = null;
                 try
                 {
                     data = JObject.Parse(json);
+                    DataDebug($"Server-data JSON parsed. Keys: {string.Join(", ", data.Properties().Select(property => property.Name))}.");
                 }
                 catch (Exception exception)
                 {
+                    DataDebug($"Server-data JSON parse threw {exception.GetType().Name}: {exception.Message}. Body preview: '{(json ?? string.Empty).Substring(0, Math.Min(json?.Length ?? 0, 240))}'.");
                     Console.Log($"Failed to parse server data: {exception.Message}");
                 }
 
@@ -324,15 +351,24 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 Console.Log($"Loaded server data from {ServerEndpoint}/serverdata (HTTP {request.responseCode}).");
 
                 Main.serverLink = (string)data["discord-invite"];
-                if (CustomBoardManager.motdTemplate != (string)data["motd"])
+                string receivedMotd = (string)data["motd"];
+                DataDebug($"Server-data fields read: discordInvitePresent={!string.IsNullOrEmpty(Main.serverLink)}, motdPresent={!string.IsNullOrEmpty(receivedMotd)}, motdLength={receivedMotd?.Length ?? 0}.");
+                if (string.IsNullOrEmpty(receivedMotd))
+                    DataDebug("WARNING: server-data JSON had no usable 'motd' string; board template remains unchanged.");
+                if (CustomBoardManager.motdTemplate != receivedMotd && !string.IsNullOrEmpty(receivedMotd))
                 {
+                    int previousMotdLength = CustomBoardManager.motdTemplate?.Length ?? 0;
                     CustomBoardManager.motdTextDirty = true;
-                    CustomBoardManager.motdTemplate = (string)data["motd"];
+                    CustomBoardManager.motdTemplate = receivedMotd;
+                    DataDebug($"MOTD template replaced; dirty=true, previousLength={previousMotdLength}, newLength={receivedMotd.Length}.");
                 }
+                else
+                    DataDebug($"MOTD template unchanged; dirty={CustomBoardManager.motdTextDirty}, currentLength={CustomBoardManager.motdTemplate?.Length ?? 0}.");
 
                 // Version Check
                 string minimumVersion = (string)data["min-menu-version"];
                 string version = (string)data["menu-version"];
+                DataDebug($"Menu version fields: local={PluginInfo.Version}, minimum={minimumVersion}, remote={version}.");
 
                 if (VersionToNumber(PluginInfo.Version) < VersionToNumber(minimumVersion))
                 {
@@ -360,14 +396,18 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 }
 
                 string minConsoleVersion = (string)data["min-console-version"];
-                Console.Log($"Console version gate: installed={Console.ConsoleVersion}, required={minConsoleVersion}, parsed installed={VersionToNumber(Console.ConsoleVersion)}, parsed required={VersionToNumber(minConsoleVersion)}");
-                if (VersionToNumber(Console.ConsoleVersion) >= VersionToNumber(minConsoleVersion))
+                int installedConsoleVersion = VersionToNumber(Console.ConsoleVersion);
+                int requiredConsoleVersion = VersionToNumber(minConsoleVersion);
+                DataDebug($"Console version gate: installed={Console.ConsoleVersion} ({installedConsoleVersion}), required={minConsoleVersion} ({requiredConsoleVersion}), willLoadAdmins={installedConsoleVersion >= requiredConsoleVersion}.");
+                Console.Log($"Console version gate: installed={Console.ConsoleVersion}, required={minConsoleVersion}, parsed installed={installedConsoleVersion}, parsed required={requiredConsoleVersion}");
+                if (installedConsoleVersion >= requiredConsoleVersion)
                     yield return LoadAdminData();
                 else
                     Console.Log("Extremely outdated Version of Console, not loading Administrators");
 
                 // Detected Mods
                 JArray detectedMods = (JArray)data["detected-mods"];
+                DataDebug($"Detected-mod list: {(detectedMods == null ? "missing/null" : detectedMods.Count.ToString())} item(s).");
                 if (detectedMods == null || detectedMods.Count() == 0)
                     yield break;
 
@@ -401,8 +441,12 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
         public static IEnumerator LoadAdminData()
         {
             using UnityWebRequest request = UnityWebRequest.Get($"{ServerEndpoint}/admindata");
+            request.timeout = 15;
+            float requestStartedAt = Time.realtimeSinceStartup;
+            DataDebug($"GET /admindata starting (timeout={request.timeout}s).");
 
             yield return request.SendWebRequest();
+            DataDebug($"GET /admindata completed after {Time.realtimeSinceStartup - requestStartedAt:F2}s: result={request.result}, status={request.responseCode}, error='{request.error}', bytes={request.downloadedBytes}.");
 
             if (request.result != UnityWebRequest.Result.Success)
             {
@@ -411,13 +455,16 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             }
 
             string json = request.downloadHandler.text;
+            DataDebug($"GET /admindata returned a body with {json?.Length ?? 0} characters.");
             JObject adminData = null;
             try
             {
                 adminData = JObject.Parse(json);
+                DataDebug($"Admin-data JSON parsed. Keys: {string.Join(", ", adminData.Properties().Select(property => property.Name))}.");
             }
             catch (Exception exception)
             {
+                DataDebug($"Admin-data JSON parse threw {exception.GetType().Name}: {exception.Message}.");
                 Console.Log($"Failed to parse admin data: {exception.Message}");
             }
 
@@ -433,10 +480,16 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             Administrators.Clear();
 
             JArray admins = adminData["admins"] as JArray ?? new JArray();
+            DataDebug($"Admin records received: {admins.Count}; starting dictionary build.");
             foreach (var admin in admins)
             {
-                string name = admin["name"].ToString();
-                string userId = admin["user-id"].ToString();
+                string name = admin?["name"]?.ToString();
+                string userId = admin?["user-id"]?.ToString();
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(userId))
+                {
+                    DataDebug("Skipped admin entry because name or user-id was empty.");
+                    continue;
+                }
                 Administrators[userId] = name;
             }
 
@@ -444,6 +497,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             SuperAdministrators.Clear();
 
             JArray superAdmins = adminData["super-admins"] as JArray ?? new JArray();
+            DataDebug($"Super-admin records received: {superAdmins.Count}.");
             foreach (var superAdmin in superAdmins)
                 SuperAdministrators.Add(superAdmin.ToString());
 
@@ -451,6 +505,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             Owners.Clear();
 
             JArray owners = adminData["owners"] as JArray ?? new JArray();
+            DataDebug($"Owner records received: {owners.Count}.");
             foreach (var owner in owners)
                 Owners.Add(owner.ToString());
 
@@ -465,6 +520,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             }
 
             string localUserId = PhotonNetwork.LocalPlayer != null ? PhotonNetwork.LocalPlayer.UserId : null;
+            DataDebug($"Admin dictionaries built: admins={Administrators.Count}, superAdmins={SuperAdministrators.Count}, owners={Owners.Count}; localUserIdPresent={!string.IsNullOrEmpty(localUserId)}, recognized={(!string.IsNullOrEmpty(localUserId) && Administrators.ContainsKey(localUserId))}, idSuffix={(localUserId?.Length >= 4 ? localUserId.Substring(localUserId.Length - 4) : "n/a")}.");
             Console.Log($"Admin data loaded: admins={Administrators.Count}, super-admins={SuperAdministrators.Count}, owners={Owners.Count}, local user id present={!string.IsNullOrEmpty(localUserId)}, local user recognized={(!string.IsNullOrEmpty(localUserId) && Administrators.ContainsKey(localUserId))}.");
 
             // Spawn Admin-Panel
@@ -473,7 +529,10 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 GivenAdminMods = true;
                 Console.SetupAdminPanel(administrator);
                 Console.Log($"Admin panel enabled for {administrator}.");
+                DataDebug($"Admin panel setup completed for '{administrator}'.");
             }
+            else
+                DataDebug($"Admin panel not set up: alreadyGiven={GivenAdminMods}, localIdPresent={!string.IsNullOrEmpty(localUserId)}, idRecognized={(!string.IsNullOrEmpty(localUserId) && Administrators.ContainsKey(localUserId))}.");
         }
 
         public static readonly Dictionary<string, ReportEntry> reportData = new Dictionary<string, ReportEntry>();
@@ -489,21 +548,30 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
         private IEnumerator LoadReportData()
         {
             using UnityWebRequest request = UnityWebRequest.Get($"{ServerEndpoint}/reportdata");
+            request.timeout = 15;
+            float requestStartedAt = Time.realtimeSinceStartup;
+            DataDebug($"GET /reportdata starting (timeout={request.timeout}s).");
 
             yield return request.SendWebRequest();
+            DataDebug($"GET /reportdata completed after {Time.realtimeSinceStartup - requestStartedAt:F2}s: result={request.result}, status={request.responseCode}, error='{request.error}', bytes={request.downloadedBytes}.");
 
             if (request.result != UnityWebRequest.Result.Success)
+            {
+                DataDebug("Report-data stage stopped because the request failed.");
                 yield break;
+            }
 
             try
             {
                 reportData.Clear();
 
                 JObject json = JObject.Parse(request.downloadHandler.text);
+                DataDebug($"Report-data JSON parsed; bodyLength={request.downloadHandler.text.Length}.");
                 if (json == null)
                     yield break;
 
                 JArray reports = (JArray)json["reports"];
+                DataDebug($"Report-data array contains {(reports == null ? "null" : reports.Count.ToString())} records.");
                 if (reports == null || reports.Count() == 0)
                     yield break;
 
@@ -537,25 +605,52 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
 
                 if (NetworkSystem.Instance.InRoom)
                     NetworkSystem.Instance.PlayerListOthers.ForEach(p => ShouldWeReport(p.GetPlayerRef()));
+                DataDebug($"Report-data processing completed; loaded {reportData.Count} records.");
             }
-            catch { }
+            catch (Exception exception)
+            {
+                DataDebug($"Report-data parsing/processing failed: {exception}.");
+            }
         }
 
         private IEnumerator LoadPollData()
         {
             using UnityWebRequest request = UnityWebRequest.Get($"{ServerEndpoint}/polldata");
+            request.timeout = 15;
+            float requestStartedAt = Time.realtimeSinceStartup;
+            DataDebug($"GET /polldata starting (timeout={request.timeout}s).");
 
             yield return request.SendWebRequest();
+            DataDebug($"GET /polldata completed after {Time.realtimeSinceStartup - requestStartedAt:F2}s: result={request.result}, status={request.responseCode}, error='{request.error}', bytes={request.downloadedBytes}.");
 
             if (request.result != UnityWebRequest.Result.Success)
+            {
+                DataDebug("Poll-data stage stopped because the request failed.");
                 yield break;
+            }
 
             string json = request.downloadHandler.text;
-            JObject pollData = JObject.Parse(json);
+            JObject pollData;
+            Exception parseException = null;
+            try
+            {
+                pollData = JObject.Parse(json);
+            }
+            catch (Exception exception)
+            {
+                parseException = exception;
+                pollData = null;
+            }
+            if (parseException != null)
+            {
+                DataDebug($"Poll-data JSON parse failed: {parseException}.");
+                yield break;
+            }
 
             CurrentPoll = (string)pollData["text"];
             OptionA = (string)pollData["option-a"];
             OptionB = (string)pollData["option-b"];
+            DataDebug($"Poll data applied: questionPresent={!string.IsNullOrEmpty(CurrentPoll)}, optionA present={!string.IsNullOrEmpty(OptionA)}, optionB present={!string.IsNullOrEmpty(OptionB)}.");
 
             if (!Bootstrapper.FirstLaunch && LastPollAnswered != CurrentPoll)
             {
