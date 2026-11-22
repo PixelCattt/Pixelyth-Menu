@@ -553,7 +553,7 @@ namespace Pixelyth.Mods
             {
                 PastStepMarker step = pastStepMarkers[i];
                 float age = Time.time - step.spawnTime;
-                if (age >= 3f || step.marker == null)
+                if (age >= 6f || step.marker == null)
                 {
                     if (step.marker != null) Object.Destroy(step.marker);
                     pastStepMarkers.RemoveAt(i);
@@ -562,7 +562,7 @@ namespace Pixelyth.Mods
                 if (step.renderer != null)
                 {
                     Color color = step.baseColor;
-                    color.a *= Mathf.Clamp01(1f - age / 3f);
+                    color.a *= Mathf.Clamp01(1f - age / 6f);
                     step.renderer.material.color = color;
                 }
             }
@@ -838,8 +838,9 @@ namespace Pixelyth.Mods
                 spotlight.range = 50f;
                 spotlight.intensity = 40f;
                 spotlight.spotAngle = 75f;
-                spotlight.renderMode = LightRenderMode.ForcePixel;
                 spotlight.shadows = LightShadows.None;
+                spotlight.cullingMask = ~0;
+                spotlight.enabled = true;
             }
         }
 
@@ -1389,26 +1390,6 @@ namespace Pixelyth.Mods
             TimeSpan time = TimeSpan.FromSeconds(playtime);
             OverallPlaytime = $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}";
             yield return new WaitForSeconds(0.1f);
-        }
-
-        public static void ExtraRoomInfo(bool? overlapInRoom = null)
-        {
-            if (overlapInRoom ?? NetworkSystem.Instance.InRoom)
-            {
-                NetworkSystem.Instance.CurrentRoom.CustomProps.TryGetValue("platform", out var platform);
-                NetworkSystem.Instance.CurrentRoom.CustomProps.TryGetValue("language", out var language);
-                NetworkSystem.Instance.CurrentRoom.CustomProps.TryGetValue("mmrTier", out var mmrTier);
-
-                NotificationManager.information["Language"] = language?.ToString() ?? "Unknown";
-                NotificationManager.information["Platform"] = platform?.ToString() ?? "Unknown";
-                if (mmrTier != null)
-                    NotificationManager.information["MMR Tier"] = mmrTier.ToString();
-            }
-            else
-            {
-                NotificationManager.information.Remove("Language");
-                NotificationManager.information.Remove("MMR Tier");
-            }
         }
 
         public static void RoomInfoOverlay(bool? overlayEnabled = null)
@@ -4664,8 +4645,14 @@ namespace Pixelyth.Mods
         {
             proximityAlertCanvas = new GameObject("Pixelyth_ProximityAlert");
             Canvas canvas = proximityAlertCanvas.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = Camera.main;
+            canvas.planeDistance = Mathf.Max(0.1f, Camera.main.nearClipPlane + 0.05f);
             canvas.sortingOrder = 999;
+            CanvasScaler scaler = proximityAlertCanvas.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            proximityAlertCanvas.AddComponent<GraphicRaycaster>();
 
             GameObject vignette = new GameObject("Vignette");
             vignette.transform.SetParent(proximityAlertCanvas.transform, false);
@@ -4706,144 +4693,6 @@ namespace Pixelyth.Mods
             proximityAlertImage = null;
             proximityAlertMaterial = null;
             proximityAlertTexture = null;
-        }
-
-        private static readonly Dictionary<int, Queue<Vector3>> ghostTrailHistory = new Dictionary<int, Queue<Vector3>>();
-        private static readonly List<GameObject> ghostTrailMarkers = new List<GameObject>();
-        private static Material ghostTrailMaterial;
-        private static float nextGhostTrailRecord;
-
-        public static void EnableGhostTrail()
-        {
-            if (ghostTrailMarkers.Count > 0) DisableGhostTrail();
-        }
-
-        public static void GhostTrail()
-        {
-            ghostTrailMarkers.RemoveAll(marker => marker == null);
-            if (Time.time >= nextGhostTrailRecord)
-            {
-                nextGhostTrailRecord = Time.time + 0.5f;
-                foreach (VRRig rig in VRRigExtensions.ActiveRigs)
-                {
-                    if (rig == null || rig.isLocal) continue;
-                    int id = rig.GetInstanceID();
-                    if (!ghostTrailHistory.TryGetValue(id, out Queue<Vector3> history))
-                        ghostTrailHistory[id] = history = new Queue<Vector3>();
-                    history.Enqueue(rig.transform.position);
-                    while (history.Count > 30) history.Dequeue();
-                }
-            }
-
-            if (ghostTrailMaterial == null)
-            {
-                ghostTrailMaterial = new Material(Shader.Find("GUI/Text Shader"));
-                ghostTrailMaterial.color = new Color(1f, 1f, 1f, 0.15f);
-            }
-
-            bool hideOnCamera = Buttons.GetIndex("Hidden on Camera").enabled;
-            int used = 0;
-            foreach (VRRig rig in VRRigExtensions.ActiveRigs)
-            {
-                if (rig == null || rig.isLocal || used >= 60) continue;
-                if (!ghostTrailHistory.TryGetValue(rig.GetInstanceID(), out Queue<Vector3> history) || history.Count < 7) continue;
-
-                Vector3 delayedPosition = history.ToArray()[history.Count - 7];
-                if (used >= ghostTrailMarkers.Count)
-                {
-                    GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    Object.Destroy(marker.GetComponent<Collider>());
-                    marker.GetComponent<Renderer>().material = ghostTrailMaterial;
-                    ghostTrailMarkers.Add(marker);
-                }
-
-                GameObject sphere = ghostTrailMarkers[used++];
-                sphere.SetActive(true);
-                sphere.transform.position = delayedPosition;
-                sphere.transform.localScale = Vector3.one * (0.25f * rig.scaleFactor);
-                sphere.layer = hideOnCamera ? 19 : 0;
-            }
-
-            for (int i = used; i < ghostTrailMarkers.Count; i++)
-                if (ghostTrailMarkers[i] != null) ghostTrailMarkers[i].SetActive(false);
-        }
-
-        public static void DisableGhostTrail()
-        {
-            foreach (GameObject marker in ghostTrailMarkers)
-                if (marker != null) Object.Destroy(marker);
-            ghostTrailMarkers.Clear();
-            ghostTrailHistory.Clear();
-            if (ghostTrailMaterial != null) Object.Destroy(ghostTrailMaterial);
-            ghostTrailMaterial = null;
-            nextGhostTrailRecord = 0f;
-        }
-
-        private static readonly Dictionary<VRRig, GameObject> micVolumeBars = new Dictionary<VRRig, GameObject>();
-
-        public static void EnableMicVolumeBars()
-        {
-            DisableMicVolumeBars();
-        }
-
-        public static void DisableMicVolumeBars()
-        {
-            foreach (GameObject bar in micVolumeBars.Values)
-                Object.Destroy(bar);
-            micVolumeBars.Clear();
-        }
-
-        public static void MicVolumeBars()
-        {
-            foreach (var stale in micVolumeBars.Keys.Where(rig => rig == null || !VRRigExtensions.ActiveRigs.Contains(rig)).ToArray())
-            {
-                Object.Destroy(micVolumeBars[stale]);
-                micVolumeBars.Remove(stale);
-            }
-
-            foreach (VRRig rig in VRRigExtensions.ActiveRigs.Where(rig => rig != null && !rig.isLocal))
-            {
-                try
-                {
-                    float loudness = Mathf.Clamp01(rig.GetRecorderLoudness());
-                    if (loudness <= 0.001f && !micVolumeBars.ContainsKey(rig))
-                        continue;
-
-                    if (!micVolumeBars.TryGetValue(rig, out GameObject bar) || bar == null)
-                    {
-                        bar = new GameObject("Pixelyth_MicVolumeBar");
-                        GameObject background = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                        Object.Destroy(background.GetComponent<Collider>());
-                        background.name = "Background";
-                        background.transform.SetParent(bar.transform, false);
-                        background.transform.localScale = new Vector3(0.075f, 0.6f, 1f);
-                        background.GetComponent<Renderer>().material.shader = Shader.Find("GUI/Text Shader");
-                        background.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 0.6f);
-
-                        GameObject fill = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                        Object.Destroy(fill.GetComponent<Collider>());
-                        fill.name = "Fill";
-                        fill.transform.SetParent(bar.transform, false);
-                        fill.GetComponent<Renderer>().material.shader = Shader.Find("GUI/Text Shader");
-                        micVolumeBars[rig] = bar;
-                    }
-
-                    bar.SetActive(loudness > 0.001f);
-                    if (loudness <= 0.001f)
-                        continue;
-
-                    Transform fillTransform = bar.transform.Find("Fill");
-                    fillTransform.GetComponent<Renderer>().material.color = Color.Lerp(Color.green, Color.red, loudness);
-                    fillTransform.localScale = new Vector3(0.045f, 0.56f * loudness, 1f);
-                    fillTransform.localPosition = new Vector3(0f, -0.28f + 0.28f * loudness, -0.01f);
-
-                    bar.transform.localScale = Vector3.one * rig.scaleFactor;
-                    bar.transform.position = rig.headMesh.transform.position + Vector3.up * (0.5f * rig.scaleFactor);
-                    bar.transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
-                    bar.transform.Rotate(0f, 180f, 0f);
-                }
-                catch { }
-            }
         }
 
         private static readonly Dictionary<VRRig, GameObject> gripIndicators = new Dictionary<VRRig, GameObject>();
