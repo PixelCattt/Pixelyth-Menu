@@ -567,7 +567,15 @@ namespace Pixelyth.Menu
                 }
 
                 if (watermarkImage != null)
-                    watermarkImage.GetComponent<RectTransform>().localRotation = Quaternion.Euler(new Vector3(0f, 90f, 90f - (rockWatermark ? (Mathf.Sin(Time.time * 2f) * 10f) : 0f)));
+                {
+                    RectTransform watermarkTransform = watermarkImage.GetComponent<RectTransform>();
+                    watermarkTransform.localRotation = Quaternion.Euler(new Vector3(0f, 90f, 90f - (rockWatermark ? (Mathf.Sin(Time.time * 2f) * 10f) : 0f)));
+                    if (watermarkBackImage != null)
+                    {
+                        RectTransform backTransform = watermarkBackImage.GetComponent<RectTransform>();
+                        backTransform.localRotation = Quaternion.Euler(0f, 180f, 0f) * watermarkTransform.localRotation;
+                    }
+                }
 
                 if (animatedTitle && title != null)
                 {
@@ -2648,6 +2656,15 @@ namespace Pixelyth.Menu
                         watermarkImage.AddComponent<UIColorChanger>().colors = textColors[0];
                     else
                         watermarkImage.material.color = Color.white;
+
+                    watermarkBackImage = Instantiate(watermarkImage, canvasObj.transform);
+                    watermarkBackImage.gameObject.name = "PixelythWatermarkBack";
+                    watermarkBackMat = new Material(watermarkImage.material);
+                    watermarkBackImage.material = watermarkBackMat;
+                    RectTransform backTransform = watermarkBackImage.GetComponent<RectTransform>();
+                    backTransform.localPosition = new Vector3(-imageTransform.localPosition.x, imageTransform.localPosition.y, imageTransform.localPosition.z);
+                    backTransform.sizeDelta = imageTransform.sizeDelta;
+                    backTransform.localRotation = Quaternion.Euler(0f, 180f, 0f) * imageTransform.localRotation;
                 }
             }
 
@@ -6954,6 +6971,7 @@ jgs \_   _/ |Oo\
         public static GameObject canvasObj;
         public static TextMeshPro fpsCount;
         public static Image watermarkImage;
+        public static Image watermarkBackImage;
         private static float fpsAvgTime;
         private static float fpsAverageNumber;
         private static float? potatoTime = 0f;
@@ -6973,6 +6991,7 @@ jgs \_   _/ |Oo\
         public static Material updateMat;
         public static Material promptMat;
         public static Material watermarkMat;
+        public static Material watermarkBackMat;
         public static Material returnMat;
         public static Material debugMat;
 
