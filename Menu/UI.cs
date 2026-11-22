@@ -41,9 +41,7 @@ namespace Pixelyth.Menu
 {
     public class UI : MonoBehaviour
     {
-        // TODO: Convert this class to the assetbundle during TMPro migration
         public static UI Instance;
-        public static Texture2D watermarkImage;
 
         private void Awake()
         {
@@ -56,8 +54,7 @@ namespace Pixelyth.Menu
             Transform canvas = uiPrefab.transform.Find("Canvas");
             if (canvas == null)
                 return;
-
-            watermark = canvas.Find("Watermark")?.GetComponent<Image>();
+            
             versionLabel = canvas.Find("VersionLabel")?.GetComponent<TextMeshProUGUI>();
             roomStatus = canvas.Find("RoomStatus")?.GetComponent<TextMeshProUGUI>();
             arraylist = canvas.Find("Arraylist")?.GetComponent<TextMeshProUGUI>();
@@ -168,11 +165,6 @@ namespace Pixelyth.Menu
             foreach (var input in inputObjects)
                 input.richText = false;
 
-            if (watermark != null)
-                watermark.material = new Material(watermark.material);
-
-            watermarkImage = LoadTextureFromResource($"{PluginInfo.ClientResourcePath}.icon.png");
-
             if (!Bootstrapper.FirstLaunch)
             {
                 GameObject closeMessage = uiPrefab.transform.Find("Canvas")?.Find("HideMessage")?.gameObject;
@@ -202,8 +194,7 @@ namespace Pixelyth.Menu
 
         private GameObject uiPrefab;
         private GameObject debugUI;
-
-        private Image watermark;
+        
         private TextMeshProUGUI versionLabel;
         private Vector2 versionLabelDefaultAnchorMin,
                         versionLabelDefaultAnchorMax,
@@ -258,7 +249,6 @@ namespace Pixelyth.Menu
                 roomStatus.enabled = !hideRoomCode;
 
                 versionLabel.enabled = !hideMenuInfos;
-                watermark.enabled = !hideMenuInfos;
 
                 foreach (var t in textObjects)
                     t.enabled = !hideControls;
@@ -312,12 +302,6 @@ namespace Pixelyth.Menu
                 if (arraylist != null)
                     arraylist.color = guiColor;
 
-                if (watermark != null)
-                {
-                    watermark.color = guiColor;
-                    watermark.gameObject.SetActive(!disableWatermark);
-                }
-
                 versionLabel.SafeSetFont(activeFont);
                 roomStatus.SafeSetFont(activeFont);
                 arraylist.SafeSetFont(activeFont);
@@ -345,29 +329,16 @@ namespace Pixelyth.Menu
                         imageObject.color = buttonColors[0].GetCurrentColor();
                 }
 
-                if (watermark != null)
-                    watermark.transform.rotation = Quaternion.Euler(0f, 0f, rockWatermark ? Mathf.Sin(Time.time * 2f) * 10f : 0f);
-
                 if (!versionLabel.text.Contains(PluginInfo.Version) || !versionLabel.text.Contains(serverLink))
                     versionLabel.SafeSetText(FollowMenuSettings("Build") + " " + PluginInfo.Version + "\n" +
                                         serverLink.Replace("https://", ""));
 
                 if (versionLabel != null)
                 {
-                    if (disableWatermark)
-                    {
-                        versionLabel.rectTransform.anchorMin = new Vector2(1f, versionLabel.rectTransform.anchorMin.y);
-                        versionLabel.rectTransform.anchorMax = new Vector2(1f, versionLabel.rectTransform.anchorMax.y);
-                        versionLabel.rectTransform.pivot = new Vector2(1f, 0.5f);
-                        versionLabel.rectTransform.anchoredPosition = new Vector2(-10f, versionLabel.rectTransform.anchoredPosition.y);
-                    }
-                    else
-                    {
-                        versionLabel.rectTransform.anchorMin = versionLabelDefaultAnchorMin;
-                        versionLabel.rectTransform.anchorMax = versionLabelDefaultAnchorMax;
-                        versionLabel.rectTransform.pivot = versionLabelDefaultPivot;
-                        versionLabel.rectTransform.anchoredPosition = versionLabelDefaultPosition;
-                    }
+                    versionLabel.rectTransform.anchorMin = new Vector2(1f, versionLabel.rectTransform.anchorMin.y);
+                    versionLabel.rectTransform.anchorMax = new Vector2(1f, versionLabel.rectTransform.anchorMax.y);
+                    versionLabel.rectTransform.pivot = new Vector2(1f, 0.5f);
+                    versionLabel.rectTransform.anchoredPosition = new Vector2(-10f, versionLabel.rectTransform.anchoredPosition.y);
                 }
 
                 bool inRoom = NetworkSystem.Instance.InRoom;
@@ -410,20 +381,6 @@ namespace Pixelyth.Menu
                 }
 
                 if (!(Time.time > uiUpdateDelay)) return;
-
-                Texture2D watermarkTexture = customWatermark ?? watermarkImage;
-
-                if (watermark != null && watermarkTexture != null && (watermark.sprite == null || watermark.sprite.texture == null || watermark.sprite.texture != watermarkTexture))
-                {
-                    Sprite sprite = Sprite.Create(
-                        watermarkTexture,
-                        new Rect(0, 0, watermarkTexture.width, watermarkTexture.height),
-                        new Vector2(0.5f, 0.5f),
-                        100f
-                    );
-
-                    watermark.sprite = sprite;
-                }
 
                 if (flipArraylist)
                 {
