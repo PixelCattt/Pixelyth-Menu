@@ -2975,7 +2975,7 @@ namespace Pixelyth.Mods
         {
             if (!enabled)
             {
-                foreach (PlanetZone zone in Object.FindObjectsOfType<PlanetZone>(true))
+                foreach (PlanetZone zone in Object.FindObjectsByType<PlanetZone>(FindObjectsSortMode.None))
                 {
                     if (zone == null || zone.gameObject == null)
                         continue;

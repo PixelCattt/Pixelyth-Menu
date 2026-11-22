@@ -321,12 +321,14 @@ namespace Pixelyth.Mods
             NotificationManager.SendNotification("<color=grey>[</color><color=red>ERROR</color><color=grey>]</color> You are not meant to spam Flush RPCs. Only call it once after you are done spamming RPCs.");
         }
 
+        /*
         public static void AntiLurker()
         {
             LurkerGhost lurker = Overpowered.Lurker;
             if (lurker != null && lurker.currentState == LurkerGhost.ghostState.possess && lurker.targetPlayer == NetworkSystem.Instance.LocalPlayer)
                 lurker.ChangeState(LurkerGhost.ghostState.patrol);
         }
+        */
 
         private static float lastCacheClearedTime;
         public static void AutoClearCache()

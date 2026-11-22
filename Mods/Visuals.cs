@@ -294,6 +294,7 @@ namespace Pixelyth.Mods
             }
         }
 
+        /*
         public static void LucyESP()
         {
             if (!NetworkSystem.Instance.InRoom)
@@ -415,6 +416,7 @@ namespace Pixelyth.Mods
             if (lucy?.ghostBody == null) return;
             DrawLucyTransformBones(lucy.ghostBody.transform, GetLucyVisualColor(lucy), GetLucyTracerWidth());
         }
+        */
 
         public static void FOVFrustumESP()
         {
@@ -664,6 +666,7 @@ namespace Pixelyth.Mods
             outlineEspMesh = null;
         }
 
+        /*
         private static void DrawLucyTransformBones(Transform parent, Color color, float width)
         {
             for (int i = 0; i < parent.childCount; i++)
@@ -703,6 +706,7 @@ namespace Pixelyth.Mods
 
             NotificationManager.information["Lurker"] = $"{stateName} | {speed:F1}m/s | {lurker.targetPlayer?.NickName ?? "Nobody"}";
         }
+        */
 
         private static GameObject scheduledEventLabel;
         private static string scheduledEventText;
@@ -771,6 +775,7 @@ namespace Pixelyth.Mods
             return $"<color=yellow><b>{title}</b></color>\nPhase: {phase}\n{status}";
         }
 
+        /*
         public static void WanderingGhostOverlay()
         {
             WanderingGhost ghost = Overpowered.Wanderer;
@@ -783,6 +788,7 @@ namespace Pixelyth.Mods
             string visibility = ghost.isActiveAndEnabled && ghost.mrenderer != null && ghost.mrenderer.enabled ? "Visible" : "Hidden";
             NotificationManager.information["Wanderer"] = $"{visibility} | Patrol {ghost.patrolSpeed:F1}m/s";
         }
+        */
 
         public static void ResourceESP()
         {

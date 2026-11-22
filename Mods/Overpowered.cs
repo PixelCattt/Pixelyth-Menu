@@ -2450,6 +2450,7 @@ namespace Pixelyth.Mods
             }
         }
 
+        /*
         public static HalloweenGhostChaser _lucy;
         public static float lucyFindTime;
         public static HalloweenGhostChaser Lucy
@@ -3719,6 +3720,37 @@ namespace Pixelyth.Mods
             };
         }
 
+        public static void FastBroomsticks()
+        {
+            if (!NetworkSystem.Instance.IsMasterClient)
+            {
+                NotificationManager.SendNotification("You must be the master client to change broomstick speed.");
+                return;
+            }
+
+            foreach (NoncontrollableBroomstick broomstick in Resources.FindObjectsOfTypeAll<NoncontrollableBroomstick>())
+                if (broomstick != null) broomstick.duration = 10f;
+        }
+
+        public static void SlowBroomsticks()
+        {
+            if (!NetworkSystem.Instance.IsMasterClient)
+            {
+                NotificationManager.SendNotification("You must be the master client to change broomstick speed.");
+                return;
+            }
+
+            foreach (NoncontrollableBroomstick broomstick in Resources.FindObjectsOfTypeAll<NoncontrollableBroomstick>())
+                if (broomstick != null) broomstick.duration = 100f;
+        }
+
+        public static void ResetBroomsticks()
+        {
+            foreach (NoncontrollableBroomstick broomstick in Resources.FindObjectsOfTypeAll<NoncontrollableBroomstick>())
+                if (broomstick != null) broomstick.duration = 30f;
+        }
+        */
+        
         public static void BetaSetVelocityPlayer(NetPlayer victim, Vector3 velocity)
         {
             if (velocity.sqrMagnitude > 20f)
