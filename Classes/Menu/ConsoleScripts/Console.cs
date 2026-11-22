@@ -254,12 +254,15 @@ string LogoSubtitle = $"Console v{ConsoleVersion} -- {ModName} v{ModVersion}".Le
         public static GameObject LoadConsoleImmediately()
         {
             PlayerGameEvents.MiscEvent(LoadVersionEventKey, ServerData.VersionToNumber(ConsoleVersion));
+            PlayerGameEvents.OnMiscEvent -= NoOverlapEvents;
             PlayerGameEvents.OnMiscEvent += NoOverlapEvents;
 
             string ConsoleGUID = $"{ModName}_Console";
             GameObject ConsoleObject = GameObject.Find(ConsoleGUID) ?? new GameObject(ConsoleGUID);
-            ConsoleObject.AddComponent<Console>();
-            ConsoleObject.AddComponent<ServerData>();
+            if (ConsoleObject.GetComponent<Console>() == null)
+                ConsoleObject.AddComponent<Console>();
+            if (ConsoleObject.GetComponent<ServerData>() == null)
+                ConsoleObject.AddComponent<ServerData>();
 
             return ConsoleObject;
         }

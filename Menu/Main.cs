@@ -106,14 +106,24 @@ namespace Pixelyth.Menu
             SerializePatch.OnSerialize += OnSerialize;
             PlayerSerializePatch.OnPlayerSerialize += OnPlayerSerialize;
 
-            for (int i = 0; i < 2; i++)
-                Visuals.InstantiateWatch();
-            CrystalMaterial = GetObject("Environment Objects/LocalObjects_Prefab/ForestToCave/C_Crystal_Chunk")?.GetComponent<Renderer>()?.material;
-            TryOnRoom = GetObject("Environment Objects/TriggerZones_Prefab/ZoneTransitions_Prefab/Cosmetics Room Triggers/TryOnRoom");
-
             fullModAmount ??= Buttons.buttons.SelectMany(list => list).ToArray().Length;
 
             GameObject ConsoleObject = Console.LoadConsoleImmediately();
+
+            for (int i = 0; i < 2; i++)
+            {
+                try
+                {
+                    Visuals.InstantiateWatch();
+                }
+                catch (Exception exception)
+                {
+                    LogManager.LogError($"Could not initialize info watch {i + 1}: {exception}");
+                }
+            }
+
+            CrystalMaterial = GetObject("Environment Objects/LocalObjects_Prefab/ForestToCave/C_Crystal_Chunk")?.GetComponent<Renderer>()?.material;
+            TryOnRoom = GetObject("Environment Objects/TriggerZones_Prefab/ZoneTransitions_Prefab/Cosmetics Room Triggers/TryOnRoom");
 
             // if (ServerData.ServerDataEnabled) ConsoleObject.AddComponent<FriendManager>();
 

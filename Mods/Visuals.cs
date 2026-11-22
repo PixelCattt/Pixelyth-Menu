@@ -1051,22 +1051,47 @@ namespace Pixelyth.Mods
 
         public static void InstantiateWatch()
         {
-            GameObject mainwatch = VRRig.LocalRig.transform.Find("rig/hand.L/huntcomputer (1)").gameObject;
-            GameObject watch = Object.Instantiate(mainwatch,
-                rightHand ? VRRig.LocalRig.transform.Find("rig/hand.R").transform
-                          : VRRig.LocalRig.transform.Find("rig/hand.L").transform, false);
+            VRRig localRig = VRRig.LocalRig;
+            if (localRig == null)
+            {
+                LogManager.LogWarning("Could not create info watch: VRRig.LocalRig is null.");
+                return;
+            }
 
-            Object.DestroyImmediate(watch.GetComponent<GorillaHuntComputer>());
+            Transform leftHandTransform = localRig.transform.Find("rig/hand.L");
+            Transform rightHandTransform = localRig.transform.Find("rig/hand.R");
+            Transform mainWatchTransform = leftHandTransform != null ? leftHandTransform.Find("huntcomputer (1)") : null;
+            Transform handTransform = rightHand ? rightHandTransform : leftHandTransform;
+            if (mainWatchTransform == null || handTransform == null)
+            {
+                LogManager.LogWarning($"Could not create info watch: source or target hand missing (sourceFound={mainWatchTransform != null}, leftHandFound={leftHandTransform != null}, rightHandFound={rightHandTransform != null}).");
+                return;
+            }
+
+            GameObject watch = Object.Instantiate(mainWatchTransform.gameObject, handTransform, false);
+            GorillaHuntComputer huntComputer = watch.GetComponent<GorillaHuntComputer>();
+            if (huntComputer != null)
+                Object.DestroyImmediate(huntComputer);
 
             Transform anchor = watch.transform.Find("HuntWatch_ScreenLocal/Canvas/Anchor");
-            anchor.Find("Hat").gameObject.SetActive(false);
-            anchor.Find("Face").gameObject.SetActive(false);
-            anchor.Find("Badge").gameObject.SetActive(false);
-            anchor.Find("Material").gameObject.SetActive(false);
-            anchor.Find("Right Hand").gameObject.SetActive(false);
-            anchor.Find("Left Hand").gameObject.SetActive(false);
+            Transform shellTransform = watch.transform.Find("HuntWatch_ScreenLocal");
+            if (anchor == null || shellTransform == null)
+            {
+                LogManager.LogWarning($"Could not finish info watch: anchorFound={anchor != null}, shellFound={shellTransform != null}. Destroying incomplete watch.");
+                Object.Destroy(watch);
+                return;
+            }
 
-            GameObject shell = watch.transform.Find("HuntWatch_ScreenLocal").gameObject;
+            foreach (string childName in new[] { "Hat", "Face", "Badge", "Material", "Right Hand", "Left Hand" })
+            {
+                Transform child = anchor.Find(childName);
+                if (child != null)
+                    child.gameObject.SetActive(false);
+                else
+                    LogManager.LogWarning($"Info watch anchor has no optional '{childName}' child.");
+            }
+
+            GameObject shell = shellTransform.gameObject;
 
             if (rightHand)
             {
@@ -1075,8 +1100,18 @@ namespace Pixelyth.Mods
                 shell.transform.localPosition += new Vector3(0.025f, 0f, -0.035f);
             }
 
-            GameObject textObject = anchor.Find("Text").gameObject;
-            Object.DestroyImmediate(textObject.GetComponent<Text>());
+            Transform textTransform = anchor.Find("Text");
+            if (textTransform == null)
+            {
+                LogManager.LogWarning("Could not finish info watch: Anchor/Text is missing. Destroying incomplete watch.");
+                Object.Destroy(watch);
+                return;
+            }
+
+            GameObject textObject = textTransform.gameObject;
+            Text legacyText = textObject.GetComponent<Text>();
+            if (legacyText != null)
+                Object.DestroyImmediate(legacyText);
 
             TextMeshProUGUI tmp = textObject.AddComponent<TextMeshProUGUI>();
             tmp.SafeSetFont(activeFont);
@@ -1085,17 +1120,22 @@ namespace Pixelyth.Mods
             tmp.SafeSetWrappingMode(TextWrappingModes.Normal);
             tmp.SafeSetOverflowMode(TextOverflowModes.Truncate);
 
+            Transform leftHandIndicator = anchor.Find("Left Hand");
+            Image indicator = leftHandIndicator != null ? leftHandIndicator.GetComponent<Image>() : null;
             Watches.Add(new WatchInfo
             {
                 gameObject = watch,
                 text = tmp,
                 shell = shell,
-                indicator = anchor.Find("Left Hand").gameObject.GetComponent<Image>()
+                indicator = indicator
             });
         }
 
-        public static void WatchOn() =>
-            Watches[1].gameObject.SetActive(true);
+        public static void WatchOn()
+        {
+            if (Watches.Count > 1 && Watches[1].gameObject != null)
+                Watches[1].gameObject.SetActive(true);
+        }
 
         public static bool infoWatchMenuName;
         public static bool infoWatchTime;
@@ -1104,6 +1144,9 @@ namespace Pixelyth.Mods
         public static bool infoWatchCode;
         public static void WatchStep()
         {
+            if (Watches.Count < 2 || Watches[1].text == null)
+                return;
+
             TextMeshProUGUI tmp = Watches[1].text;
 
             if (tmp)
@@ -1142,8 +1185,11 @@ namespace Pixelyth.Mods
             }
         }
 
-        public static void WatchOff() =>
-             Watches[1].gameObject.SetActive(false);
+        public static void WatchOff()
+        {
+            if (Watches.Count > 1 && Watches[1].gameObject != null)
+                Watches[1].gameObject.SetActive(false);
+        }
 
         public static Material oldSkyMat;
         public static void DoCustomSkyboxColor()
