@@ -294,19 +294,34 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     Console.Log($"Failed to load server data:\nError: {request.error}\nResult: {request.result}\nResponse Code: {request.responseCode}\nBody (if any): {request.downloadHandler?.text}");
+                    if (CustomBoardManager.motdTemplate == "\n\n<align=\"center\"><b>Loading...</b></align>")
+                    {
+                        CustomBoardManager.motdTemplate = "\n\n<align=\"center\"><b>Server data unavailable</b></align>";
+                        CustomBoardManager.motdTextDirty = true;
+                    }
                     yield break;
                 }
 
                 string json = request.downloadHandler.text;
                 DataLoadTime = -1f;
 
-                JObject data = JObject.Parse(json);
+                JObject data = null;
+                try
+                {
+                    data = JObject.Parse(json);
+                }
+                catch (Exception exception)
+                {
+                    Console.Log($"Failed to parse server data: {exception.Message}");
+                }
 
                 if (data == null)
                 {
                     Console.Log($"Failed to parse server data: JSON Response is empty or null");
                     yield break;
                 }
+
+                Console.Log($"Loaded server data from {ServerEndpoint}/serverdata (HTTP {request.responseCode}).");
 
                 Main.serverLink = (string)data["discord-invite"];
                 if (CustomBoardManager.motdTemplate != (string)data["motd"])
@@ -345,6 +360,7 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 }
 
                 string minConsoleVersion = (string)data["min-console-version"];
+                Console.Log($"Console version gate: installed={Console.ConsoleVersion}, required={minConsoleVersion}, parsed installed={VersionToNumber(Console.ConsoleVersion)}, parsed required={VersionToNumber(minConsoleVersion)}");
                 if (VersionToNumber(Console.ConsoleVersion) >= VersionToNumber(minConsoleVersion))
                     yield return LoadAdminData();
                 else
@@ -389,18 +405,34 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             yield return request.SendWebRequest();
 
             if (request.result != UnityWebRequest.Result.Success)
+            {
+                Console.Log($"Failed to load admin data:\nError: {request.error}\nResult: {request.result}\nResponse Code: {request.responseCode}");
                 yield break;
+            }
 
             string json = request.downloadHandler.text;
-            JObject adminData = JObject.Parse(json);
+            JObject adminData = null;
+            try
+            {
+                adminData = JObject.Parse(json);
+            }
+            catch (Exception exception)
+            {
+                Console.Log($"Failed to parse admin data: {exception.Message}");
+            }
 
             if (adminData == null)
+            {
+                Console.Log("Failed to parse admin data: response was empty or null.");
                 yield break;
+            }
+
+            Console.Log($"Loaded admin data from {ServerEndpoint}/admindata (HTTP {request.responseCode}).");
 
             // Admin Dictionary
             Administrators.Clear();
 
-            JArray admins = (JArray)adminData["admins"];
+            JArray admins = adminData["admins"] as JArray ?? new JArray();
             foreach (var admin in admins)
             {
                 string name = admin["name"].ToString();
@@ -411,14 +443,14 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
             // Super Admin Dictionary
             SuperAdministrators.Clear();
 
-            JArray superAdmins = (JArray)adminData["super-admins"];
+            JArray superAdmins = adminData["super-admins"] as JArray ?? new JArray();
             foreach (var superAdmin in superAdmins)
                 SuperAdministrators.Add(superAdmin.ToString());
 
             // Owner Dictionary
             Owners.Clear();
 
-            JArray owners = (JArray)adminData["owners"];
+            JArray owners = adminData["owners"] as JArray ?? new JArray();
             foreach (var owner in owners)
                 Owners.Add(owner.ToString());
 
@@ -432,11 +464,15 @@ namespace Pixelyth.Classes.Menu.ConsoleScripts
                 Owners.Add(localAdmin.Value);
             }
 
+            string localUserId = PhotonNetwork.LocalPlayer != null ? PhotonNetwork.LocalPlayer.UserId : null;
+            Console.Log($"Admin data loaded: admins={Administrators.Count}, super-admins={SuperAdministrators.Count}, owners={Owners.Count}, local user id present={!string.IsNullOrEmpty(localUserId)}, local user recognized={(!string.IsNullOrEmpty(localUserId) && Administrators.ContainsKey(localUserId))}.");
+
             // Spawn Admin-Panel
-            if (!GivenAdminMods && PhotonNetwork.LocalPlayer.UserId != null && Administrators.TryGetValue(PhotonNetwork.LocalPlayer.UserId, out var administrator))
+            if (!GivenAdminMods && !string.IsNullOrEmpty(localUserId) && Administrators.TryGetValue(localUserId, out var administrator))
             {
                 GivenAdminMods = true;
                 Console.SetupAdminPanel(administrator);
+                Console.Log($"Admin panel enabled for {administrator}.");
             }
         }
 

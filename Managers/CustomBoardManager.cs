@@ -198,6 +198,7 @@ namespace Pixelyth.Managers
         public GameObject motdText;
 
         private TMP_FontAsset archiveGorillaTagFont;
+        private string lastMotdError;
 
         private string cachedMotdHeading;
         private string cachedMotdBody;
@@ -240,7 +241,15 @@ namespace Pixelyth.Managers
         private void RebuildMotdText()
         {
             cachedMotdHeading = FollowMenuSettings($"Thank You for using {(doCustomName ? customMenuName : menuName)}!");
-            cachedMotdBody = FollowMenuSettings(string.Format(motdTemplate, PluginInfo.Version, fullModAmount, PluginInfo.BetaBuild ? "BETA" : "RELEASE", PluginInfo.BuildTimestamp));
+            try
+            {
+                cachedMotdBody = FollowMenuSettings(string.Format(motdTemplate, PluginInfo.Version, fullModAmount, PluginInfo.BetaBuild ? "BETA" : "RELEASE", PluginInfo.BuildTimestamp));
+            }
+            catch (FormatException exception)
+            {
+                Debug.LogError($"[Pixelyth] MOTD template formatting failed: {exception.Message}");
+                cachedMotdBody = FollowMenuSettings(motdTemplate);
+            }
             motdTextDirty = false;
         }
 
@@ -387,7 +396,9 @@ namespace Pixelyth.Managers
                     motdText = Instantiate(motdObject, motdObject.transform.parent);
                     motdObject.SetActive(false);
 
-                    motdText.GetComponent<PlayFabTitleDataTextDisplay>().enabled = false;
+                    PlayFabTitleDataTextDisplay titleDataDisplay = motdText.GetComponent<PlayFabTitleDataTextDisplay>();
+                    if (titleDataDisplay != null)
+                        titleDataDisplay.enabled = false;
                 }
 
                 TextMeshPro motdBodyText = motdText.GetComponent<TextMeshPro>();
@@ -403,8 +414,14 @@ namespace Pixelyth.Managers
 
                 if (motdTextDirty) RebuildMotdText();
                 motdBodyText.SafeSetText(cachedMotdBody);
+                lastMotdError = null;
             }
-            catch { }
+            catch (Exception exception)
+            {
+                if (lastMotdError != exception.Message)
+                    Debug.LogError($"[Pixelyth] Failed to update the MOTD board: {exception}");
+                lastMotdError = exception.Message;
+            }
 
             try
             {
